@@ -15,9 +15,7 @@
 @property (nonatomic, assign) NSInteger cacheArgumentsIdx;
 @end
 
-@implementation JPEngine {
-    JSContext *_context;
-}
+@implementation JPEngine
 
 static JSContext *_context;
 
