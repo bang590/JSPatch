@@ -129,8 +129,8 @@ You can define a new Objective-C class in JavaScript:
 defineClass("JPViewController: UIViewController", {
   //instance method definitions
   viewDidLoad: function() {
-    //use self.super() to call super method
-    self.super().viewDidLoad()
+    //use self.super to call super method
+    self.super.viewDidLoad()
 
     //do something here
   },
