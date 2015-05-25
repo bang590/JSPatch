@@ -2,7 +2,7 @@
 JSPatch ![License MIT](https://go-shields.herokuapp.com/license-MIT-yellow.png) 
 ========
 
-JSPatch bridge Object-C and Javascript using the Object-C runtime. You can call any Object-C class and method in JavaScript by just including a small engine. That makes the APP obtain the power of script language: add modules or replacing Object-C codes to fix bugs dynamically.
+JSPatch bridge Objective-C and JavaScript using the Objective-C runtime. You can call any Objective-C class and method in JavaScript by just including a small engine. That makes the APP obtain the power of script language: add modules or replacing Objective-C codes to fix bugs dynamically.
 
 JSPatch is still in development, welcome to improve the project together.
 
@@ -57,7 +57,7 @@ Copy `JSEngine.m` `JSEngine.h` `JSPatch.js` in `JSPatch/` to your project.
 
 ##Usage
 
-###Object-C
+###Objective-C
 1. `#import "JPEngine.h"`
 2. call `[JPEngine startEngine]`
 3. exec JavasScript by `[JPEngine evaluateScript:@""]`
@@ -90,7 +90,7 @@ NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8
 
 ####1. require 
 
-Call `require('className')` before using the Object-C class. You can use `,` to separate multiple class to import them at one time. 
+Call `require('className')` before using the Objective-C class. You can use `,` to separate multiple class to import them at one time. 
 
 ```js
 require('UIView, UIColor')
@@ -123,7 +123,7 @@ var indexPath = NSIndexPath.indexPathForRow_inSection(0, 1);
 ```
 
 ####3. defineClass
-You can define a new Object-C class in JavaScript:
+You can define a new Objective-C class in JavaScript:
 
 ```js
 defineClass("JPViewController: UIViewController", {

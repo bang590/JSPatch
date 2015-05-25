@@ -1,7 +1,7 @@
 ---
 JSPatch(中文) ![License MIT](https://go-shields.herokuapp.com/license-MIT-yellow.png) 
 ========
-JSPatch可以让你用javascript书写原生iOS APP。只需在项目引入极小的引擎，就可以使用javascript调用任何Object-c的原生接口，获得脚本语言的优势：为项目动态添加模块，或替换项目原生代码动态修复bug。
+JSPatch可以让你用JavaScript书写原生iOS APP。只需在项目引入极小的引擎，就可以使用JavaScript调用任何Objective-C的原生接口，获得脚本语言的优势：为项目动态添加模块，或替换项目原生代码动态修复bug。
 
 项目仍在开发中，欢迎一起完善这个项目。
 
@@ -122,7 +122,7 @@ var indexPath = NSIndexPath.indexPathForRow_inSection(0, 1);
 ```
 
 ####3. defineClass
-可以新定义一个Object-c class，重写父类里的方法。
+可以新定义一个Objective-C class，重写父类里的方法。
 
 ```js
 defineClass("JPViewController: UIViewController", {
@@ -145,7 +145,7 @@ defineClass("JPViewController: UIViewController", {
 })
 ```
 
-可以定义Object-c里已存在的类，对类和实例方法进行动态替换。
+可以定义Objective-C里已存在的类，对类和实例方法进行动态替换。
 
 ```objc
 //OC
