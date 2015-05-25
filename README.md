@@ -1,12 +1,14 @@
----
-JSPatch ![License MIT](https://go-shields.herokuapp.com/license-MIT-yellow.png) 
-========
+# JSPatch
+[![Travis](https://img.shields.io/travis/bang590/JSPatch.svg)](https://github.com/bang590/JSPatch)
+[![CocoaPods Version](https://img.shields.io/cocoapods/v/JSPatch.svg?style=flat)](https://github.com/cocoapods/CocoaPods)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-✔-f2a77e.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![License](https://img.shields.io/github/license/bang590/JSPatch.svg?style=flat)](https://github.com/bang590/JSPatch/blob/master/LICENSE)
 
 JSPatch bridge Objective-C and JavaScript using the Objective-C runtime. You can call any Objective-C class and method in JavaScript by just including a small engine. That makes the APP obtain the power of script language: add modules or replacing Objective-C codes to fix bugs dynamically.
 
 JSPatch is still in development, welcome to improve the project together.
 
-##Example
+## Example
 
 ```objc
 @implementation AppDelegate
@@ -34,10 +36,10 @@ JSPatch is still in development, welcome to improve the project together.
 ```
 
 ```js
-//demo.js
+// demo.js
 require('UIView, UIColor, UILabel')
 defineClass('AppDelegate', {
-  //replace the -genView method
+  // replace the -genView method
   genView: function() {
     var view = self.ORIGgenView();
     view.setBackgroundColor(UIColor.greenColor())
@@ -51,13 +53,41 @@ defineClass('AppDelegate', {
 ```
 
 
-##Installation
+## Installation
+
+### CocoaPods
+
+[CocoaPods](http://cocoapods.org) is a dependency manager for Objective-C, which automates and simplifies the process of using 3rd-party libraries like JSPatch in your projects. See the [CocoaPods.org](https://cocoapods.org/#install).
+
+```ruby
+# Your Podfile
+platform :ios, '7.0'
+pod 'JSPatch', '~> 0.0.1'
+```
+
+### Carthage
+
+[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager. Add the following to your Cartfile:
+
+``` ogdl
+github "bang590/JSPatch"
+```
+
+Then run `carthage update`.
+
+Follow the current instructions in [Carthage's README][carthage-installation]
+for up to date installation instructions.
+
+[carthage-installation]: https://github.com/Carthage/Carthage#adding-frameworks-to-an-application
+
+### Manually
 
 Copy `JSEngine.m` `JSEngine.h` `JSPatch.js` in `JSPatch/` to your project.
 
-##Usage
 
-###Objective-C
+## Usage
+
+### Objective-C
 1. `#import "JPEngine.h"`
 2. call `[JPEngine startEngine]`
 3. exec JavasScript by `[JPEngine evaluateScript:@""]`
@@ -65,7 +95,7 @@ Copy `JSEngine.m` `JSEngine.h` `JSPatch.js` in `JSPatch/` to your project.
 ```objc
 [JPEngine startEngine];
 
-//exec js directly
+// exec js directly
 [JPEngine evaluateScript:@"\
  var alertView = require('UIAlertView').alloc().init();\
  alertView.setTitle('Alert');\
@@ -74,21 +104,21 @@ Copy `JSEngine.m` `JSEngine.h` `JSPatch.js` in `JSPatch/` to your project.
  alertView.show(); \
 "];
 
-//exec js file from network
+// exec js file from network
 [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://cnbang.net/test.js"]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
     NSString *script = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     [JPEngine evaluateScript:script];
 }];
 
-//exec local js file
+// exec local js file
 NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"sample" ofType:@"js"];
 NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8StringEncoding error:nil];
 [JPEngine evaluateScript:script];
 ```
 
-###JavaScript
+### JavaScript
 
-####1. require 
+#### 1. require 
 
 Call `require('className')` before using the Objective-C class. You can use `,` to separate multiple class to import them at one time. 
 
@@ -103,21 +133,21 @@ var ctrl = require('UIViewController').alloc().init()
 ```js
 require('UIView, UIColor, UISlider, NSIndexPath')
 
-//Invoke class method
+// Invoke class method
 var redColor = UIColor.redColor();
 
-//Invoke instance method
+// Invoke instance method
 var view = UIView.alloc().init();
 view.setNeedsLayout();
 
-//set proerty
+// set proerty
 view.setBackgroundColor(redColor);
 
-//get property 
+// get property 
 var bgColor = view.backgroundColor();
 
-//multi-params method
-//OC：NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1]
+// multi-params method
+// OC：NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1]
 var indexPath = NSIndexPath.indexPathForRow_inSection(0, 1);
 
 ```
@@ -149,7 +179,7 @@ defineClass("JPViewController: UIViewController", {
 Or you can redefine an exists class and override methods.
 
 ```objc
-//OC
+// OC
 @implementation JPTableViewController
 ...
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -170,9 +200,9 @@ Or you can redefine an exists class and override methods.
 ```
 
 ```objc
-//JS
+// JS
 defineClass("JPTableViewController", {
-  //instance method definitions
+  // instance method definitions
   tableView_didSelectRowAtIndexPath: function(tableView, indexPath) {
     var row = indexPath.row()
     if (self.dataSource().length > row) {  //fix the out of bound bug here
@@ -183,7 +213,7 @@ defineClass("JPTableViewController", {
   },
 
   dataSource: function() {
-    //get the original method by adding prefix 'ORIG'
+    // get the original method by adding prefix 'ORIG'
     var data = self.ORIGdataSource();
     return data.push('Good!');
   }
@@ -191,24 +221,25 @@ defineClass("JPTableViewController", {
 ```
 
 
-####4. CGRect/CGPoint/CGSize/NSRange
+#### 4. CGRect / CGPoint / CGSize / NSRange
 Use hashes:
+
 ```objc
-//OC
+// OC
 UIView *view = [[UIView alloc] initWithFrame:CGRectMake(20, 20, 100, 100)];
 CGFloat x = view.frame.origin.x;
 ```
 
 ```js
-//JS
+// JS
 var view = UIView.alloc().initWithFrame({x:20, y:20, width:100, height:100});
 var x = view.bounds.x;
 ```
 
-####5. block
+#### 5. block
 You should indicate each type of params when passing block from js to objc.
 ```objc
-//OC
+// OC
 @implementation JPObject
 + (void)request:(void(^)(NSString *content, BOOL success))callback
 {
@@ -218,15 +249,16 @@ You should indicate each type of params when passing block from js to objc.
 ```
 
 ```js
-//JS
+// JS
 require('JPObject').request(block("NSString *, BOOL", function(ctn, succ) {
   if (succ) log(ctn)  //output: I'm content
 }));
 ```
 
 Just call directly when the block passing from objc to js:
+
 ```objc
-//OC
+// OC
 @implementation JPObject
 typedef void (^JSBlock)(NSDictionary *dict);
 + (JSBlock)genBlock
@@ -241,7 +273,7 @@ typedef void (^JSBlock)(NSDictionary *dict);
 ```
 
 ```js
-//JS
+// JS
 var blk = require('JPObject').genBlock();
 blk({v: "0.0.1"});  //output: I'm JSPatch, version: 0.0.1
 ```
@@ -250,28 +282,28 @@ blk({v: "0.0.1"});  //output: I'm JSPatch, version: 0.0.1
 Using `dispatch_after()` `dispatch_async_main()` `dispatch_sync_main()` `dispatch_async_global_queue()` to call GCD.
 
 ```objc
-//OC
+// OC
 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-  //do something
+  // do something
 });
 
 dispatch_async(dispatch_get_main_queue(), ^{
-  //do something
+  // do something
 });
 ```
 
 ```js
-//JS
+// JS
 dispatch_after(function(1.0, function(){
-  //do something
+  // do something
 }))
 dispatch_async_main(function(){
-  //do something
+  // do something
 })
 ```
 
 
-##Enviroment
-- iOS7+
+## Enviroment
+- iOS 7+
 - JavaScriptCore.framework
 - Support armv7/armv7s/arm64
