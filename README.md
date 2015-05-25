@@ -1,6 +1,7 @@
 # JSPatch
 [![Travis](https://img.shields.io/travis/bang590/JSPatch.svg)](https://github.com/bang590/JSPatch)
-![CocoaPods Version](https://img.shields.io/cocoapods/v/JSPatch.svg?style=flat)
+[![CocoaPods Version](https://img.shields.io/cocoapods/v/JSPatch.svg?style=flat)](https://github.com/cocoapods/CocoaPods)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-✔-f2a77e.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![License](https://img.shields.io/github/license/bang590/JSPatch.svg?style=flat)](https://github.com/bang590/JSPatch/blob/master/LICENSE)
 
 JSPatch bridge Objective-C and JavaScript using the Objective-C runtime. You can call any Objective-C class and method in JavaScript by just including a small engine. That makes the APP obtain the power of script language: add modules or replacing Objective-C codes to fix bugs dynamically.
@@ -56,13 +57,28 @@ defineClass('AppDelegate', {
 
 ### CocoaPods
 
-[CocoaPods](http://cocoapods.org) is a dependency manager for Objective-C, which automates and simplifies the process of using 3rd-party libraries like JSPatch in your projects. See the ["Getting Started" guide for more information](https://github.com/AFNetworking/AFNetworking/wiki/Getting-Started-with-AFNetworking).
+[CocoaPods](http://cocoapods.org) is a dependency manager for Objective-C, which automates and simplifies the process of using 3rd-party libraries like JSPatch in your projects. See the [CocoaPods.org](https://cocoapods.org/#install).
 
 ```ruby
 # Your Podfile
 platform :ios, '7.0'
 pod 'JSPatch', '~> 0.0.1'
 ```
+
+### Carthage
+
+[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager. Add the following to your Cartfile:
+
+``` ogdl
+github "bang590/JSPatch"
+```
+
+Then run `carthage update`.
+
+Follow the current instructions in [Carthage's README][carthage-installation]
+for up to date installation instructions.
+
+[carthage-installation]: https://github.com/Carthage/Carthage#adding-frameworks-to-an-application
 
 ### Manually
 

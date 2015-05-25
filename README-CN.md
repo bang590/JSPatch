@@ -1,5 +1,7 @@
 # JSPatch
 [![Travis](https://img.shields.io/travis/bang590/JSPatch.svg)](https://github.com/bang590/JSPatch)
+[![CocoaPods Version](https://img.shields.io/cocoapods/v/JSPatch.svg?style=flat)](https://github.com/cocoapods/CocoaPods)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-✔-f2a77e.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![License](https://img.shields.io/github/license/bang590/JSPatch.svg?style=flat)](https://github.com/bang590/JSPatch/blob/master/LICENSE)
 
 JSPatch 可以让你用 JavaScript 书写原生 iOS APP。只需在项目引入极小的引擎，就可以使用 JavaScript 调用任何 Objective-C 的原生接口，获得脚本语言的优势：为项目动态添加模块，或替换项目原生代码动态修复 bug。
@@ -52,6 +54,33 @@ defineClass('AppDelegate', {
 
 
 ## 安装
+
+### CocoaPods
+
+[CocoaPods](http://cocoapods.org) 是一个为 Cocoa 项目设计的依赖管理工具。可以用它简化使用第三方库的操作步骤。使用方法可以参考 [CocoaPods.org](https://cocoapods.org/#install).
+
+```ruby
+# 你的 Podfile
+platform :ios, '7.0'
+pod 'JSPatch', '~> 0.0.1'
+```
+
+### Carthage
+
+[Carthage](https://github.com/Carthage/Carthage) 是一个去中心化的依赖管理工具。请添加以下内容到你的 Cartfile:
+
+``` ogdl
+github "bang590/JSPatch"
+```
+
+接着运行 `carthage update`.
+
+然后参考官方最新的 [Carthage's README][carthage-installation]
+来把编译好的 framework 安装到项目中。
+
+[carthage-installation]: https://github.com/Carthage/Carthage#adding-frameworks-to-an-application
+
+### 直接使用源码
 
 拷贝 `JSPatch/` 目录下的三个文件 `JSEngine.m` / `JSEngine.h` / `JSPatch.js` 到项目里即可。
 
