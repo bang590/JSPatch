@@ -205,5 +205,7 @@ var global = this;
   var view = newTestObj.funcReturnView(42) 
   obj.setNewTestObjectReturnViewPassed(view.frame().x == 42) 
   obj.setNewTestObjectReturnBoolPassed(JPNewTestObject.funcReturnBool(view, 42))
+ 
+  obj.setConsoleLogPassed(console.log != undefined)
 
 })();

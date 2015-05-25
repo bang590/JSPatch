@@ -100,7 +100,7 @@ static NSRegularExpression* regex;
     context[@"log"] = ^() {
         NSArray *args = [JSContext currentArguments];
         for (JSValue *jsVal in args) {
-            NSLog(@"log from js: %@", jsVal);
+            NSLog(@"JSPatch.log: %@", jsVal);
         }
     };
     
