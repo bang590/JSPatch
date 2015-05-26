@@ -1,4 +1,4 @@
-![JSPatchBanner](https://cloud.githubusercontent.com/assets/219689/7807128/4ded1348-03bb-11e5-890f-23ba39f2a72f.png)
+![JSPatchBanner](https://cloud.githubusercontent.com/assets/219689/7807401/d41f5f00-03bd-11e5-86c0-ac21e75b48c5.png)
 
 [![Travis](https://img.shields.io/travis/bang590/JSPatch.svg)](https://github.com/bang590/JSPatch)
 [![CocoaPods Version](https://img.shields.io/cocoapods/v/JSPatch.svg?style=flat)](https://github.com/cocoapods/CocoaPods)
