@@ -16,8 +16,6 @@
 		2D6D13011B0B8CFF0095A435 /* demo.js in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D13001B0B8CFF0095A435 /* demo.js */; };
 		2DD801281AF336BC005580A8 /* test.js in Resources */ = {isa = PBXBuildFile; fileRef = DE94AE451AF2480000E461D4 /* test.js */; };
 		D754A49F1B140E4B00BC7E66 /* JSPatch.h in Headers */ = {isa = PBXBuildFile; fileRef = D754A49E1B140E4B00BC7E66 /* JSPatch.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D754A4B11B140E4B00BC7E66 /* JSPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D754A49A1B140E4B00BC7E66 /* JSPatch.framework */; };
-		D754A4B21B140E4B00BC7E66 /* JSPatch.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D754A49A1B140E4B00BC7E66 /* JSPatch.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D754A4BB1B140EB600BC7E66 /* JPEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D892B1B0B8C3B009382EC /* JPEngine.m */; };
 		D754A4BC1B140EBB00BC7E66 /* JSPatch.js in Resources */ = {isa = PBXBuildFile; fileRef = 2D5D892C1B0B8C3B009382EC /* JSPatch.js */; };
 		D754A4BD1B140EC800BC7E66 /* JPEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 2D5D892A1B0B8C3B009382EC /* JPEngine.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -43,7 +41,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				D754A4B21B140E4B00BC7E66 /* JSPatch.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,7 +83,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D754A4B11B140E4B00BC7E66 /* JSPatch.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
