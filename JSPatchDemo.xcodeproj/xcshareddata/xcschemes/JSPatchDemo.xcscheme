@@ -34,6 +34,20 @@
                ReferencedContainer = "container:JSPatchDemo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D754A4A31B140E4B00BC7E66"
+               BuildableName = "JSPatchFrameworkTests.xctest"
+               BlueprintName = "JSPatchFrameworkTests"
+               ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -49,6 +63,16 @@
                BlueprintIdentifier = "DE94AE231AF246C000E461D4"
                BuildableName = "JSPatchDemoTests.xctest"
                BlueprintName = "JSPatchTests"
+               ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D754A4A31B140E4B00BC7E66"
+               BuildableName = "JSPatchFrameworkTests.xctest"
+               BlueprintName = "JSPatchFrameworkTests"
                ReferencedContainer = "container:JSPatchDemo.xcodeproj">
             </BuildableReference>
          </TestableReference>
