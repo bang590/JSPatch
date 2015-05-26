@@ -1,11 +1,12 @@
----
-JSPatch(中文) ![License MIT](https://go-shields.herokuapp.com/license-MIT-yellow.png) 
-========
-JSPatch可以让你用JavaScript书写原生iOS APP。只需在项目引入极小的引擎，就可以使用JavaScript调用任何Objective-C的原生接口，获得脚本语言的优势：为项目动态添加模块，或替换项目原生代码动态修复bug。
+# JSPatch
+[![Travis](https://img.shields.io/travis/bang590/JSPatch.svg)](https://github.com/bang590/JSPatch)
+[![License](https://img.shields.io/github/license/bang590/JSPatch.svg?style=flat)](https://github.com/bang590/JSPatch/blob/master/LICENSE)
+
+JSPatch 可以让你用 JavaScript 书写原生 iOS APP。只需在项目引入极小的引擎，就可以使用 JavaScript 调用任何 Objective-C 的原生接口，获得脚本语言的优势：为项目动态添加模块，或替换项目原生代码动态修复 bug。
 
 项目仍在开发中，欢迎一起完善这个项目。
 
-##示例
+## 示例
 
 ```objc
 @implementation AppDelegate
@@ -33,10 +34,10 @@ JSPatch可以让你用JavaScript书写原生iOS APP。只需在项目引入极�
 ```
 
 ```js
-//demo.js
+// demo.js
 require('UIView, UIColor, UILabel')
 defineClass('AppDelegate', {
-  //replace the -genView method
+  // replace the -genView method
   genView: function() {
     var view = self.ORIGgenView();
     view.setBackgroundColor(UIColor.greenColor())
@@ -50,21 +51,21 @@ defineClass('AppDelegate', {
 ```
 
 
-##安装
+## 安装
 
 拷贝 `JSPatch/` 目录下的三个文件 `JSEngine.m` / `JSEngine.h` / `JSPatch.js` 到项目里即可。
 
-##使用
+## 使用
 
-###OC端：
+### Objective-C:
 1. `#import "JPEngine.h"`
 2. 调用`[JPEngine startEngine]`
-3. 通过`[JPEngine evaluateScript:@""]`接口执行js脚本。
+3. 通过`[JPEngine evaluateScript:@""]`接口执行 JavaScript。
 
 ```objc
 [JPEngine startEngine];
 
-//直接执行js
+// 直接执行js
 [JPEngine evaluateScript:@"\
  var alertView = require('UIAlertView').alloc().init();\
  alertView.setTitle('Alert');\
@@ -73,23 +74,23 @@ defineClass('AppDelegate', {
  alertView.show(); \
 "];
 
-//从网络拉回js脚本执行
+// 从网络拉回js脚本执行
 [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://cnbang.net/test.js"]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
     NSString *script = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     [JPEngine evaluateScript:script];
 }];
 
-//执行本地js文件
+// 执行本地js文件
 NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"sample" ofType:@"js"];
 NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8StringEncoding error:nil];
 [JPEngine evaluateScript:script];
 ```
 
-###JS端：
+### JavaScript:
 
-####1. require 
+#### 1. require 
 
-使用某个OC类前，先调用require('className')，然后可以直接使用这个类。可以用逗号分隔一次性引入多个类。
+使用某个 Objective-C 类前，先调用 require('className')，然后可以直接使用这个类。可以用逗号分隔一次性引入多个类。
 
 ```js
 require('UIView, UIColor')
@@ -98,62 +99,62 @@ var red = UIColor.redColor()
 var ctrl = require('UIViewController').alloc().init()
 ```
 
-####2. 方法调用
+#### 2. 方法调用
 ```js
 require('UIView, UIColor, UISlider, NSIndexPath')
 
-//调用类方法
+// 调用类方法
 var redColor = UIColor.redColor();
 
-//调用实例方法
+// 调用实例方法
 var view = UIView.alloc().init();
 view.setNeedsLayout();
 
-//setProerty
+// setProerty
 view.setBackgroundColor(redColor);
 
-//getProperty 
+// getProperty 
 var bgColor = view.backgroundColor();
 
-//多参数方法名用'_'隔开：
-//OC：NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1]
+// 多参数方法名用'_'隔开：
+// OC：NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1]
 var indexPath = NSIndexPath.indexPathForRow_inSection(0, 1);
 
 ```
 
-####3. defineClass
-可以新定义一个Objective-C class，重写父类里的方法。
+#### 3. defineClass
+可以新定义一个 Objective-C class，重写父类里的方法。
 
 ```js
 defineClass("JPViewController: UIViewController", {
-  //instance method definitions
+  // instance method definitions
   viewDidLoad: function() {
     //use self.super to call super method
     self.super.viewDidLoad()
 
-    //do something here
+    // do something here
   },
 
   viewDidAppear: function(animated) {
 
   }
 }, {
-  //class method definitions
+  // class method definitions
   description: function() {
     return "I'm JPViewController"
   } 
 })
 ```
 
-可以定义Objective-C里已存在的类，对类和实例方法进行动态替换。
+可以定义 Objective-C 里已存在的类，对类和实例方法进行动态替换。
 
 ```objc
-//OC
+// OC
 @implementation JPTableViewController
 ...
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  NSString *content = self.dataSource[[indexPath row]];  //may cause out of bound
+  NSString *content = self.dataSource[[indexPath row]];  // may cause out of bound
   JPViewController *ctrl = [[JPViewController alloc] initWithContent:content];
   [self.navigationController pushViewController:ctrl];
 }
@@ -169,9 +170,9 @@ defineClass("JPViewController: UIViewController", {
 ```
 
 ```objc
-//JS
+// JS
 defineClass("JPTableViewController", {
-  //instance method definitions
+  // instance method definitions
   tableView_didSelectRowAtIndexPath: function(tableView, indexPath) {
     var row = indexPath.row()
     if (self.dataSource().length > row) {  //fix the out of bound bug here
@@ -182,33 +183,35 @@ defineClass("JPTableViewController", {
   },
 
   dataSource: function() {
-    //函数名前加'ORIG'可以调回OC定义的原方法
+    // 函数名前加'ORIG'可以调回OC定义的原方法
     var data = self.ORIGdataSource();
     return data.push('Good!');
   }
 }, {})
 ```
-执行以上js脚本后，JPTableViewController的方法就被替换成js里的实现。
+执行以上 JavaScript 脚本后，JPTableViewController 的方法就被替换成 JavaScript 里的实现。
 
 
-####4. CGRect/CGPoint/CGSize/NSRange
-针对这几个常用的struct会转为字典表示：
+#### 4. CGRect / CGPoint / CGSize / NSRange
+针对这几个常用的 struct 会转为字典表示：
+
 ```objc
-//OC
+// OC
 UIView *view = [[UIView alloc] initWithFrame:CGRectMake(20, 20, 100, 100)];
 CGFloat x = view.frame.origin.x;
 ```
 
 ```js
-//JS
+// JS
 var view = UIView.alloc().initWithFrame({x:20, y:20, width:100, height:100});
 var x = view.bounds.x;
 ```
 
-####5. block
-block从js传入OC时，需要写上每个参数的类型。
+#### 5. block
+block 从 JavaScript 传入 Objective-C 时，需要写上每个参数的类型。
+
 ```objc
-//OC
+// OC
 @implementation JPObject
 + (void)request:(void(^)(NSString *content, BOOL success))callback
 {
@@ -218,15 +221,16 @@ block从js传入OC时，需要写上每个参数的类型。
 ```
 
 ```js
-//JS
+// JS
 require('JPObject').request(block("NSString *, BOOL", function(ctn, succ) {
-  if (succ) log(ctn)  //output: I'm content
+  if (succ) log(ctn)  // output: I'm content
 }));
 ```
 
-block从OC传给JS时，可以直接调用。
+block 从 Objective-C 传给 JavaScript 时，可以直接调用。
+
 ```objc
-//OC
+// OC
 @implementation JPObject
 typedef void (^JSBlock)(NSDictionary *dict);
 + (JSBlock)genBlock
@@ -241,36 +245,36 @@ typedef void (^JSBlock)(NSDictionary *dict);
 ```
 
 ```js
-//JS
+// JS
 var blk = require('JPObject').genBlock();
 blk({v: "0.0.1"});  //output: I'm JSPatch, version: 0.0.1
 ```
 
-####6. dispatch
+#### 6. dispatch
 Using `dispatch_after()` `dispatch_async_main()` `dispatch_sync_main()` `dispatch_async_global_queue()` to call GCD.
 
 ```objc
-//OC
+// OC
 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-  //do something
+  // do something
 });
 
 dispatch_async(dispatch_get_main_queue(), ^{
-  //do something
+  // do something
 });
 ```
 
 ```js
-//JS
+// JS
 dispatch_after(function(1.0, function(){
-  //do something
+  // do something
 }))
 dispatch_async_main(function(){
-  //do something
+  // do something
 })
 ```
 
-##运行环境
-- iOS7+
+## 运行环境
+- iOS 7+
 - JavaScriptCore.framework
-- 支持armv7/armv7s/arm64
+- 支持 armv7/armv7s/arm64

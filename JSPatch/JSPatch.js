@@ -213,4 +213,12 @@ var global = this
     }
     return {args: args, cbID: id}
   }
+  
+  global.console = {
+    log: global._OC_log
+  }
+  
+  global.YES = 1
+  global.NO = 0
+  
 })()

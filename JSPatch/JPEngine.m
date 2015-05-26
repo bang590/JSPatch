@@ -95,10 +95,10 @@ static NSRegularExpression* regex;
         });
     };
 
-    context[@"log"] = ^() {
+    context[@"_OC_log"] = ^() {
         NSArray *args = [JSContext currentArguments];
         for (JSValue *jsVal in args) {
-            NSLog(@"log from js: %@", jsVal);
+            NSLog(@"JSPatch.log: %@", jsVal);
         }
     };
     
@@ -338,9 +338,7 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     }
     
     IMP originalImp = class_respondsToSelector(cls, selector) ? class_getMethodImplementation(cls, selector) : NULL;
-    if ([selectorName isEqualToString:@"funcToSwizzleWithBlock:"]) {
-        NSLog(@"$s");
-    }
+    
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
     class_replaceMethod(cls, selector, class_getMethodImplementation(cls, @selector(__JPNONImplementSelector)), typeDescription);
