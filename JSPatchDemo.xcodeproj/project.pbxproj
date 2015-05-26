@@ -27,13 +27,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D754A4AF1B140E4B00BC7E66 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DE94AE031AF246BF00E461D4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D754A4991B140E4B00BC7E66;
-			remoteInfo = JSPatchFramework;
-		};
 		DE94AE251AF246C000E461D4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DE94AE031AF246BF00E461D4 /* Project object */;
@@ -243,7 +236,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				D754A4B01B140E4B00BC7E66 /* PBXTargetDependency */,
 			);
 			name = JSPatchDemo;
 			productName = JSPatch;
@@ -371,11 +363,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D754A4B01B140E4B00BC7E66 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D754A4991B140E4B00BC7E66 /* JSPatch */;
-			targetProxy = D754A4AF1B140E4B00BC7E66 /* PBXContainerItemProxy */;
-		};
 		DE94AE261AF246C000E461D4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DE94AE0A1AF246BF00E461D4 /* JSPatchDemo */;
