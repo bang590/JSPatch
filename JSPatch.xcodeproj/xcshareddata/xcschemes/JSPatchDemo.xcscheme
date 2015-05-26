@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D754A4991B140E4B00BC7E66"
-               BuildableName = "JSPatch.framework"
-               BlueprintName = "JSPatch"
-               ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+               BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
+               BuildableName = "JSPatchDemo.app"
+               BlueprintName = "JSPatchDemo"
+               ReferencedContainer = "container:JSPatch.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,17 +35,17 @@
                BlueprintIdentifier = "DE94AE231AF246C000E461D4"
                BuildableName = "JSPatchDemoTests.xctest"
                BlueprintName = "JSPatchTests"
-               ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+               ReferencedContainer = "container:JSPatch.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D754A4991B140E4B00BC7E66"
-            BuildableName = "JSPatch.framework"
-            BlueprintName = "JSPatch"
-            ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+            BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
+            BuildableName = "JSPatchDemo.app"
+            BlueprintName = "JSPatchDemo"
+            ReferencedContainer = "container:JSPatch.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -58,15 +58,16 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D754A4991B140E4B00BC7E66"
-            BuildableName = "JSPatch.framework"
-            BlueprintName = "JSPatch"
-            ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+            BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
+            BuildableName = "JSPatchDemo.app"
+            BlueprintName = "JSPatchDemo"
+            ReferencedContainer = "container:JSPatch.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -76,15 +77,16 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D754A4991B140E4B00BC7E66"
-            BuildableName = "JSPatch.framework"
-            BlueprintName = "JSPatch"
-            ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+            BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
+            BuildableName = "JSPatchDemo.app"
+            BlueprintName = "JSPatchDemo"
+            ReferencedContainer = "container:JSPatch.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

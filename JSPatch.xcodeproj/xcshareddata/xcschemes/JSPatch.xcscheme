@@ -14,24 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
-               BuildableName = "JSPatchDemo.app"
-               BlueprintName = "JSPatchDemo"
-               ReferencedContainer = "container:JSPatchDemo.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DE94AE231AF246C000E461D4"
-               BuildableName = "JSPatchDemoTests.xctest"
-               BlueprintName = "JSPatchTests"
-               ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+               BlueprintIdentifier = "D754A4991B140E4B00BC7E66"
+               BuildableName = "JSPatch.framework"
+               BlueprintName = "JSPatch"
+               ReferencedContainer = "container:JSPatch.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -49,17 +35,17 @@
                BlueprintIdentifier = "DE94AE231AF246C000E461D4"
                BuildableName = "JSPatchDemoTests.xctest"
                BlueprintName = "JSPatchTests"
-               ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+               ReferencedContainer = "container:JSPatch.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
-            BuildableName = "JSPatchDemo.app"
-            BlueprintName = "JSPatchDemo"
-            ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+            BlueprintIdentifier = "D754A4991B140E4B00BC7E66"
+            BuildableName = "JSPatch.framework"
+            BlueprintName = "JSPatch"
+            ReferencedContainer = "container:JSPatch.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -72,16 +58,15 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
-            BuildableName = "JSPatchDemo.app"
-            BlueprintName = "JSPatchDemo"
-            ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+            BlueprintIdentifier = "D754A4991B140E4B00BC7E66"
+            BuildableName = "JSPatch.framework"
+            BlueprintName = "JSPatch"
+            ReferencedContainer = "container:JSPatch.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -91,16 +76,15 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
-            BuildableName = "JSPatchDemo.app"
-            BlueprintName = "JSPatchDemo"
-            ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+            BlueprintIdentifier = "D754A4991B140E4B00BC7E66"
+            BuildableName = "JSPatch.framework"
+            BlueprintName = "JSPatch"
+            ReferencedContainer = "container:JSPatch.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
