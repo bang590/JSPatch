@@ -1,4 +1,5 @@
-# JSPatch
+![JSPatchBanner](https://cloud.githubusercontent.com/assets/219689/7806822/faade692-03b7-11e5-982a-f16c8de9616e.png)
+
 [![Travis](https://img.shields.io/travis/bang590/JSPatch.svg)](https://github.com/bang590/JSPatch)
 [![CocoaPods Version](https://img.shields.io/cocoapods/v/JSPatch.svg?style=flat)](https://github.com/cocoapods/CocoaPods)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-✔-f2a77e.svg?style=flat)](https://github.com/Carthage/Carthage)
