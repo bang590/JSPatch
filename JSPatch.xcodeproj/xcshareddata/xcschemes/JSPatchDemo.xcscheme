@@ -17,21 +17,7 @@
                BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
                BuildableName = "JSPatchDemo.app"
                BlueprintName = "JSPatchDemo"
-               ReferencedContainer = "container:JSPatchDemo.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DE94AE231AF246C000E461D4"
-               BuildableName = "JSPatchDemoTests.xctest"
-               BlueprintName = "JSPatchTests"
-               ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+               ReferencedContainer = "container:JSPatch.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -49,7 +35,7 @@
                BlueprintIdentifier = "DE94AE231AF246C000E461D4"
                BuildableName = "JSPatchDemoTests.xctest"
                BlueprintName = "JSPatchTests"
-               ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+               ReferencedContainer = "container:JSPatch.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -59,7 +45,7 @@
             BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
             BuildableName = "JSPatchDemo.app"
             BlueprintName = "JSPatchDemo"
-            ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+            ReferencedContainer = "container:JSPatch.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -79,7 +65,7 @@
             BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
             BuildableName = "JSPatchDemo.app"
             BlueprintName = "JSPatchDemo"
-            ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+            ReferencedContainer = "container:JSPatch.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -98,7 +84,7 @@
             BlueprintIdentifier = "DE94AE0A1AF246BF00E461D4"
             BuildableName = "JSPatchDemo.app"
             BlueprintName = "JSPatchDemo"
-            ReferencedContainer = "container:JSPatchDemo.xcodeproj">
+            ReferencedContainer = "container:JSPatch.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
