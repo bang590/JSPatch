@@ -32,5 +32,12 @@ defineClass('JPTableViewController : UITableViewController', {
   },
   tableView_heightForRowAtIndexPath: function(tableView, indexPath) {
     return 60
+  },
+  tableView_didSelectRowAtIndexPath: function(tableView, indexPath) {
+     var alertView = require('UIAlertView').alloc().init()
+     alertView.setTitle('Alert')
+     alertView.setMessage(self.dataSource()[indexPath.row()])
+     alertView.addButtonWithTitle('OK')
+     alertView.show()
   }
 })

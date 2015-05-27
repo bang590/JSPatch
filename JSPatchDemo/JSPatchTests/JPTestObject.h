@@ -58,6 +58,7 @@
 
 @property (nonatomic, assign) BOOL newTestObjectReturnViewPassed;
 @property (nonatomic, assign) BOOL newTestObjectReturnBoolPassed;
+@property (nonatomic, assign) BOOL newTestObjectCustomFuncPassed;
 
 @property (nonatomic, assign) BOOL consoleLogPassed;
 

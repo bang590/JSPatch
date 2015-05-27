@@ -120,10 +120,11 @@ static NSRegularExpression* regex;
 
 #pragma mark - Implements
 
-static NSMutableDictionary *_cacheArguments;
-static NSInteger _cacheArgumentsIdx = 0;
-
+static NSMutableDictionary *_JSOverideMethods;
+static NSArray *_TMPInvocationArguments;
+static NSRegularExpression *countArgRegex;
 static NSMutableDictionary *_propKeys;
+
 static const void *propKey(NSString *propName) {
     if (!_propKeys) _propKeys = [[NSMutableDictionary alloc] init];
     id key = _propKeys[propName];
@@ -140,7 +141,6 @@ static void setPropIMP(id slf, SEL selector, id val, NSString *propName) {
     objc_setAssociatedObject(slf, propKey(propName), val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-
 static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods)
 {
     NSArray *clsArr = [classDeclaration componentsSeparatedByString:@":"];
@@ -153,47 +153,46 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
         cls = objc_allocateClassPair(superCls, className.UTF8String, 0);
         objc_registerClassPair(cls);
     }
-    NSMutableArray *ocInstanceMethods = [[NSMutableArray alloc] init];
-    NSMutableArray *ocClassMethods = [[NSMutableArray alloc] init];
+    
     for (int i = 0; i < 2; i ++) {
         BOOL isInstance = i == 0;
-        NSMutableArray *methods = isInstance ? ocInstanceMethods: ocClassMethods;
         JSValue *jsMethods = isInstance ? instanceMethods: classMethods;
         
         Class currCls = isInstance ? cls: objc_getMetaClass(className.UTF8String);
-        do {
-            unsigned int numberOfInstanceMethods = 0;
-            Method *instanceMethodsArr = class_copyMethodList(currCls, &numberOfInstanceMethods);
-            for (unsigned int i = 0; i < numberOfInstanceMethods; i++) {
-                Method method = instanceMethodsArr[i];
-                struct objc_method_description *description = method_getDescription(method);
-                
-                NSString *selectorName = NSStringFromSelector(description->name);
-                NSString *jsFuncName = [selectorName stringByReplacingOccurrencesOfString:@":" withString:@"_"];
-                if ([jsFuncName characterAtIndex:jsFuncName.length - 1] == '_') {
-                    jsFuncName = [jsFuncName substringToIndex:jsFuncName.length - 1];
-                }
-                JSValue *function = jsMethods[jsFuncName];
-                if (!function.isUndefined && ![methods containsObject:jsFuncName]) {
-                    overrideMethod(cls, selectorName, jsMethods[jsFuncName], !isInstance);
-                    [methods addObject:jsFuncName];
-                }
+        NSDictionary *methodDict = [jsMethods toDictionary];
+        for (NSString *jsMethodName in methodDict.allKeys) {
+            if ([jsMethodName isEqualToString:@"__c"]) {
+                continue;
             }
-            currCls = [currCls superclass];
-        } while (currCls);
+            JSValue *jsMethodArr = [jsMethods valueForProperty:jsMethodName];
+            int numberOfArg = [jsMethodArr[0] toInt32];
+            NSString *selectorName = [jsMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
+            if (!countArgRegex) {
+                countArgRegex = [NSRegularExpression regularExpressionWithPattern:@":" options:NSRegularExpressionCaseInsensitive error:nil];
+            }
+            NSUInteger numberOfMatches = [countArgRegex numberOfMatchesInString:selectorName options:0 range:NSMakeRange(0, [selectorName length])];
+            if (numberOfMatches < numberOfArg) {
+                selectorName = [selectorName stringByAppendingString:@":"];
+            }
+            
+            JSValue *jsMethod = jsMethodArr[1];
+            if (class_respondsToSelector(currCls, NSSelectorFromString(selectorName))) {
+                overrideMethod(currCls, selectorName, jsMethod, !isInstance);
+            }
+             else {
+                addNewMethod(currCls, selectorName, jsMethod, numberOfArg, !isInstance);
+            }
+        }
     }
     
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-    class_addMethod(cls, @selector(getProp:), (IMP)getPropIMP, "@24@0:8@16");
-    class_addMethod(cls, @selector(setProp:forKey:), (IMP)setPropIMP, "v32@0:8@16@24");
+    class_addMethod(cls, @selector(getProp:), (IMP)getPropIMP, "@@:@");
+    class_addMethod(cls, @selector(setProp:forKey:), (IMP)setPropIMP, "v@:@@");
 #pragma clang diagnostic pop
 
-    return @{@"cls": className, @"instMethods": ocInstanceMethods, @"clsMethods": ocClassMethods};
+    return @{@"cls": className};
 }
-
-static NSMutableDictionary *_JSOverideMethods;
-static NSArray *_TMPInvocationArguments;
 
 #define JPMETHOD_IMPLEMENTATION(_type, _typeString, _typeSelector) \
     JPMETHOD_IMPLEMENTATION_RET(_type, _typeString, return [[ret toObject] _typeSelector]) \
@@ -207,7 +206,6 @@ static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) { 
 }   \
 
 #define JPMETHOD_IMPLEMENTATION_NAME(_typeString) JPMethodImplement_##_typeString
-
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
@@ -235,6 +233,33 @@ JPMETHOD_IMPLEMENTATION(BOOL, B, boolValue)
 #pragma clang diagnostic pop
 
 
+
+#define JPMETHOD_NEW_IMPLEMENTATION_NAME(_argCount) JPMethodNewImplementation_##_argCount
+#define JPMETHOD_NEW_IMPLEMENTATION_ARG_0 (id slf, SEL selector)
+#define JPMETHOD_NEW_IMPLEMENTATION_ARG_1 (id slf, SEL selector, id obj1)
+#define JPMETHOD_NEW_IMPLEMENTATION_ARG_2 (id slf, SEL selector, id obj1, id obj2)
+#define JPMETHOD_NEW_IMPLEMENTATION_ARG_3 (id slf, SEL selector, id obj1, id obj2, id obj3)
+#define JPMETHOD_NEW_IMPLEMENTATION_ARG_4 (id slf, SEL selector, id obj1, id obj2, id obj3, id obj4)
+#define JPMETHOD_NEW_IMPLEMENTATION_ARG_5 (id slf, SEL selector, id obj1, id obj2, id obj3, id obj4, id obj5)
+
+#define JPMETHOD_NEW_IMPLEMENTATION(_argCount, _argArr)   \
+static id JPMETHOD_NEW_IMPLEMENTATION_NAME(_argCount) JPMETHOD_NEW_IMPLEMENTATION_ARG_##_argCount { \
+    NSString *selectorName = NSStringFromSelector(selector);    \
+    NSString *clsName = NSStringFromClass([slf class]); \
+    JSValue *ret = [_JSOverideMethods[clsName][selectorName] callWithArguments:formatOCObj(@[slf _argArr])];    \
+    return [ret toObject]; \
+}
+
+#define COMMA ,
+
+JPMETHOD_NEW_IMPLEMENTATION(0, );
+JPMETHOD_NEW_IMPLEMENTATION(1, COMMA obj1);
+JPMETHOD_NEW_IMPLEMENTATION(2, COMMA obj1 COMMA obj2);
+JPMETHOD_NEW_IMPLEMENTATION(3, COMMA obj1 COMMA obj2 COMMA obj3);
+JPMETHOD_NEW_IMPLEMENTATION(4, COMMA obj1 COMMA obj2 COMMA obj3 COMMA obj4);
+JPMETHOD_NEW_IMPLEMENTATION(5, COMMA obj1 COMMA obj2 COMMA obj3 COMMA obj4 COMMA obj5);
+
+
 static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
 {
     NSMethodSignature *methodSignature = [invocation methodSignature];
@@ -259,9 +284,8 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
     }
     
     NSMutableArray *argList = [[NSMutableArray alloc] init];
-    if (!class_isMetaClass(object_getClass(slf))) {
-        [argList addObject:slf];
-    }
+    [argList addObject:slf];
+    
     for (NSUInteger i = 2; i < numberOfArguments; i++) {
         const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];
         switch(argumentType[0]) {
@@ -326,16 +350,21 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
     _TMPInvocationArguments = nil;
 }
 
+static void _initJPOverideMethods(NSString *clsName) {
+    if (!_JSOverideMethods) {
+        _JSOverideMethods = [[NSMutableDictionary alloc] init];
+    }
+    if (!_JSOverideMethods[clsName]) {
+        _JSOverideMethods[clsName] = [[NSMutableDictionary alloc] init];
+    }
+}
+
 static void overrideMethod(Class cls, NSString *selectorName, JSValue *function, BOOL isClassMethod)
 {
     SEL selector = NSSelectorFromString(selectorName);
-    NSMethodSignature *methodSignature = isClassMethod ? [cls methodSignatureForSelector:selector]: [cls instanceMethodSignatureForSelector:selector];
-    Method method = isClassMethod ? class_getClassMethod(cls, selector) : class_getInstanceMethod(cls, selector);
+    NSMethodSignature *methodSignature = [cls instanceMethodSignatureForSelector:selector];
+    Method method = class_getInstanceMethod(cls, selector);
     char *typeDescription = (char *)method_getTypeEncoding(method);
-    
-    if (isClassMethod) {
-        cls = objc_getMetaClass(object_getClassName(cls));
-    }
     
     IMP originalImp = class_respondsToSelector(cls, selector) ? class_getMethodImplementation(cls, selector) : NULL;
     
@@ -360,12 +389,7 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     SEL JPSelector = NSSelectorFromString(JPSelectorName);
     if(!class_respondsToSelector(cls, JPSelector)) {
         NSString *clsName = NSStringFromClass(cls);
-        if (!_JSOverideMethods) {
-            _JSOverideMethods = [[NSMutableDictionary alloc] init];
-        }
-        if (!_JSOverideMethods[clsName]) {
-            _JSOverideMethods[clsName] = [[NSMutableDictionary alloc] init];
-        }
+        _initJPOverideMethods(clsName);
         _JSOverideMethods[clsName][JPSelectorName] = function;
         const char *returnType = [methodSignature methodReturnType];
         IMP JPImplementation;
@@ -414,9 +438,37 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
         }
         class_addMethod(cls, JPSelector, JPImplementation, typeDescription);
     }
-    
-    
 }
+
+static void addNewMethod(Class cls, NSString *selectorName, JSValue *function, int argCount, BOOL isClassMethod)
+{
+    NSString *clsName = NSStringFromClass(cls);
+    _initJPOverideMethods(clsName);
+    _JSOverideMethods[clsName][selectorName] = function;
+    
+    SEL selector = NSSelectorFromString(selectorName);
+    IMP JPImplementation = (IMP)JPMETHOD_NEW_IMPLEMENTATION_NAME(0);
+    switch (argCount) {
+    #define JPMETHOD_NEW_CASE(_argCount) \
+        case _argCount: \
+            JPImplementation = (IMP)JPMETHOD_NEW_IMPLEMENTATION_NAME(_argCount);    \
+            break;
+            
+        JPMETHOD_NEW_CASE(0)
+        JPMETHOD_NEW_CASE(1)
+        JPMETHOD_NEW_CASE(2)
+        JPMETHOD_NEW_CASE(3)
+        JPMETHOD_NEW_CASE(4)
+        JPMETHOD_NEW_CASE(5)
+    }
+    NSMutableString *typeDescStr = [@"@@:" mutableCopy];
+    for (int i = 0; i < argCount; i ++) {
+        [typeDescStr appendString:@"@"];
+    }
+    class_addMethod(cls, selector, JPImplementation, [typeDescStr cStringUsingEncoding:NSUTF8StringEncoding]);
+}
+
+#pragma mark -
 
 static id callSelector(NSString *className, NSString *selectorName, NSArray *arguments, id instance, BOOL isSuper) {
     Class cls = className ? NSClassFromString(className) : [instance class];
@@ -564,6 +616,11 @@ static id callSelector(NSString *className, NSString *selectorName, NSArray *arg
     }
     return nil;
 }
+
+#pragma mark -
+
+static NSMutableDictionary *_cacheArguments;
+static NSInteger _cacheArgumentsIdx = 0;
 
 static id genCallbackBlock(id valObj)
 {

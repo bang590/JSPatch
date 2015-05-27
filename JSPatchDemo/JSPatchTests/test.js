@@ -16,18 +16,6 @@ var global = this;
     funcToSwizzleReturnInt: function(num) {
       return num
     },
-    funcToSwizzleRect: function(rect) {
-      return rect;
-    },
-    funcToSwizzlePoint: function(point) {
-      return point;
-    },
-    funcToSwizzleSize: function(size) {
-      return size;
-    },
-    funcToSwizzleRange: function(range) {
-      return range;
-    },
     funcCustom: function(num) {
       self.setCallCustomFuncPassed(num == 10)
     },
@@ -196,7 +184,12 @@ var global = this;
   {
     funcReturnBool: function(view, num) {
       return view && num == 42
-      // return view.drawRect && num == 42
+    }
+  },
+  {
+    customFunc: function(num) {
+      var view = self.funcReturnView(num)
+      obj.setNewTestObjectCustomFuncPassed(view.frame().x == num)
     }
   })
 
@@ -205,6 +198,7 @@ var global = this;
   var view = newTestObj.funcReturnView(42) 
   obj.setNewTestObjectReturnViewPassed(view.frame().x == 42) 
   obj.setNewTestObjectReturnBoolPassed(JPNewTestObject.funcReturnBool(view, 42))
+  newTestObj.customFunc(42)
  
   obj.setConsoleLogPassed(console.log != undefined)
 
