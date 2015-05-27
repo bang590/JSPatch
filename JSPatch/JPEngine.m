@@ -8,7 +8,6 @@
 
 #import "JPEngine.h"
 #import <objc/runtime.h>
-#import <UIKit/UIKit.h>
 
 @interface JPEngine ()
 @property (nonatomic, strong) NSMutableDictionary *cacheArguments;
