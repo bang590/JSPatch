@@ -27,9 +27,9 @@
 }
 
 // Implemented in demo.js
-- (IBAction)buttonJavaScriptTest_action:(id)sender { }
+- (IBAction)buttonJavaScriptTestAction:(id)sender { }
 
-- (IBAction)buttonObjectiveCTest_action:(id)sender
+- (IBAction)buttonObjectiveCTestAction:(id)sender
 {
     self.clickCount++;
     

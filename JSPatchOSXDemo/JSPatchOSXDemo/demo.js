@@ -1,5 +1,5 @@
 defineClass('AppDelegate', {
-    buttonJavaScriptTest_action: function(sender) {
+    buttonJavaScriptTestAction: function(sender) {
         self.setClickCount(self.clickCount() + 1);
         
         sender.setTitle("Clicked " + self.clickCount() + " times");
