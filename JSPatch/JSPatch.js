@@ -158,7 +158,7 @@ var global = this
           global.self = args[0]
           args.splice(0,1)
           var ret = _formatJSToOC(originMethod.apply(originMethod, args))
-          global.self = global.self
+          global.self = lastSelf
           
           return ret
         }]
