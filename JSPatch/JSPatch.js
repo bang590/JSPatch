@@ -217,7 +217,7 @@ var global = this
   }
   
 
-  global.include = global._OC_Import
+  global.include = global._OC_Include
   
   global.YES = 1
   global.NO = 0
