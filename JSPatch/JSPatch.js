@@ -1,7 +1,6 @@
 var global = this
 
 ;(function(){
-  var clsList = {}
   var callbacks = {}
   var localMethods = {}
   var callbackID = 0
@@ -128,16 +127,13 @@ var global = this
   }
 
   var _require = function(clsName) {
-     global.__defineGetter__(clsName, function(){
-       return _require(clsName)
-     })
-    if (!clsList[clsName]) {
-      clsList[clsName] = {
+    if (!global[clsName]) {
+      global[clsName] = {
         __isCls: 1,
         __clsName: clsName
       }
     } 
-    return clsList[clsName]
+    return global[clsName]
   }
 
   global.require = function(clsNames) {
