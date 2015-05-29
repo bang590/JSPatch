@@ -212,6 +212,9 @@ var global = this
     log: global._OC_log
   }
   
+
+  global.include = global._OC_Include
+  
   global.YES = 1
   global.NO = 0
   
