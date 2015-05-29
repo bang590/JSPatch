@@ -120,6 +120,9 @@ var bgColor = view.backgroundColor();
 // OC：NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1]
 var indexPath = NSIndexPath.indexPathForRow_inSection(0, 1);
 
+// 方法名包含下划线'_'，js用双下划线表示
+// OC: [JPObject _privateMethod];
+JPObject.__privateMethod()
 ```
 
 #### 3. defineClass

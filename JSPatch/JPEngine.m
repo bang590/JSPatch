@@ -165,7 +165,10 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
             }
             JSValue *jsMethodArr = [jsMethods valueForProperty:jsMethodName];
             int numberOfArg = [jsMethodArr[0] toInt32];
-            NSString *selectorName = [jsMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
+            NSString *tmpJSMethodName = [jsMethodName stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
+            NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
+            selectorName = [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+            
             if (!countArgRegex) {
                 countArgRegex = [NSRegularExpression regularExpressionWithPattern:@":" options:NSRegularExpressionCaseInsensitive error:nil];
             }

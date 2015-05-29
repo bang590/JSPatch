@@ -90,7 +90,8 @@ var global = this
   
   var _methodFunc = function(instance, clsName, methodName, args, isSuper) {
     var args = _formatJSToOC(args)
-    var selectorName = methodName.replace(/_/g, ":")
+    methodName = methodName.replace(/__/g, "-")
+    var selectorName = methodName.replace(/_/g, ":").replace(/-/g, "_")
     var marchArr = selectorName.match(/:/g)
     var numOfArgs = marchArr ? marchArr.length : 0
     if (args.length > numOfArgs) {

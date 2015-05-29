@@ -157,6 +157,8 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
         self.funcToSwizzleWithBlockPassed = view && num == 42;
     }];
     
+    [self funcToSwizzle_withUnderLine_:42];
+    
 }
 - (void)funcToSwizzleWithString:(NSString *)str view:(UIView *)view int:(NSInteger)i
 {
@@ -181,6 +183,11 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
 - (void)funcToSwizzleWithBlock:(void(^)(UIView *view, int num))block
 {
 
+}
+
+- (void)funcToSwizzle_withUnderLine_:(int)num
+{
+    
 }
 
 + (void)classFuncToSwizzle:(JPTestObject *)testObject int:(NSInteger)i

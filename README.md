@@ -130,9 +130,13 @@ view.setBackgroundColor(redColor);
 // get property 
 var bgColor = view.backgroundColor();
 
-// multi-params method
-// OC：NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1]
+// multi-params method (use underline to separate)
+// OC：NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
 var indexPath = NSIndexPath.indexPathForRow_inSection(0, 1);
+
+// method name contains underline (use double undeline to represent)
+// OC: [JPObject _privateMethod];
+JPObject.__privateMethod()
 
 ```
 
@@ -203,7 +207,6 @@ defineClass("JPTableViewController", {
   }
 }, {})
 ```
-
 
 #### 4. CGRect / CGPoint / CGSize / NSRange
 Use hashes:

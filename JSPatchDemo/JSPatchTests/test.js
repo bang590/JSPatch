@@ -21,6 +21,9 @@ var global = this;
     },
     funcToSwizzleWithBlock: function(blk) {
       blk(UIView.alloc().init(), 42)
+    },
+    funcToSwizzle__withUnderLine__: function(num) {
+      self.setFuncToSwizzle__withUnderLine__Passed(num == 42)
     }
   },
   {
