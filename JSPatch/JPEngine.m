@@ -105,6 +105,13 @@ static NSRegularExpression* regex;
         NSAssert(NO, @"js exception, \nmsg: %@, \nstack: \n %@", [msg toObject], [stack toObject]);
     };
     
+    context[@"_NS_Log"] = ^() {
+        NSArray *args = [JSContext currentArguments];
+        for (JSValue *jsVal in args) {
+            NSLog(@"%@", jsVal);
+        }
+    };
+    
     context.exceptionHandler = ^(JSContext *con, JSValue *exception) {
         NSLog(@"%@", exception);
         NSAssert(NO, @"js exception: %@", exception);
