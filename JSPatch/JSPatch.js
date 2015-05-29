@@ -216,7 +216,8 @@ var global = this
     log: global._OC_log
   }
   
-  global.nslog = global._NS_Log
+
+  global.include = global._OC_Import
   
   global.YES = 1
   global.NO = 0

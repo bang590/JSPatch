@@ -104,12 +104,12 @@ static NSRegularExpression* regex;
     context[@"_OC_catch"] = ^(JSValue *msg, JSValue *stack) {
         NSAssert(NO, @"js exception, \nmsg: %@, \nstack: \n %@", [msg toObject], [stack toObject]);
     };
-    
-    context[@"_NS_Log"] = ^() {
-        NSArray *args = [JSContext currentArguments];
-        for (JSValue *jsVal in args) {
-            NSLog(@"%@", jsVal);
-        }
+        
+    context[@"_OC_Import"] = ^(JSValue *file){
+        NSString *fileName =  [file toString];
+        NSString *sourcePath = [[NSBundle mainBundle] pathForResource:fileName ofType:@"js"];
+        NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8StringEncoding error:nil];
+        [JPEngine evaluateScript:script];
     };
     
     context.exceptionHandler = ^(JSContext *con, JSValue *exception) {
