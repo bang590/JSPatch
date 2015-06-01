@@ -14,7 +14,7 @@ var global = this
           this.__isSuper = isSuper
           this.__clsName = className
       }
-      JSClass.prototype.__defineGetter__('super', function(){
+      JSClass.prototype.__defineGetter__('super', function(){// 追加定义
         if (!this.__super) {
           this.__super = new JSClass(this.__obj, this.__clsName, 1)
         }
@@ -23,14 +23,13 @@ var global = this
     }
     return JSClass
   }
-
-  var _toJSObj = function(meta) {
+    var _toJSObj = function(meta) {
     var JSClass = _getJSClass()
     return new JSClass(meta["obj"], meta["cls"])
   }
   
   var _methodNameOCToJS = function(name) {
-    name = name.replace(/\:/g, '_')
+    name = name.replace(/\:/g, '_')//正则匹配
     if (name[name.length - 1] == '_') {
       return name.substr(0, name.length - 1)
     }
@@ -120,7 +119,7 @@ var global = this
     }
     var self = this
     return function(){
-      var args = Array.prototype.slice.call(arguments)
+      var args = Array.prototype.slice.call(arguments)//Array.prototype.slice.call(arguments)能将具有length属性的对象转成数组
       return _methodFunc(self.__obj, self.__clsName, methodName, args, self.__isSuper)
     }
   }
@@ -188,7 +187,7 @@ var global = this
     var newInstMethods = {}, newClsMethods = {}
     _formatDefineMethod(instMethods, newInstMethods, 1)
     _formatDefineMethod(clsMethods, newClsMethods, 0)
-
+  
     var ret = _OC_defineClass(declaration, newInstMethods, newClsMethods)
 
     _formatLocalMethods(instMethods, ret["instMethods"], 1)

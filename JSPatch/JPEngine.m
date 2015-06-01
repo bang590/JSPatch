@@ -107,10 +107,11 @@ static NSRegularExpression* regex;
     };
     
     context.exceptionHandler = ^(JSContext *con, JSValue *exception) {
-        NSLog(@"%@", exception);
+        NSLog(@"exception＝%@", exception);
+    #ifdef DEBUG
         NSAssert(NO, @"js exception: %@", exception);
+    #endif
     };
-    
     _context = context;
     
     NSString *path = [[NSBundle mainBundle] pathForResource:@"JSPatch" ofType:@"js"];
@@ -133,14 +134,18 @@ static const void *propKey(NSString *propName) {
     }
     return (__bridge const void *)(key);
 }
+
 static id getPropIMP(id slf, SEL selector, NSString *propName) {
     return objc_getAssociatedObject(slf, propKey(propName));
 }
+
 static void setPropIMP(id slf, SEL selector, id val, NSString *propName) {
     objc_setAssociatedObject(slf, propKey(propName), val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-
+/**
+ * 静态指针函数
+ */
 static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods)
 {
     NSArray *clsArr = [classDeclaration componentsSeparatedByString:@":"];
@@ -185,7 +190,7 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
     
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-    class_addMethod(cls, @selector(getProp:), (IMP)getPropIMP, "@24@0:8@16");
+    class_addMethod(cls, @selector(getProp:), (IMP)getPropIMP, "@24@0:8@16");//返回值，receiver类型，SEL，参数1，。。。参数n
     class_addMethod(cls, @selector(setProp:forKey:), (IMP)setPropIMP, "v32@0:8@16@24");
 #pragma clang diagnostic pop
 

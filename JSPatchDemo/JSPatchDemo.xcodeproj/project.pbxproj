@@ -13,11 +13,14 @@
 		2D5D892E1B0B8C3B009382EC /* JSPatch.js in Resources */ = {isa = PBXBuildFile; fileRef = 2D5D892C1B0B8C3B009382EC /* JSPatch.js */; };
 		2D6D12FD1B0B8CF20095A435 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D12FA1B0B8CF20095A435 /* Images.xcassets */; };
 		2D6D12FF1B0B8CF20095A435 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6D12FC1B0B8CF20095A435 /* main.m */; };
-		2D6D13011B0B8CFF0095A435 /* demo.js in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D13001B0B8CFF0095A435 /* demo.js */; };
-		2DD801281AF336BC005580A8 /* test.js in Resources */ = {isa = PBXBuildFile; fileRef = DE94AE451AF2480000E461D4 /* test.js */; };
-		DE94AE2B1AF246C000E461D4 /* JSPatchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94AE2A1AF246C000E461D4 /* JSPatchTests.m */; };
-		DE94AE461AF2480000E461D4 /* JPTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94AE441AF2480000E461D4 /* JPTestObject.m */; };
-		DE94AE471AF2480000E461D4 /* test.js in Resources */ = {isa = PBXBuildFile; fileRef = DE94AE451AF2480000E461D4 /* test.js */; };
+		BFDFDC571B1566ED0087CC61 /* UIResponder+load.m in Sources */ = {isa = PBXBuildFile; fileRef = BFDFDC561B1566ED0087CC61 /* UIResponder+load.m */; };
+		BFDFDC591B1567770087CC61 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BFDFDC581B1567770087CC61 /* Default-568h@2x.png */; };
+		BFDFDC5B1B1569B20087CC61 /* demo.js in Resources */ = {isa = PBXBuildFile; fileRef = BFDFDC5A1B1569B20087CC61 /* demo.js */; };
+		BFDFDC5C1B15B8490087CC61 /* JPEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D892B1B0B8C3B009382EC /* JPEngine.m */; };
+		BFEFA00C1B16B7AB00881408 /* JPTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFA0081B16B7AB00881408 /* JPTestObject.m */; };
+		BFEFA00D1B16B7AB00881408 /* JSPatchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFA0091B16B7AB00881408 /* JSPatchTests.m */; };
+		BFEFA00E1B16B7AB00881408 /* test.js in Resources */ = {isa = PBXBuildFile; fileRef = BFEFA00A1B16B7AB00881408 /* test.js */; };
+		BFEFA0141B16B8EB00881408 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BFEFA0131B16B8EB00881408 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,14 +44,17 @@
 		2D6D12FA1B0B8CF20095A435 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		2D6D12FB1B0B8CF20095A435 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D6D12FC1B0B8CF20095A435 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		2D6D13001B0B8CFF0095A435 /* demo.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = demo.js; sourceTree = "<group>"; };
+		BFDFDC551B1566ED0087CC61 /* UIResponder+load.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIResponder+load.h"; sourceTree = "<group>"; };
+		BFDFDC561B1566ED0087CC61 /* UIResponder+load.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIResponder+load.m"; sourceTree = "<group>"; };
+		BFDFDC581B1567770087CC61 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		BFDFDC5A1B1569B20087CC61 /* demo.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = demo.js; sourceTree = "<group>"; };
+		BFEFA0071B16B7AB00881408 /* JPTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPTestObject.h; sourceTree = "<group>"; };
+		BFEFA0081B16B7AB00881408 /* JPTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPTestObject.m; sourceTree = "<group>"; };
+		BFEFA0091B16B7AB00881408 /* JSPatchTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSPatchTests.m; sourceTree = "<group>"; };
+		BFEFA00A1B16B7AB00881408 /* test.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = test.js; sourceTree = "<group>"; };
+		BFEFA0131B16B8EB00881408 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE94AE0B1AF246BF00E461D4 /* JSPatchDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSPatchDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE94AE241AF246C000E461D4 /* JSPatchDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JSPatchDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DE94AE291AF246C000E461D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DE94AE2A1AF246C000E461D4 /* JSPatchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSPatchTests.m; sourceTree = "<group>"; };
-		DE94AE431AF2480000E461D4 /* JPTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPTestObject.h; sourceTree = "<group>"; };
-		DE94AE441AF2480000E461D4 /* JPTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPTestObject.m; sourceTree = "<group>"; };
-		DE94AE451AF2480000E461D4 /* test.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = test.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,7 +84,7 @@
 				2D5D89181B0B8BFF009382EC /* AppDelegate.m */,
 				2D5D891D1B0B8BFF009382EC /* JPViewController.h */,
 				2D5D891E1B0B8BFF009382EC /* JPViewController.m */,
-				2D6D13001B0B8CFF0095A435 /* demo.js */,
+				BFDFDC5A1B1569B20087CC61 /* demo.js */,
 			);
 			path = JSPatchDemo;
 			sourceTree = "<group>";
@@ -89,6 +95,8 @@
 				2D5D892A1B0B8C3B009382EC /* JPEngine.h */,
 				2D5D892B1B0B8C3B009382EC /* JPEngine.m */,
 				2D5D892C1B0B8C3B009382EC /* JSPatch.js */,
+				BFDFDC551B1566ED0087CC61 /* UIResponder+load.h */,
+				BFDFDC561B1566ED0087CC61 /* UIResponder+load.m */,
 			);
 			name = JSPatch;
 			path = ../../JSPatch;
@@ -107,6 +115,7 @@
 		DE94AE021AF246BE00E461D4 = {
 			isa = PBXGroup;
 			children = (
+				BFDFDC581B1567770087CC61 /* Default-568h@2x.png */,
 				2D5D89161B0B8BFF009382EC /* JSPatchDemo */,
 				DE94AE271AF246C000E461D4 /* JSPatchTests */,
 				DE94AE0C1AF246BF00E461D4 /* Products */,
@@ -125,10 +134,11 @@
 		DE94AE271AF246C000E461D4 /* JSPatchTests */ = {
 			isa = PBXGroup;
 			children = (
-				DE94AE431AF2480000E461D4 /* JPTestObject.h */,
-				DE94AE441AF2480000E461D4 /* JPTestObject.m */,
-				DE94AE451AF2480000E461D4 /* test.js */,
-				DE94AE2A1AF246C000E461D4 /* JSPatchTests.m */,
+				BFEFA0131B16B8EB00881408 /* Info.plist */,
+				BFEFA0071B16B7AB00881408 /* JPTestObject.h */,
+				BFEFA0081B16B7AB00881408 /* JPTestObject.m */,
+				BFEFA0091B16B7AB00881408 /* JSPatchTests.m */,
+				BFEFA00A1B16B7AB00881408 /* test.js */,
 				DE94AE281AF246C000E461D4 /* Supporting Files */,
 			);
 			path = JSPatchTests;
@@ -137,7 +147,6 @@
 		DE94AE281AF246C000E461D4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				DE94AE291AF246C000E461D4 /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -194,7 +203,6 @@
 					};
 					DE94AE231AF246C000E461D4 = {
 						CreatedOnToolsVersion = 6.2;
-						TestTargetID = DE94AE0A1AF246BF00E461D4;
 					};
 				};
 			};
@@ -222,10 +230,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DD801281AF336BC005580A8 /* test.js in Resources */,
+				BFDFDC5B1B1569B20087CC61 /* demo.js in Resources */,
+				BFDFDC591B1567770087CC61 /* Default-568h@2x.png in Resources */,
 				2D5D892E1B0B8C3B009382EC /* JSPatch.js in Resources */,
 				2D6D12FD1B0B8CF20095A435 /* Images.xcassets in Resources */,
-				2D6D13011B0B8CFF0095A435 /* demo.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,7 +241,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE94AE471AF2480000E461D4 /* test.js in Resources */,
+				BFEFA0141B16B8EB00881408 /* Info.plist in Resources */,
+				BFEFA00E1B16B7AB00881408 /* test.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -244,10 +253,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
 				2D5D892D1B0B8C3B009382EC /* JPEngine.m in Sources */,
+				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
 				2D5D89251B0B8BFF009382EC /* JPViewController.m in Sources */,
 				2D6D12FF1B0B8CF20095A435 /* main.m in Sources */,
+				BFDFDC571B1566ED0087CC61 /* UIResponder+load.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,8 +265,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE94AE461AF2480000E461D4 /* JPTestObject.m in Sources */,
-				DE94AE2B1AF246C000E461D4 /* JSPatchTests.m in Sources */,
+				BFDFDC5C1B15B8490087CC61 /* JPEngine.m in Sources */,
+				BFEFA00C1B16B7AB00881408 /* JPTestObject.m in Sources */,
+				BFEFA00D1B16B7AB00881408 /* JSPatchTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,7 +387,6 @@
 		DE94AE321AF246C000E461D4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -388,14 +398,12 @@
 				INFOPLIST_FILE = JSPatchTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = JSPatchDemoTests;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JSPatchDemo.app/JSPatchDemo";
 			};
 			name = Debug;
 		};
 		DE94AE331AF246C000E461D4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -403,7 +411,6 @@
 				INFOPLIST_FILE = JSPatchTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = JSPatchDemoTests;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JSPatchDemo.app/JSPatchDemo";
 			};
 			name = Release;
 		};
@@ -417,7 +424,7 @@
 				DE94AE2D1AF246C000E461D4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		DE94AE2E1AF246C000E461D4 /* Build configuration list for PBXNativeTarget "JSPatchDemo" */ = {
 			isa = XCConfigurationList;
@@ -426,7 +433,7 @@
 				DE94AE301AF246C000E461D4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		DE94AE311AF246C000E461D4 /* Build configuration list for PBXNativeTarget "JSPatchTests" */ = {
 			isa = XCConfigurationList;
@@ -435,7 +442,7 @@
 				DE94AE331AF246C000E461D4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
