@@ -27,8 +27,6 @@
                                 }\
                             }];
 
-
-
 @implementation UIResponder (load)
 
 +(void)load
