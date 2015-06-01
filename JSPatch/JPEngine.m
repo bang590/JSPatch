@@ -112,7 +112,7 @@ static NSRegularExpression* regex;
     
     _context = context;
     
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"JSPatch" ofType:@"js"];
+    NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"JSPatch" ofType:@"js"];
     NSString *jsCore = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:path] encoding:NSUTF8StringEncoding];
     [_context evaluateScript:jsCore];
 }
