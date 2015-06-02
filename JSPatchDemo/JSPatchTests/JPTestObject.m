@@ -264,6 +264,11 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     return [super methodSignatureForSelector:aSelector];
 }
 
+- (NSString*)funcOverrideParentMethod
+{
+    return @"orgi";
+}
+
 @end
 
 

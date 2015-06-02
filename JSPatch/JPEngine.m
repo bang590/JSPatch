@@ -213,7 +213,7 @@ static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) { 
 #pragma clang diagnostic ignored "-Wunused-variable"
 
 JPMETHOD_IMPLEMENTATION_RET(void, v, nil)
-JPMETHOD_IMPLEMENTATION_RET(id, id, return [ret toObject])
+//JPMETHOD_IMPLEMENTATION_RET(id, id, return [ret toObject])
 JPMETHOD_IMPLEMENTATION_RET(CGRect, rect, return dictToRect([ret toObject]))
 JPMETHOD_IMPLEMENTATION_RET(CGSize, size, return dictToSize([ret toObject]))
 JPMETHOD_IMPLEMENTATION_RET(CGPoint, point, return dictToPoint([ret toObject]))
@@ -234,7 +234,25 @@ JPMETHOD_IMPLEMENTATION(BOOL, B, boolValue)
 
 #pragma clang diagnostic pop
 
-
+static id JPMethodImplement_id (id slf, SEL selector) {
+    NSString *selectorName = NSStringFromSelector(selector);
+    
+    Class cls = [slf class];
+    NSString *clsName = NSStringFromClass(cls);
+    JSValue *fun = _JSOverideMethods[clsName][selectorName];
+    while (!fun) {
+        cls = class_getSuperclass(cls);
+        if (!cls) {
+            NSLog(@"warning can not find selector %@", selectorName);
+        }
+        clsName = NSStringFromClass(cls);
+        fun = _JSOverideMethods[clsName][selectorName];
+    }
+    
+    JSValue *ret = [fun callWithArguments:_TMPInvocationArguments];
+    id r = [ret toObject];
+    return r;
+}
 
 #define JPMETHOD_NEW_IMPLEMENTATION_NAME(_argCount) JPMethodNewImplementation_##_argCount
 #define JPMETHOD_NEW_IMPLEMENTATION_ARG_0 (id slf, SEL selector)
@@ -389,8 +407,10 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
     SEL JPSelector = NSSelectorFromString(JPSelectorName);
-    if(!class_respondsToSelector(cls, JPSelector)) {
-        NSString *clsName = NSStringFromClass(cls);
+    NSString *clsName = NSStringFromClass(cls);
+    //if(!class_respondsToSelector(cls, JPSelector)) {
+    if (!_JSOverideMethods[clsName][JPSelectorName]) {
+     
         _initJPOverideMethods(clsName);
         _JSOverideMethods[clsName][JPSelectorName] = function;
         const char *returnType = [methodSignature methodReturnType];
