@@ -140,6 +140,24 @@ static void setPropIMP(id slf, SEL selector, id val, NSString *propName) {
     objc_setAssociatedObject(slf, propKey(propName), val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+static JSValue* GetJSFunctionInObjectHierachy(id slf, SEL selector)
+{
+    NSString *selectorName = NSStringFromSelector(selector);
+    Class cls = [slf class];
+    NSString *clsName = NSStringFromClass(cls);
+    JSValue *fun = _JSOverideMethods[clsName][selectorName];
+    while (!fun) {
+        cls = class_getSuperclass(cls);
+        if (!cls) {
+            NSLog(@"warning can not find selector %@", selectorName);
+            return nil;
+        }
+        clsName = NSStringFromClass(cls);
+        fun = _JSOverideMethods[clsName][selectorName];
+    }
+    return fun;
+}
+
 static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods)
 {
     NSArray *clsArr = [classDeclaration componentsSeparatedByString:@":"];
@@ -201,9 +219,8 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
 
 #define JPMETHOD_IMPLEMENTATION_RET(_type, _typeString, _ret) \
 static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) {    \
-    NSString *selectorName = NSStringFromSelector(selector);    \
-    NSString *clsName = NSStringFromClass([slf class]);\
-    JSValue *ret = [_JSOverideMethods[clsName][selectorName] callWithArguments:_TMPInvocationArguments]; \
+    JSValue *fun = GetJSFunctionInObjectHierachy(slf, selector);    \
+    JSValue *ret = [fun callWithArguments:_TMPInvocationArguments];  \
     _ret;    \
 }   \
 
@@ -213,7 +230,7 @@ static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) { 
 #pragma clang diagnostic ignored "-Wunused-variable"
 
 JPMETHOD_IMPLEMENTATION_RET(void, v, nil)
-//JPMETHOD_IMPLEMENTATION_RET(id, id, return [ret toObject])
+JPMETHOD_IMPLEMENTATION_RET(id, id, return [ret toObject])
 JPMETHOD_IMPLEMENTATION_RET(CGRect, rect, return dictToRect([ret toObject]))
 JPMETHOD_IMPLEMENTATION_RET(CGSize, size, return dictToSize([ret toObject]))
 JPMETHOD_IMPLEMENTATION_RET(CGPoint, point, return dictToPoint([ret toObject]))
@@ -233,26 +250,6 @@ JPMETHOD_IMPLEMENTATION(double, d, doubleValue)
 JPMETHOD_IMPLEMENTATION(BOOL, B, boolValue)
 
 #pragma clang diagnostic pop
-
-static id JPMethodImplement_id (id slf, SEL selector) {
-    NSString *selectorName = NSStringFromSelector(selector);
-    
-    Class cls = [slf class];
-    NSString *clsName = NSStringFromClass(cls);
-    JSValue *fun = _JSOverideMethods[clsName][selectorName];
-    while (!fun) {
-        cls = class_getSuperclass(cls);
-        if (!cls) {
-            NSLog(@"warning can not find selector %@", selectorName);
-        }
-        clsName = NSStringFromClass(cls);
-        fun = _JSOverideMethods[clsName][selectorName];
-    }
-    
-    JSValue *ret = [fun callWithArguments:_TMPInvocationArguments];
-    id r = [ret toObject];
-    return r;
-}
 
 #define JPMETHOD_NEW_IMPLEMENTATION_NAME(_argCount) JPMethodNewImplementation_##_argCount
 #define JPMETHOD_NEW_IMPLEMENTATION_ARG_0 (id slf, SEL selector)
