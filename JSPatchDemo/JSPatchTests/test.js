@@ -24,7 +24,11 @@ var global = this;
     },
     funcToSwizzle__withUnderLine__: function(num) {
       self.setFuncToSwizzle__withUnderLine__Passed(num == 42)
+    },
+    funcOverrideParentMethod:function(){
+      return "overrided";
     }
+    
   },
   {
     classFuncToSwizzle_int: function(o, num) {

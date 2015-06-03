@@ -62,6 +62,9 @@
 @property (nonatomic, assign) BOOL newTestObjectCustomFuncPassed;
 
 @property (nonatomic, assign) BOOL consoleLogPassed;
+@property (nonatomic, assign) BOOL overrideParentMethodPassed;
+
+- (NSString*)funcOverrideParentMethod;
 
 @end
 

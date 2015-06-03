@@ -112,7 +112,7 @@ static NSRegularExpression* regex;
     
     _context = context;
     
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"JSPatch" ofType:@"js"];
+    NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"JSPatch" ofType:@"js"];
     NSString *jsCore = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:path] encoding:NSUTF8StringEncoding];
     [_context evaluateScript:jsCore];
 }
@@ -138,6 +138,24 @@ static id getPropIMP(id slf, SEL selector, NSString *propName) {
 }
 static void setPropIMP(id slf, SEL selector, id val, NSString *propName) {
     objc_setAssociatedObject(slf, propKey(propName), val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+static JSValue* GetJSFunctionInObjectHierachy(id slf, SEL selector)
+{
+    NSString *selectorName = NSStringFromSelector(selector);
+    Class cls = [slf class];
+    NSString *clsName = NSStringFromClass(cls);
+    JSValue *fun = _JSOverideMethods[clsName][selectorName];
+    while (!fun) {
+        cls = class_getSuperclass(cls);
+        if (!cls) {
+            NSLog(@"warning can not find selector %@", selectorName);
+            return nil;
+        }
+        clsName = NSStringFromClass(cls);
+        fun = _JSOverideMethods[clsName][selectorName];
+    }
+    return fun;
 }
 
 static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods)
@@ -201,9 +219,8 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
 
 #define JPMETHOD_IMPLEMENTATION_RET(_type, _typeString, _ret) \
 static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) {    \
-    NSString *selectorName = NSStringFromSelector(selector);    \
-    NSString *clsName = NSStringFromClass([slf class]);\
-    JSValue *ret = [_JSOverideMethods[clsName][selectorName] callWithArguments:_TMPInvocationArguments]; \
+    JSValue *fun = GetJSFunctionInObjectHierachy(slf, selector);    \
+    JSValue *ret = [fun callWithArguments:_TMPInvocationArguments];  \
     _ret;    \
 }   \
 
@@ -233,8 +250,6 @@ JPMETHOD_IMPLEMENTATION(double, d, doubleValue)
 JPMETHOD_IMPLEMENTATION(BOOL, B, boolValue)
 
 #pragma clang diagnostic pop
-
-
 
 #define JPMETHOD_NEW_IMPLEMENTATION_NAME(_argCount) JPMethodNewImplementation_##_argCount
 #define JPMETHOD_NEW_IMPLEMENTATION_ARG_0 (id slf, SEL selector)
@@ -389,8 +404,10 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
     SEL JPSelector = NSSelectorFromString(JPSelectorName);
-    if(!class_respondsToSelector(cls, JPSelector)) {
-        NSString *clsName = NSStringFromClass(cls);
+    NSString *clsName = NSStringFromClass(cls);
+    //if(!class_respondsToSelector(cls, JPSelector)) {
+    if (!_JSOverideMethods[clsName][JPSelectorName]) {
+     
         _initJPOverideMethods(clsName);
         _JSOverideMethods[clsName][JPSelectorName] = function;
         const char *returnType = [methodSignature methodReturnType];
