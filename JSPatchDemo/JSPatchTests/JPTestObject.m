@@ -139,6 +139,9 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     UIView *view = [self funcToSwizzleReturnView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)]];
     self.funcToSwizzleReturnViewPassed = view.frame.size.width == 100;
     
+    UIView *nilView = [self funcToSwizzleReturnView:nil];
+    self.funcToSwizzleParamNilPassed = !nilView;
+
     int num = [self funcToSwizzleReturnInt:42];
     self.funcToSwizzleReturnIntPassed = num == 42;
     
