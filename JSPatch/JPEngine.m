@@ -390,7 +390,11 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     IMP msgForwardIMP = _objc_msgForward;
     #if !defined(__arm64__)
         if (typeDescription[0] == '{') {
-            msgForwardIMP = (IMP)_objc_msgForward_stret;
+            NSUInteger valueSize = 0;
+            NSGetSizeAndAlignment(typeDescription, &valueSize, NULL);
+            if (!(valueSize == 1 || valueSize == 2 || valueSize == 4 || valueSize == 8)) {
+                msgForwardIMP = (IMP)_objc_msgForward_stret;
+            }
         }
     #endif
 
