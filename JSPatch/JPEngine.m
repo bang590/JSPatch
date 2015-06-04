@@ -281,7 +281,7 @@ JPMETHOD_NEW_IMPLEMENTATION(5, COMMA obj1 COMMA obj2 COMMA obj3 COMMA obj4 COMMA
 
 static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
 {
-    NSMethodSignature *methodSignature = [invocation methodSignature];   
+    NSMethodSignature *methodSignature = [invocation methodSignature];     
     NSInteger numberOfArguments = [methodSignature numberOfArguments];
     
     NSString *selectorName = NSStringFromSelector(invocation.selector);
