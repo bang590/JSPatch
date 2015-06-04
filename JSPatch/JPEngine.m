@@ -8,6 +8,7 @@
 
 #import "JPEngine.h"
 #import <objc/runtime.h>
+#import <objc/message.h>
 
 @interface JPEngine ()
 @property (nonatomic, strong) NSMutableDictionary *cacheArguments;
@@ -140,24 +141,6 @@ static void setPropIMP(id slf, SEL selector, id val, NSString *propName) {
     objc_setAssociatedObject(slf, propKey(propName), val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-static JSValue* GetJSFunctionInObjectHierachy(id slf, SEL selector)
-{
-    NSString *selectorName = NSStringFromSelector(selector);
-    Class cls = [slf class];
-    NSString *clsName = NSStringFromClass(cls);
-    JSValue *fun = _JSOverideMethods[clsName][selectorName];
-    while (!fun) {
-        cls = class_getSuperclass(cls);
-        if (!cls) {
-            NSLog(@"warning can not find selector %@", selectorName);
-            return nil;
-        }
-        clsName = NSStringFromClass(cls);
-        fun = _JSOverideMethods[clsName][selectorName];
-    }
-    return fun;
-}
-
 static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods)
 {
     NSArray *clsArr = [classDeclaration componentsSeparatedByString:@":"];
@@ -214,12 +197,31 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
     return @{@"cls": className};
 }
 
+
+static JSValue* getJSFunctionInObjectHierachy(id slf, SEL selector)
+{
+    NSString *selectorName = NSStringFromSelector(selector);
+    Class cls = [slf class];
+    NSString *clsName = NSStringFromClass(cls);
+    JSValue *func = _JSOverideMethods[clsName][selectorName];
+    while (!func) {
+        cls = class_getSuperclass(cls);
+        if (!cls) {
+            NSCAssert(NO, @"warning can not find selector %@", selectorName);
+            return nil;
+        }
+        clsName = NSStringFromClass(cls);
+        func = _JSOverideMethods[clsName][selectorName];
+    }
+    return func;
+}
+
 #define JPMETHOD_IMPLEMENTATION(_type, _typeString, _typeSelector) \
     JPMETHOD_IMPLEMENTATION_RET(_type, _typeString, return [[ret toObject] _typeSelector]) \
 
 #define JPMETHOD_IMPLEMENTATION_RET(_type, _typeString, _ret) \
 static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) {    \
-    JSValue *fun = GetJSFunctionInObjectHierachy(slf, selector);    \
+    JSValue *fun = getJSFunctionInObjectHierachy(slf, selector);    \
     JSValue *ret = [fun callWithArguments:_TMPInvocationArguments];  \
     _ret;    \
 }   \
@@ -385,10 +387,17 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     
     IMP originalImp = class_respondsToSelector(cls, selector) ? class_getMethodImplementation(cls, selector) : NULL;
     
+    IMP msgForwardIMP = _objc_msgForward;
+    #if !defined(__arm64__)
+        if (typeDescription[0] == '{') {
+            msgForwardIMP = (IMP)_objc_msgForward_stret;
+        }
+    #endif
+
+    class_replaceMethod(cls, selector, msgForwardIMP, typeDescription);
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-    class_replaceMethod(cls, selector, class_getMethodImplementation(cls, @selector(__JPNONImplementSelector)), typeDescription);
-
     SEL newForwardSelector = @selector(ORIGforwardInvocation:);
     if (!class_respondsToSelector(cls, newForwardSelector)) {
         IMP originalForwardImp = class_replaceMethod(cls, @selector(forwardInvocation:), (IMP)JPForwardInvocation, "v@:@");
@@ -405,9 +414,8 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
     SEL JPSelector = NSSelectorFromString(JPSelectorName);
     NSString *clsName = NSStringFromClass(cls);
-    //if(!class_respondsToSelector(cls, JPSelector)) {
+
     if (!_JSOverideMethods[clsName][JPSelectorName]) {
-     
         _initJPOverideMethods(clsName);
         _JSOverideMethods[clsName][JPSelectorName] = function;
         const char *returnType = [methodSignature methodReturnType];

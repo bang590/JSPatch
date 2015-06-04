@@ -27,6 +27,18 @@ var global = this;
     },
     funcOverrideParentMethod:function(){
       return "overrided";
+    },
+    funcToSwizzleReturnRect: function(rect) {
+      return rect;
+    },
+    funcToSwizzleReturnSize: function(size) {
+      return size;
+    },
+    funcToSwizzleReturnPoint: function(point) {
+      return point;
+    },
+    funcToSwizzleReturnRange: function(range) {
+      return range;
     }
     
   },

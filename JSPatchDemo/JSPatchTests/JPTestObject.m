@@ -159,6 +159,19 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     
     [self funcToSwizzle_withUnderLine_:42];
     
+    CGRect rect = [self funcToSwizzleReturnRect:CGRectMake(0, 0, 100, 100)];
+    self.funcToSwizzleReturnRectPassed = rect.size.width == 100;
+    
+    CGPoint point = [self funcToSwizzleReturnPoint:CGPointMake(42, 42)];
+    self.funcToSwizzleReturnRectPassed = point.x == 42;
+    
+    CGSize size = [self funcToSwizzleReturnSize:CGSizeMake(42, 42)];
+    self.funcToSwizzleReturnSizePassed = size.width == 42;
+    
+    NSRange range = [self funcToSwizzleReturnRange:NSMakeRange(0, 42)];
+    self.funcToSwizzleReturnRangePassed = range.length == 42;
+    
+    
 }
 - (void)funcToSwizzleWithString:(NSString *)str view:(UIView *)view int:(NSInteger)i
 {
@@ -190,6 +203,23 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     
 }
 
+- (CGRect)funcToSwizzleReturnRect:(CGRect)rect
+{
+    return CGRectZero;
+}
+- (CGPoint)funcToSwizzleReturnPoint:(CGPoint)point
+{
+    return CGPointZero;
+}
+- (CGSize)funcToSwizzleReturnSize:(CGSize)size
+{
+    return CGSizeZero;
+}
+- (NSRange)funcToSwizzleReturnRange:(NSRange)range
+{
+    return NSMakeRange(0, 0);
+}
+
 + (void)classFuncToSwizzle:(JPTestObject *)testObject int:(NSInteger)i
 {
     
@@ -205,6 +235,9 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
 {
     return 0;
 }
+
+
+
 
 #pragma mark - super
 - (void)funcCallSuper
@@ -233,7 +266,6 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
 {
     
 }
-
 
 #pragma mark - forward
 - (void)callTestForward
@@ -264,6 +296,8 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     return [super methodSignatureForSelector:aSelector];
 }
 
+
+#pragma mark -
 - (NSString*)funcOverrideParentMethod
 {
     return @"orgi";
