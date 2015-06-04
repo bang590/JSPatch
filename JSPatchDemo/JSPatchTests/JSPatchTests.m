@@ -91,6 +91,7 @@
     XCTAssert(obj.newTestObjectCustomFuncPassed, @"newTestObjectCustomFuncPassed");
     
     XCTAssertEqualObjects(@"overrided",[subObj funcOverrideParentMethod]);
+    
 }
 
 @end

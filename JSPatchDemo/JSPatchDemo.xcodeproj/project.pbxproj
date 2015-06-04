@@ -18,6 +18,7 @@
 		DE94AE2B1AF246C000E461D4 /* JSPatchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94AE2A1AF246C000E461D4 /* JSPatchTests.m */; };
 		DE94AE461AF2480000E461D4 /* JPTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94AE441AF2480000E461D4 /* JPTestObject.m */; };
 		DE94AE471AF2480000E461D4 /* test.js in Resources */ = {isa = PBXBuildFile; fileRef = DE94AE451AF2480000E461D4 /* test.js */; };
+		E1B89EA01B203482000645C2 /* MultithreadTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = E1B89E9F1B203482000645C2 /* MultithreadTestObject.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,8 @@
 		DE94AE431AF2480000E461D4 /* JPTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPTestObject.h; sourceTree = "<group>"; };
 		DE94AE441AF2480000E461D4 /* JPTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPTestObject.m; sourceTree = "<group>"; };
 		DE94AE451AF2480000E461D4 /* test.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = test.js; sourceTree = "<group>"; };
+		E1B89E9E1B203482000645C2 /* MultithreadTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultithreadTestObject.h; sourceTree = "<group>"; };
+		E1B89E9F1B203482000645C2 /* MultithreadTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultithreadTestObject.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +82,8 @@
 				2D5D891D1B0B8BFF009382EC /* JPViewController.h */,
 				2D5D891E1B0B8BFF009382EC /* JPViewController.m */,
 				2D6D13001B0B8CFF0095A435 /* demo.js */,
+				E1B89E9E1B203482000645C2 /* MultithreadTestObject.h */,
+				E1B89E9F1B203482000645C2 /* MultithreadTestObject.m */,
 			);
 			path = JSPatchDemo;
 			sourceTree = "<group>";
@@ -246,6 +251,7 @@
 			files = (
 				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
 				2D5D892D1B0B8C3B009382EC /* JPEngine.m in Sources */,
+				E1B89EA01B203482000645C2 /* MultithreadTestObject.m in Sources */,
 				2D5D89251B0B8BFF009382EC /* JPViewController.m in Sources */,
 				2D6D12FF1B0B8CF20095A435 /* main.m in Sources */,
 			);

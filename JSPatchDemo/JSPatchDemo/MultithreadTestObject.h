@@ -9,5 +9,16 @@
 #import <Foundation/Foundation.h>
 
 @interface MultithreadTestObject : NSObject
+{
+    NSMutableArray *_values;
+}
+
+@property int objectId;
+
+- (instancetype)init;
+- (void)addValueJS:(NSNumber*)number;
+- (void)addValue:(NSNumber*)number;
+- (void)addValueNoPatch:(NSNumber*)number;
+- (BOOL)checkAllValues;
 
 @end
