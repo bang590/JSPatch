@@ -58,7 +58,7 @@
     XCTAssert(obj.funcReturnDictStringViewPassed, @"funcReturnDictStringViewPassed");
     XCTAssert(obj.funcReturnDictStringIntPassed, @"funcReturnDictStringIntPassed");
     XCTAssert(obj.funcReturnArrayControllerViewStringPassed, @"funcReturnArrayControllerViewStringPassed");
-    
+    XCTAssert(obj.funcReturnDictPassed, @"funcReturnDictPassed");
     
     XCTAssert(obj.funcReturnBlockPassed, @"funcReturnBlockPassed");
     XCTAssert(obj.funcReturnObjectBlockPassed, @"funcReturnObjectBlockPassed");
