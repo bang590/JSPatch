@@ -18,12 +18,9 @@
 		DE94AE2B1AF246C000E461D4 /* JSPatchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94AE2A1AF246C000E461D4 /* JSPatchTests.m */; };
 		DE94AE461AF2480000E461D4 /* JPTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94AE441AF2480000E461D4 /* JPTestObject.m */; };
 		DE94AE471AF2480000E461D4 /* test.js in Resources */ = {isa = PBXBuildFile; fileRef = DE94AE451AF2480000E461D4 /* test.js */; };
+		E1B89EA01B203482000645C2 /* JPMultithreadTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = E1B89E9F1B203482000645C2 /* JPMultithreadTestObject.m */; };
 		E1B89EA31B218986000645C2 /* JPInheritanceTestObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = E1B89EA21B218986000645C2 /* JPInheritanceTestObjects.m */; };
-		E1B89EA71B218A35000645C2 /* InheritTest01Patch.js in Resources */ = {isa = PBXBuildFile; fileRef = E1B89EA41B218A35000645C2 /* InheritTest01Patch.js */; };
-		E1B89EA81B218A35000645C2 /* InheritTest02Patch.js in Resources */ = {isa = PBXBuildFile; fileRef = E1B89EA51B218A35000645C2 /* InheritTest02Patch.js */; };
-		E1B89EA91B218A35000645C2 /* InheritTest03Patch.js in Resources */ = {isa = PBXBuildFile; fileRef = E1B89EA61B218A35000645C2 /* InheritTest03Patch.js */; };
-		E1B89EAC1B218AB6000645C2 /* PatchLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = E1B89EAB1B218AB6000645C2 /* PatchLoader.m */; };
-		E1B89EA01B203482000645C2 /* MultithreadTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = E1B89E9F1B203482000645C2 /* MultithreadTestObject.m */; };
+		E1B89EA71B218A35000645C2 /* InheritTestPatch.js in Resources */ = {isa = PBXBuildFile; fileRef = E1B89EA41B218A35000645C2 /* InheritTestPatch.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,15 +52,11 @@
 		DE94AE431AF2480000E461D4 /* JPTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPTestObject.h; sourceTree = "<group>"; };
 		DE94AE441AF2480000E461D4 /* JPTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPTestObject.m; sourceTree = "<group>"; };
 		DE94AE451AF2480000E461D4 /* test.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = test.js; sourceTree = "<group>"; };
+		E1B89E9E1B203482000645C2 /* JPMultithreadTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JPMultithreadTestObject.h; path = ../JSPatchDemo/JPMultithreadTestObject.h; sourceTree = "<group>"; };
+		E1B89E9F1B203482000645C2 /* JPMultithreadTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JPMultithreadTestObject.m; path = ../JSPatchDemo/JPMultithreadTestObject.m; sourceTree = "<group>"; };
 		E1B89EA11B218986000645C2 /* JPInheritanceTestObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPInheritanceTestObjects.h; sourceTree = "<group>"; };
 		E1B89EA21B218986000645C2 /* JPInheritanceTestObjects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPInheritanceTestObjects.m; sourceTree = "<group>"; };
-		E1B89EA41B218A35000645C2 /* InheritTest01Patch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = InheritTest01Patch.js; sourceTree = "<group>"; };
-		E1B89EA51B218A35000645C2 /* InheritTest02Patch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = InheritTest02Patch.js; sourceTree = "<group>"; };
-		E1B89EA61B218A35000645C2 /* InheritTest03Patch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = InheritTest03Patch.js; sourceTree = "<group>"; };
-		E1B89EAA1B218AB6000645C2 /* PatchLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PatchLoader.h; sourceTree = "<group>"; };
-		E1B89EAB1B218AB6000645C2 /* PatchLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PatchLoader.m; sourceTree = "<group>"; };
-		E1B89E9E1B203482000645C2 /* MultithreadTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultithreadTestObject.h; sourceTree = "<group>"; };
-		E1B89E9F1B203482000645C2 /* MultithreadTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultithreadTestObject.m; sourceTree = "<group>"; };
+		E1B89EA41B218A35000645C2 /* InheritTestPatch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = InheritTestPatch.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,8 +87,6 @@
 				2D5D891D1B0B8BFF009382EC /* JPViewController.h */,
 				2D5D891E1B0B8BFF009382EC /* JPViewController.m */,
 				2D6D13001B0B8CFF0095A435 /* demo.js */,
-				E1B89E9E1B203482000645C2 /* MultithreadTestObject.h */,
-				E1B89E9F1B203482000645C2 /* MultithreadTestObject.m */,
 			);
 			path = JSPatchDemo;
 			sourceTree = "<group>";
@@ -142,9 +133,9 @@
 		DE94AE271AF246C000E461D4 /* JSPatchTests */ = {
 			isa = PBXGroup;
 			children = (
-				E1B89EA41B218A35000645C2 /* InheritTest01Patch.js */,
-				E1B89EA51B218A35000645C2 /* InheritTest02Patch.js */,
-				E1B89EA61B218A35000645C2 /* InheritTest03Patch.js */,
+				E1B89E9E1B203482000645C2 /* JPMultithreadTestObject.h */,
+				E1B89E9F1B203482000645C2 /* JPMultithreadTestObject.m */,
+				E1B89EA41B218A35000645C2 /* InheritTestPatch.js */,
 				DE94AE431AF2480000E461D4 /* JPTestObject.h */,
 				DE94AE441AF2480000E461D4 /* JPTestObject.m */,
 				E1B89EA11B218986000645C2 /* JPInheritanceTestObjects.h */,
@@ -152,8 +143,6 @@
 				DE94AE451AF2480000E461D4 /* test.js */,
 				DE94AE2A1AF246C000E461D4 /* JSPatchTests.m */,
 				DE94AE281AF246C000E461D4 /* Supporting Files */,
-				E1B89EAA1B218AB6000645C2 /* PatchLoader.h */,
-				E1B89EAB1B218AB6000645C2 /* PatchLoader.m */,
 			);
 			path = JSPatchTests;
 			sourceTree = "<group>";
@@ -257,10 +246,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1B89EA71B218A35000645C2 /* InheritTest01Patch.js in Resources */,
+				E1B89EA71B218A35000645C2 /* InheritTestPatch.js in Resources */,
 				DE94AE471AF2480000E461D4 /* test.js in Resources */,
-				E1B89EA91B218A35000645C2 /* InheritTest03Patch.js in Resources */,
-				E1B89EA81B218A35000645C2 /* InheritTest02Patch.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,7 +260,7 @@
 			files = (
 				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
 				2D5D892D1B0B8C3B009382EC /* JPEngine.m in Sources */,
-				E1B89EA01B203482000645C2 /* MultithreadTestObject.m in Sources */,
+				E1B89EA01B203482000645C2 /* JPMultithreadTestObject.m in Sources */,
 				2D5D89251B0B8BFF009382EC /* JPViewController.m in Sources */,
 				2D6D12FF1B0B8CF20095A435 /* main.m in Sources */,
 			);
@@ -286,7 +273,6 @@
 				DE94AE461AF2480000E461D4 /* JPTestObject.m in Sources */,
 				E1B89EA31B218986000645C2 /* JPInheritanceTestObjects.m in Sources */,
 				DE94AE2B1AF246C000E461D4 /* JSPatchTests.m in Sources */,
-				E1B89EAC1B218AB6000645C2 /* PatchLoader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

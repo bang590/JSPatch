@@ -6,7 +6,7 @@
 //  Copyright (c) 2015年 bang. All rights reserved.
 //
 
-#import "MultithreadTestObject.h"
+#import "JPMultithreadTestObject.h"
 
 @implementation MultithreadTestObject
 

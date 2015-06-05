@@ -11,7 +11,27 @@
 #import "JPEngine.h"
 #import "JPTestObject.h"
 #import "JPInheritanceTestObjects.h"
-#import "PatchLoader.h"
+#import "JPMultithreadTestObject.h"
+
+@interface PatchLoader : NSObject
+
++ (void)LoadPatch:(NSString*)patchName;
+
+@end
+
+@implementation PatchLoader
+
++ (void)LoadPatch:(NSString *)patchName
+{
+    NSString *jsPath = [[NSBundle bundleForClass:[self class]] pathForResource:patchName ofType:@"js"];
+    NSError *error;
+    NSString *jsScript = [NSString stringWithContentsOfFile:jsPath encoding:NSUTF8StringEncoding error:&error];
+    [JPEngine evaluateScript:jsScript];
+}
+
+@end
+
+void thread(void* context);
 
 @interface JSPatchTests : XCTestCase
 
@@ -103,66 +123,138 @@
 
 - (void)testInheritance
 {
-    id objB = [[InheritTest01ObjectB alloc] init];
-    NSString* m1Return = [objB m1];
-    NSString* m2Return = [objB m2];
+    /*get values before patch*/
+    id t1objB = [[InheritTest01ObjectB alloc] init];
+    NSString* t1m1Return = [t1objB m1];
+    NSString* t1m2Return = [t1objB m2];
     
-    [PatchLoader LoadPatch:@"InheritTest01Patch"];
+    id t2objA = [[InheritTest02ObjectA alloc] init];
+    id t2objB = [[InheritTest02ObjectB alloc] init];
+    id t2objC = [[InheritTest02ObjectC alloc] init];
+    NSString* t2m1Return = [t2objA m1];
+    NSString* t2m2Return = [t2objA m2];
+    NSString* t2Bm1Return = [t2objB m1];
+    NSString* t2Bm2Return = [t2objB m2];
+    NSString* t2Cm1Return = [t2objC m1];
+    NSString* t2Cm2Return = [t2objC m2];
     
-    XCTAssertNotEqualObjects(m1Return, [objB m1]);
-    XCTAssertEqualObjects(@"JP_01ObjB_m1", [objB m1]);
-    XCTAssertEqualObjects(m2Return,[objB m2]);
-     
-    id objA = [[InheritTest02ObjectA alloc] init];
-    objB = [[InheritTest02ObjectB alloc] init];
-    id objC = [[InheritTest02ObjectC alloc] init];
-    m1Return = [objA m1];
-    m2Return = [objA m2];
-    NSString* Bm1Return = [objB m1];
-    NSString* Bm2Return = [objB m2];
-    NSString* Cm1Return = [objC m1];
-    NSString* Cm2Return = [objC m2];
+    id t3objA = [[InheritTest03ObjectA alloc] init];
+    id t3objB = [[InheritTest03ObjectB alloc] init];
+    id t3objC = [[InheritTest03ObjectC alloc] init];
+    NSString* t3m1Return = [t3objA m1];
+    NSString* t3m2Return = [t3objA m2];
+    NSString* t3Bm1Return = [t3objB m1];
+    NSString* t3Bm2Return = [t3objB m2];
+    NSString* t3Cm1Return = [t3objC m1];
+    NSString* t3Cm2Return = [t3objC m2];
     
-    [PatchLoader LoadPatch:@"InheritTest02Patch"];
+    [PatchLoader LoadPatch:@"InheritTestPatch"];
     
-    XCTAssertEqualObjects(m1Return,[objA m1]);
-    XCTAssertEqualObjects(m2Return,[objA m2]);
+    /*Test 1*/
+    XCTAssertNotEqualObjects(t1m1Return, [t1objB m1]);
+    XCTAssertEqualObjects(@"JP_01ObjB_m1", [t1objB m1]);
+    XCTAssertEqualObjects(t1m2Return,[t1objB m2]);
     
-    XCTAssertNotEqualObjects(Bm1Return,[objB m1]);
-    XCTAssertEqualObjects(@"JP_02ObjB_m1",[objB m1]);
+    /*Test 2*/
+    XCTAssertEqualObjects(t2m1Return,[t2objA m1]);
+    XCTAssertEqualObjects(t2m2Return,[t2objA m2]);
     
-    XCTAssertEqualObjects(Bm2Return,[objB m2]);
+    XCTAssertNotEqualObjects(t2Bm1Return,[t2objB m1]);
+    XCTAssertEqualObjects(@"JP_02ObjB_m1",[t2objB m1]);
     
-    XCTAssertNotEqualObjects(Cm1Return,[objC m1]);
-    XCTAssertEqualObjects(@"JP_02ObjB_m1",[objC m1]);
+    XCTAssertEqualObjects(t2Bm2Return,[t2objB m2]);
     
-    XCTAssertNotEqualObjects(Cm2Return,[objC m2]);
-    XCTAssertEqualObjects(@"JP_02ObjC_m2",[objC m2]);
+    XCTAssertNotEqualObjects(t2Cm1Return,[t2objC m1]);
+    XCTAssertEqualObjects(@"JP_02ObjB_m1",[t2objC m1]);
     
-    objA = [[InheritTest03ObjectA alloc] init];
-    objB = [[InheritTest03ObjectB alloc] init];
-    objC = [[InheritTest03ObjectC alloc] init];
-    m1Return = [objA m1];
-    m2Return = [objA m2];
-    Bm1Return = [objB m1];
-    Bm2Return = [objB m2];
-    Cm1Return = [objC m1];
-    Cm2Return = [objC m2];
+    XCTAssertNotEqualObjects(t2Cm2Return,[t2objC m2]);
+    XCTAssertEqualObjects(@"JP_02ObjC_m2",[t2objC m2]);
     
-    [PatchLoader LoadPatch:@"InheritTest03Patch"];
+    /*Test 3*/
+    XCTAssertEqualObjects(t3m1Return,[t3objA m1]);
+    XCTAssertEqualObjects(t3m2Return,[t3objA m2]);
     
-    XCTAssertEqualObjects(m1Return,[objA m1]);
-    XCTAssertEqualObjects(m2Return,[objA m2]);
+    XCTAssertNotEqualObjects(t3Bm1Return,[t3objB m1]);
+    XCTAssertEqualObjects(@"JP_03ObjB_m1",[t3objB m1]);
     
-    XCTAssertNotEqualObjects(Bm1Return,[objB m1]);
-    XCTAssertEqualObjects(@"JP_03ObjB_m1",[objB m1]);
+    XCTAssertEqualObjects(t3Bm2Return,[t3objB m2]);
     
-    XCTAssertEqualObjects(Bm2Return,[objB m2]);
+    XCTAssertEqualObjects(t3Cm1Return,[t3objC m1]);
     
-    XCTAssertEqualObjects(Cm1Return,[objC m1]);
+    XCTAssertNotEqualObjects(t3Cm2Return,[t3objC m2]);
+    XCTAssertEqualObjects(@"JP_03ObjC_m2",[t3objC m2]);
+}
+
+dispatch_semaphore_t sem;
+int finishcount = 0;
+bool success = false;
+#define LOOPCOUNT 1000
+
+- (void)testSerialQueue
+{
+    NSMutableArray *objs = [[NSMutableArray alloc] init];
+    for (int i = 0; i < LOOPCOUNT; i++) {
+        MultithreadTestObject *obj = [[MultithreadTestObject alloc] init];
+        obj.objectId = i;
+        [objs addObject:obj];
+    }
     
-    XCTAssertNotEqualObjects(Cm2Return,[objC m2]);
-    XCTAssertEqualObjects(@"JP_03ObjC_m2",[objC m2]);
+    dispatch_queue_t q = dispatch_queue_create("my queue", DISPATCH_QUEUE_SERIAL);
+    for (int i = 0; i < LOOPCOUNT; i++) {
+        dispatch_async_f(q, (__bridge void*)[objs objectAtIndex:i], thread);
+    }
+    
+    sem = dispatch_semaphore_create(0);
+    dispatch_semaphore_wait(sem,DISPATCH_TIME_FOREVER);
+    
+    XCTAssertTrue(success,@"serial queue test failed");
+}
+
+- (void)testConcurrentQueue
+{
+    NSMutableArray *objs = [[NSMutableArray alloc] init];
+    for (int i = 0; i < LOOPCOUNT; i++) {
+        MultithreadTestObject *obj = [[MultithreadTestObject alloc] init];
+        obj.objectId = i;
+        [objs addObject:obj];
+    }
+    
+    dispatch_queue_t q = dispatch_queue_create("my queue", DISPATCH_QUEUE_CONCURRENT);
+    for (int i = 0; i < LOOPCOUNT; i++) {
+        dispatch_async_f(q, (__bridge void*)[objs objectAtIndex:i], thread);
+    }
+    
+    sem = dispatch_semaphore_create(0);
+    dispatch_semaphore_wait(sem,DISPATCH_TIME_FOREVER);
+
+    XCTAssertTrue(success,@"concurrent queue test failed");
 }
 
 @end
+
+
+
+void thread(void* context)
+{
+    MultithreadTestObject *obj = (__bridge MultithreadTestObject*)context;
+    for (int i = 0; i < LOOPCOUNT; i++) {
+        [obj addValue:[NSNumber numberWithInt:obj.objectId]];
+        //NSLog(@"obj %d ok", obj.objectId);
+    }
+    
+    finishcount++;
+    
+    if (![obj checkAllValues]) {
+        NSLog(@"found wrong data in object %d", obj.objectId);
+        dispatch_semaphore_signal(sem);
+        return;
+    }
+
+    NSLog(@"obj %d ok, count %d ", obj.objectId, finishcount);
+    
+    if (finishcount == LOOPCOUNT) {
+        finishcount = 0;
+        success = true;
+        dispatch_semaphore_signal(sem);
+    }
+}
