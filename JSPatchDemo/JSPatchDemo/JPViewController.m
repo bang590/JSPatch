@@ -25,6 +25,7 @@ void thread(void* context)
     
     if (![obj checkAllValues]) {
         NSLog(@"found wrong data in object %d", obj.objectId);
+        @throw [NSException exceptionWithName:@"thread safe exception" reason:@"found wrong data in object" userInfo:nil];
     }
     else
     {
@@ -43,29 +44,40 @@ void thread(void* context)
     [self.view addSubview:btn];
     
     btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 200, [UIScreen mainScreen].bounds.size.width, 50)];
-    [btn setTitle:@"Multi thread test" forState:UIControlStateNormal];
-    [btn addTarget:self action:@selector(testMultiThread:) forControlEvents:UIControlEventTouchUpInside];
+    [btn setTitle:@"Test serial queue" forState:UIControlStateNormal];
+    [btn addTarget:self action:@selector(testSerialQueue:) forControlEvents:UIControlEventTouchUpInside];
     [btn setBackgroundColor:[UIColor grayColor]];
     [self.view addSubview:btn];
-}
-
-- (void)handleBtn:(id)sender
-{
-}
-
-- (void)testMultiThread:(id)sender
-{
+    
+    btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 300, [UIScreen mainScreen].bounds.size.width, 50)];
+    [btn setTitle:@"Test concurrent queue" forState:UIControlStateNormal];
+    [btn addTarget:self action:@selector(testConcurrentQueue:) forControlEvents:UIControlEventTouchUpInside];
+    [btn setBackgroundColor:[UIColor grayColor]];
+    [self.view addSubview:btn];
+    
     objs = [[NSMutableArray alloc] init];
     for (int i = 0; i < 1000; i++) {
         MultithreadTestObject *obj = [[MultithreadTestObject alloc] init];
         obj.objectId = i;
         [objs addObject:obj];
     }
-    
-    //dispatch_queue_t q = dispatch_get_main_queue();
-    //dispatch_queue_t q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,0);
+}
+
+- (void)handleBtn:(id)sender
+{
+}
+
+- (void)testSerialQueue:(id)sender
+{
     dispatch_queue_t q = dispatch_queue_create("my queue", DISPATCH_QUEUE_SERIAL);
-    //dispatch_queue_t q = dispatch_queue_create("my queue", DISPATCH_QUEUE_CONCURRENT);
+    for (int i = 0; i < 1000; i++) {
+        dispatch_async_f(q, (__bridge void*)[objs objectAtIndex:i], thread);
+    }
+}
+
+- (void)testConcurrentQueue:(id)sender
+{
+    dispatch_queue_t q = dispatch_queue_create("my queue", DISPATCH_QUEUE_CONCURRENT);
     for (int i = 0; i < 1000; i++) {
         dispatch_async_f(q, (__bridge void*)[objs objectAtIndex:i], thread);
     }
