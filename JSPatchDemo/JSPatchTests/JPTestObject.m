@@ -139,6 +139,9 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     UIView *view = [self funcToSwizzleReturnView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)]];
     self.funcToSwizzleReturnViewPassed = view.frame.size.width == 100;
     
+    UIView *nilView = [self funcToSwizzleReturnView:nil];
+    self.funcToSwizzleParamNilPassed = !nilView;
+
     int num = [self funcToSwizzleReturnInt:42];
     self.funcToSwizzleReturnIntPassed = num == 42;
     
@@ -163,7 +166,7 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     self.funcToSwizzleReturnRectPassed = rect.size.width == 100;
     
     CGPoint point = [self funcToSwizzleReturnPoint:CGPointMake(42, 42)];
-    self.funcToSwizzleReturnRectPassed = point.x == 42;
+    self.funcToSwizzleReturnPointPassed = point.x == 42;
     
     CGSize size = [self funcToSwizzleReturnSize:CGSizeMake(42, 42)];
     self.funcToSwizzleReturnSizePassed = size.width == 42;

@@ -61,7 +61,7 @@ defineClass('AppDelegate', {
 ```ruby
 # Your Podfile
 platform :ios, '7.0'
-pod 'JSPatch', '~> 0.0.1'
+pod 'JSPatch'
 ```
 
 ### Manually

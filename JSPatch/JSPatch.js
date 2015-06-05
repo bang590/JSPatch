@@ -38,8 +38,9 @@ var global = this
 
   var _formatOCToJS = function(obj) {
      if (obj === undefined || obj === null) return null
-     if (typeof obj == "object" && obj.__isObj) {
-       return _toJSObj(obj)
+     if (typeof obj == "object") {
+       if (obj.__isObj) return _toJSObj(obj)
+       if (obj.__isNull) return null
      }
      if (obj instanceof Array) {
         var ret = []

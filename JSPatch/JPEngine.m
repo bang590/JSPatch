@@ -231,8 +231,13 @@ static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) { 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
 
+#define JPMETHOD_RET_ID \
+    id obj = [ret toObject]; \
+    if ([obj isKindOfClass:[NSNull class]]) return nil;  \
+    return obj;
+
 JPMETHOD_IMPLEMENTATION_RET(void, v, nil)
-JPMETHOD_IMPLEMENTATION_RET(id, id, return [ret toObject])
+JPMETHOD_IMPLEMENTATION_RET(id, id, JPMETHOD_RET_ID)
 JPMETHOD_IMPLEMENTATION_RET(CGRect, rect, return dictToRect([ret toObject]))
 JPMETHOD_IMPLEMENTATION_RET(CGSize, size, return dictToSize([ret toObject]))
 JPMETHOD_IMPLEMENTATION_RET(CGPoint, point, return dictToPoint([ret toObject]))
@@ -330,13 +335,13 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
             JP_FWD_ARG_CASE('d', double)
             JP_FWD_ARG_CASE('B', BOOL)
             case '@': {
-                void *arg;
+                __unsafe_unretained id arg;
                 [invocation getArgument:&arg atIndex:i];
                 static const char *blockType = @encode(typeof(^{}));
                 if (!strcmp(argumentType, blockType)) {
-                    [argList addObject:[(__bridge id)arg copy]];
+                    [argList addObject:(arg ? [arg copy]: [NSNull null])];
                 } else {
-                    [argList addObject:(__bridge id)arg];
+                    [argList addObject:(arg ? arg: [NSNull null])];
                 }
                 break;
             }
@@ -390,7 +395,12 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     IMP msgForwardIMP = _objc_msgForward;
     #if !defined(__arm64__)
         if (typeDescription[0] == '{') {
-            msgForwardIMP = (IMP)_objc_msgForward_stret;
+            //In some cases that returns struct, we should use the '_stret' API:
+            //http://sealiesoftware.com/blog/archive/2008/10/30/objc_explain_objc_msgSend_stret.html
+            //NSMethodSignature knows the detail but has no API to return, we can only get the info from debugDescription.
+            if ([methodSignature.debugDescription rangeOfString:@"is special struct return? YES"].location != NSNotFound) {
+                msgForwardIMP = (IMP)_objc_msgForward_stret;
+            }
         }
     #endif
 
@@ -786,7 +796,9 @@ static BOOL typeIsObject(NSString *typeString) {
 
 static NSDictionary *toJSObj(id obj)
 {
-    if (!obj) return nil;
+    if (!obj || [obj isKindOfClass:[NSNull class]]) {
+        return @{@"__isNull": @(YES)};
+    }
     return @{@"__isObj": @(YES), @"cls": NSStringFromClass([obj class]), @"obj": obj};
 }
 @end

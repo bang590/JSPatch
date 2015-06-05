@@ -1,19 +1,16 @@
 Pod::Spec.new do |s|
   s.name         = "JSPatch"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "JSPatch bridge Objective-C and JavaScript. You can call any"  \
                    " Objective-C class and method in JavaScript by just" \
                    " including a small engine."
 
   s.description  = <<-DESC
-                   JSPatch bridge Objective-C and JavaScript using the
+                   JSPatch bridges Objective-C and JavaScript using the
                    Objective-C runtime. You can call any Objective-C class and
                    method in JavaScript by just including a small engine.
-                   That makes the APP obtain the power of script language:
-                   add modules or replacing Objective-C codes to
-                   fix bugs dynamically.
-                   JSPatch is still in development,
-                   welcome to improve the project together.
+                   That makes the APP obtaining the power of script language:
+                   add modules or replacing Objective-C codes to fix bugs dynamically.
                    DESC
 
   s.homepage     = "https://github.com/bang590/JSPatch"

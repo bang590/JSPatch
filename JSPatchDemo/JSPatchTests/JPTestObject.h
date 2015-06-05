@@ -40,6 +40,7 @@
 @property (nonatomic, assign) BOOL funcToSwizzleViewPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleViewCalledOriginalPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleReturnViewPassed;
+@property (nonatomic, assign) BOOL funcToSwizzleParamNilPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleReturnIntPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleWithBlockPassed;
 @property (nonatomic, assign) BOOL funcToSwizzle_withUnderLine_Passed;
