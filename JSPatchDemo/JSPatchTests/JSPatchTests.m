@@ -112,12 +112,7 @@
     XCTAssertNotEqualObjects(m1Return, [objB m1]);
     XCTAssertEqualObjects(@"JP_01ObjB_m1", [objB m1]);
     XCTAssertEqualObjects(m2Return,[objB m2]);
-    
-    /*expect([objB m1]).notTo.equal(m1Return);
-    expect([objB m1]).to.equal(@"JP_01ObjB_m1");
-    expect([objB m2]).to.equal(m2Return);*/
-    
-    
+     
     id objA = [[InheritTest02ObjectA alloc] init];
     objB = [[InheritTest02ObjectB alloc] init];
     id objC = [[InheritTest02ObjectC alloc] init];
@@ -143,22 +138,6 @@
     
     XCTAssertNotEqualObjects(Cm2Return,[objC m2]);
     XCTAssertEqualObjects(@"JP_02ObjC_m2",[objC m2]);
-
-    /*
-    expect([objA m1]).to.equal(m1Return);
-    expect([objA m2]).to.equal(m2Return);
-    
-    expect([objB m1]).notTo.equal(Bm1Return);
-    expect([objB m1]).to.equal(@"JP_02ObjB_m1");
-    expect([objB m2]).to.equal(Bm2Return);
-    
-    expect([objC m1]).notTo.equal(Cm1Return);
-    expect([objC m1]).to.equal(@"JP_02ObjB_m1");
-    
-    expect([objC m2]).notTo.equal(Cm2Return);
-    expect([objC m2]).to.equal(@"JP_02ObjC_m2");
-    */
-    
     
     objA = [[InheritTest03ObjectA alloc] init];
     objB = [[InheritTest03ObjectB alloc] init];
@@ -184,21 +163,6 @@
     
     XCTAssertNotEqualObjects(Cm2Return,[objC m2]);
     XCTAssertEqualObjects(@"JP_03ObjC_m2",[objC m2]);
-    
-    /*
-    expect([objA m1]).to.equal(m1Return);
-    expect([objA m2]).to.equal(m2Return);
-    
-    expect([objB m1]).notTo.equal(Bm1Return);
-    expect([objB m1]).to.equal(@"JP_03ObjB_m1");
-    
-    expect([objB m2]).to.equal(Bm2Return);
-    
-    expect([objC m1]).to.equal(Cm1Return);
-    
-    expect([objC m2]).notTo.equal(Cm2Return);
-    expect([objC m2]).to.equal(@"JP_03ObjC_m2");
-     */
 }
 
 @end
