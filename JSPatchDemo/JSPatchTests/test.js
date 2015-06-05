@@ -130,6 +130,9 @@ var global = this;
   var arr = obj.funcReturnArrayControllerViewString()
   obj.setFuncReturnArrayControllerViewStringPassed(arr[0] && arr[1] && arr[2] == "stringFromOC")
 
+  var dict = obj.funcReturnDict({name: "JSPatch"})
+  obj.setFuncReturnDictPassed(dict.name == "JSPatch")
+ 
   //////property
   var view = UIView.alloc().init();
   view.setFrame({

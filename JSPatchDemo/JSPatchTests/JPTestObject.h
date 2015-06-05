@@ -27,6 +27,7 @@
 @property (nonatomic, assign) BOOL funcReturnDictStringIntPassed;
 @property (nonatomic, assign) BOOL funcReturnDictStringViewPassed;
 @property (nonatomic, assign) BOOL funcReturnArrayControllerViewStringPassed;
+@property (nonatomic, assign) BOOL funcReturnDictPassed;
 
 @property (nonatomic, assign) BOOL funcReturnBlockPassed;
 @property (nonatomic, assign) BOOL funcReturnObjectBlockPassed;

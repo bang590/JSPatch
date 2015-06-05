@@ -64,6 +64,10 @@
     self.funcWithDictAndDoublePassed = dictPass && doublePass;
 }
 
+- (NSDictionary *)funcReturnDict:(NSDictionary *)dict
+{
+    return dict;
+}
 - (NSDictionary *)funcReturnDictStringInt
 {
     return @{@"str": @"stringFromOC", @"num": @(42)};

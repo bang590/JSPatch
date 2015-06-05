@@ -66,26 +66,29 @@ var global = this
   }
 
   var _formatJSToOC = function(obj) {
-     if (obj instanceof Object && obj.__obj) {
-       return obj.__obj
-     }
-     if (obj instanceof Array) {
-        var ret = []
-        obj.forEach(function(o){
-          ret.push(_formatJSToOC(o))
-        })
-        return ret
-     }
-     if (obj instanceof Object) {
-        var ret = {}
-        for (var key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            ret[key] = _formatJSToOC(obj[key])
-          }
+    if (obj instanceof Object && obj.__obj) {
+     return obj.__obj
+    }
+    if (obj instanceof Array) {
+      var ret = []
+      obj.forEach(function(o){
+        ret.push(_formatJSToOC(o))
+      })
+      return ret
+    }
+    if (obj instanceof Function) {
+      return obj
+    }
+    if (obj instanceof Object) {
+      var ret = {}
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          ret[key] = _formatJSToOC(obj[key])
         }
-        return ret
-     }
-     return obj
+      }
+      return ret
+    }
+    return obj
   }
   
   var _methodFunc = function(instance, clsName, methodName, args, isSuper) {

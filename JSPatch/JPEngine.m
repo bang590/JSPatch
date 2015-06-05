@@ -779,6 +779,7 @@ static id formatOCObj(id obj) {
     if ([obj isKindOfClass:[NSDictionary class]]) {
         NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
         for (NSString *key in [obj allKeys]) {
+            if ([key isEqualToString:@"__c"]) continue;
             [newDict setObject:formatOCObj(obj[key]) forKey:key];
         }
         return newDict;
