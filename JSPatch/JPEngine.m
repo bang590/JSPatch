@@ -395,9 +395,10 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     IMP msgForwardIMP = _objc_msgForward;
     #if !defined(__arm64__)
         if (typeDescription[0] == '{') {
-            NSUInteger valueSize = 0;
-            NSGetSizeAndAlignment(typeDescription, &valueSize, NULL);
-            if (!(valueSize == 1 || valueSize == 2 || valueSize == 4 || valueSize == 8)) {
+            //In some cases that returns struct, we should use the '_stret' API:
+            //http://sealiesoftware.com/blog/archive/2008/10/30/objc_explain_objc_msgSend_stret.html
+            //NSMethodSignature knows the detail but has no API to return, we can only get the info from debugDescription.
+            if ([methodSignature.debugDescription rangeOfString:@"is special struct return? YES"].location != NSNotFound) {
                 msgForwardIMP = (IMP)_objc_msgForward_stret;
             }
         }
