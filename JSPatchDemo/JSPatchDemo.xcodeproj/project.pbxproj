@@ -23,6 +23,7 @@
 		E1B89EA81B218A35000645C2 /* InheritTest02Patch.js in Resources */ = {isa = PBXBuildFile; fileRef = E1B89EA51B218A35000645C2 /* InheritTest02Patch.js */; };
 		E1B89EA91B218A35000645C2 /* InheritTest03Patch.js in Resources */ = {isa = PBXBuildFile; fileRef = E1B89EA61B218A35000645C2 /* InheritTest03Patch.js */; };
 		E1B89EAC1B218AB6000645C2 /* PatchLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = E1B89EAB1B218AB6000645C2 /* PatchLoader.m */; };
+		E1B89EA01B203482000645C2 /* MultithreadTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = E1B89E9F1B203482000645C2 /* MultithreadTestObject.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,8 @@
 		E1B89EA61B218A35000645C2 /* InheritTest03Patch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = InheritTest03Patch.js; sourceTree = "<group>"; };
 		E1B89EAA1B218AB6000645C2 /* PatchLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PatchLoader.h; sourceTree = "<group>"; };
 		E1B89EAB1B218AB6000645C2 /* PatchLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PatchLoader.m; sourceTree = "<group>"; };
+		E1B89E9E1B203482000645C2 /* MultithreadTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultithreadTestObject.h; sourceTree = "<group>"; };
+		E1B89E9F1B203482000645C2 /* MultithreadTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultithreadTestObject.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +94,8 @@
 				2D5D891D1B0B8BFF009382EC /* JPViewController.h */,
 				2D5D891E1B0B8BFF009382EC /* JPViewController.m */,
 				2D6D13001B0B8CFF0095A435 /* demo.js */,
+				E1B89E9E1B203482000645C2 /* MultithreadTestObject.h */,
+				E1B89E9F1B203482000645C2 /* MultithreadTestObject.m */,
 			);
 			path = JSPatchDemo;
 			sourceTree = "<group>";
@@ -268,6 +273,7 @@
 			files = (
 				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
 				2D5D892D1B0B8C3B009382EC /* JPEngine.m in Sources */,
+				E1B89EA01B203482000645C2 /* MultithreadTestObject.m in Sources */,
 				2D5D89251B0B8BFF009382EC /* JPViewController.m in Sources */,
 				2D6D12FF1B0B8CF20095A435 /* main.m in Sources */,
 			);
