@@ -330,7 +330,8 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
     
     _TMPInvocationArguments = nil;
 }
-
+/**
+ */
 static void overrideMethod(Class cls, NSString *selectorName, JSValue *function, BOOL isClassMethod)
 {
     SEL selector = NSSelectorFromString(selectorName);
@@ -341,9 +342,11 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     if (isClassMethod) {
         cls = objc_getMetaClass(object_getClassName(cls));
     }
-    
+    //IMP 函数指针
     IMP originalImp = class_respondsToSelector(cls, selector) ? class_getMethodImplementation(cls, selector) : NULL;
-    
+/***
+ * 处理编译器警告
+ */
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
     class_replaceMethod(cls, selector, class_getMethodImplementation(cls, @selector(__JPNONImplementSelector)), typeDescription);
@@ -424,10 +427,10 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 }
 
 static id callSelector(NSString *className, NSString *selectorName, NSArray *arguments, id instance, BOOL isSuper) {
-    Class cls = className ? NSClassFromString(className) : [instance class];
-    SEL selector = NSSelectorFromString(selectorName);
+    Class cls = className ? NSClassFromString(className) : [instance class];//将字符串转化为类名
+    SEL selector = NSSelectorFromString(selectorName);//将字符串的方法名转化为SEL类型
     
-    if (isSuper) {
+    if (isSuper) {//判断是否有父类
         NSString *superSelectorName = [NSString stringWithFormat:@"SUPER_%@", selectorName];
         SEL superSelector = NSSelectorFromString(superSelectorName);
         
@@ -438,7 +441,7 @@ static id callSelector(NSString *className, NSString *selectorName, NSArray *arg
         class_addMethod(cls, superSelector, superIMP, method_getTypeEncoding(superMethod));
         selector = superSelector;
     }
-    
+    //反射
     NSInvocation *invocation;
     NSMethodSignature *methodSignature;
     if (instance) {
@@ -455,7 +458,7 @@ static id callSelector(NSString *className, NSString *selectorName, NSArray *arg
     [invocation setSelector:selector];
     
     NSUInteger numberOfArguments = methodSignature.numberOfArguments;
-    for (NSUInteger i = 2; i < numberOfArguments; i++) {
+    for (NSUInteger i = 2; i < numberOfArguments; i++) {//按传入参数
         const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];
         id valObj = arguments[i-2];
         switch (argumentType[0]) {
@@ -671,6 +674,9 @@ static NSRange dictToRange(NSDictionary *dict)
     return NSMakeRange([dict[@"location"] intValue], [dict[@"length"] intValue]);
 }
 
+/** 
+ * 去除特殊字符
+ */
 static NSString *trim(NSString *string)
 {
     return [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];

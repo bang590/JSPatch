@@ -203,6 +203,7 @@
 					};
 					DE94AE231AF246C000E461D4 = {
 						CreatedOnToolsVersion = 6.2;
+						TestTargetID = DE94AE0A1AF246BF00E461D4;
 					};
 				};
 			};
@@ -387,6 +388,7 @@
 		DE94AE321AF246C000E461D4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -398,12 +400,14 @@
 				INFOPLIST_FILE = JSPatchTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = JSPatchDemoTests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JSPatchDemo.app/JSPatchDemo";
 			};
 			name = Debug;
 		};
 		DE94AE331AF246C000E461D4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -411,6 +415,7 @@
 				INFOPLIST_FILE = JSPatchTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = JSPatchDemoTests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JSPatchDemo.app/JSPatchDemo";
 			};
 			name = Release;
 		};

@@ -33,6 +33,7 @@ defineClass('JPTableViewController : UITableViewController', {
     }
     cell.textLabel().setText(self.dataSource()[indexPath.row()])
     cell.detailTextLabel().setText('abc')
+    cell
     return cell
   },
   tableView_heightForRowAtIndexPath: function(tableView, indexPath) {
