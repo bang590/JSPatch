@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface MultithreadTestObject : NSObject
+@interface JPMultithreadTestObject : NSObject
 {
     NSMutableArray *_values;
 }

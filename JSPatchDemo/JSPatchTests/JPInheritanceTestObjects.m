@@ -8,7 +8,7 @@
 
 #import "JPInheritanceTestObjects.h"
 
-@implementation InheritTest01ObjectA
+@implementation JPInheritTest01ObjectA
 
 - (NSString*)m1
 {
@@ -22,7 +22,7 @@
 
 @end
 
-@implementation InheritTest01ObjectB
+@implementation JPInheritTest01ObjectB
 
 - (NSString*)m1
 {
@@ -32,7 +32,7 @@
 @end
 
 
-@implementation InheritTest02ObjectA
+@implementation JPInheritTest02ObjectA
 
 - (NSString*)m1
 {
@@ -46,7 +46,7 @@
 
 @end
 
-@implementation InheritTest02ObjectB
+@implementation JPInheritTest02ObjectB
 
 - (NSString*)m1
 {
@@ -56,7 +56,7 @@
 
 @end
 
-@implementation InheritTest02ObjectC
+@implementation JPInheritTest02ObjectC
 
 - (NSString*)m2
 {
@@ -65,7 +65,7 @@
 
 @end
 
-@implementation InheritTest03ObjectA
+@implementation JPInheritTest03ObjectA
 
 - (NSString*)m1
 {
@@ -79,7 +79,7 @@
 
 @end
 
-@implementation InheritTest03ObjectB
+@implementation JPInheritTest03ObjectB
 
 - (NSString*)m1
 {
@@ -89,7 +89,7 @@
 
 @end
 
-@implementation InheritTest03ObjectC
+@implementation JPInheritTest03ObjectC
 
 - (NSString*)m2
 {
