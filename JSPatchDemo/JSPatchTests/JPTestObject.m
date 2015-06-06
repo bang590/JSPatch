@@ -178,7 +178,7 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     NSRange range = [self funcToSwizzleReturnRange:NSMakeRange(0, 42)];
     self.funcToSwizzleReturnRangePassed = range.length == 42;
     
-    
+
 }
 - (void)funcToSwizzleWithString:(NSString *)str view:(UIView *)view int:(NSInteger)i
 {
