@@ -41,13 +41,3 @@ defineClass('JPTableViewController : UITableViewController', {
      alertView.show()
   }
 })
-
-defineClass('MultithreadTestObject', {
-            addValueJS: function(num) {
-            self.addValue(num);
-            },
-            addValue: function(num) {
-            self.ORIGaddValue(num);
-            }
-
-            });

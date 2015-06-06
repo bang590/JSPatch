@@ -15,13 +15,13 @@
 
 @interface PatchLoader : NSObject
 
-+ (void)LoadPatch:(NSString*)patchName;
++ (void)loadPatch:(NSString*)patchName;
 
 @end
 
 @implementation PatchLoader
 
-+ (void)LoadPatch:(NSString *)patchName
++ (void)loadPatch:(NSString *)patchName
 {
     NSString *jsPath = [[NSBundle bundleForClass:[self class]] pathForResource:patchName ofType:@"js"];
     NSError *error;
@@ -148,7 +148,7 @@ void thread(void* context);
     NSString* t3Cm1Return = [t3objC m1];
     NSString* t3Cm2Return = [t3objC m2];
     
-    [PatchLoader LoadPatch:@"InheritTestPatch"];
+    [PatchLoader loadPatch:@"InheritTest"];
     
     /*Test 1*/
     XCTAssertNotEqualObjects(t1m1Return, [t1objB m1]);
@@ -188,10 +188,13 @@ void thread(void* context);
 dispatch_semaphore_t sem;
 int finishcount = 0;
 bool success = false;
-#define LOOPCOUNT 1000
+#define LOOPCOUNT 200
 
-- (void)testSerialQueue
+- (void)testDispatchQueue
 {
+    [PatchLoader loadPatch:@"multithreadTest"];
+    
+    success = false;
     NSMutableArray *objs = [[NSMutableArray alloc] init];
     for (int i = 0; i < LOOPCOUNT; i++) {
         MultithreadTestObject *obj = [[MultithreadTestObject alloc] init];
@@ -199,40 +202,29 @@ bool success = false;
         [objs addObject:obj];
     }
     
-    dispatch_queue_t q = dispatch_queue_create("my queue", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t q1 = dispatch_queue_create("serial queue", DISPATCH_QUEUE_SERIAL);
     for (int i = 0; i < LOOPCOUNT; i++) {
-        dispatch_async_f(q, (__bridge void*)[objs objectAtIndex:i], thread);
+        dispatch_async_f(q1, (__bridge void*)[objs objectAtIndex:i], thread);
     }
     
     sem = dispatch_semaphore_create(0);
     dispatch_semaphore_wait(sem,DISPATCH_TIME_FOREVER);
     
     XCTAssertTrue(success,@"serial queue test failed");
-}
-
-- (void)testConcurrentQueue
-{
-    NSMutableArray *objs = [[NSMutableArray alloc] init];
-    for (int i = 0; i < LOOPCOUNT; i++) {
-        MultithreadTestObject *obj = [[MultithreadTestObject alloc] init];
-        obj.objectId = i;
-        [objs addObject:obj];
-    }
     
-    dispatch_queue_t q = dispatch_queue_create("my queue", DISPATCH_QUEUE_CONCURRENT);
+    success = false;
+    dispatch_queue_t q2 = dispatch_queue_create("concurrent queue", DISPATCH_QUEUE_CONCURRENT);
     for (int i = 0; i < LOOPCOUNT; i++) {
-        dispatch_async_f(q, (__bridge void*)[objs objectAtIndex:i], thread);
+        dispatch_async_f(q2, (__bridge void*)[objs objectAtIndex:i], thread);
     }
     
     sem = dispatch_semaphore_create(0);
     dispatch_semaphore_wait(sem,DISPATCH_TIME_FOREVER);
-
+    
     XCTAssertTrue(success,@"concurrent queue test failed");
 }
 
 @end
-
-
 
 void thread(void* context)
 {
