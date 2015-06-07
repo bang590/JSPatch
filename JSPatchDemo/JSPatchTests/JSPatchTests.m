@@ -85,7 +85,8 @@
     
     XCTAssert(obj.propertySetFramePassed, @"propertySetFramePassed");
     XCTAssert(obj.propertySetViewPassed, @"propertySetViewPassed");
-    
+    XCTAssert(obj.propertySetInheritedPropertyPassed, @"propertySetInheritedPropertyPassed");
+
     XCTAssert(obj.newTestObjectReturnViewPassed, @"newTestObjectReturnViewPassed");
     XCTAssert(obj.newTestObjectReturnBoolPassed, @"newTestObjectReturnBoolPassed");
     XCTAssert(obj.newTestObjectCustomFuncPassed, @"newTestObjectCustomFuncPassed");

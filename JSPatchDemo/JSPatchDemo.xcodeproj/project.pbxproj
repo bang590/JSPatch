@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1B80EC0D1B23DE9800C4614A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1B80EC0C1B23DE9800C4614A /* LaunchScreen.xib */; };
 		2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D89181B0B8BFF009382EC /* AppDelegate.m */; };
 		2D5D89251B0B8BFF009382EC /* JPViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D891E1B0B8BFF009382EC /* JPViewController.m */; };
 		2D5D892D1B0B8C3B009382EC /* JPEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D5D892B1B0B8C3B009382EC /* JPEngine.m */; };
@@ -31,6 +32,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1B80EC0C1B23DE9800C4614A /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		2D5D89171B0B8BFF009382EC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2D5D89181B0B8BFF009382EC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		2D5D891D1B0B8BFF009382EC /* JPViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPViewController.h; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 				2D6D12FA1B0B8CF20095A435 /* Images.xcassets */,
 				2D6D12FB1B0B8CF20095A435 /* Info.plist */,
 				2D6D12FC1B0B8CF20095A435 /* main.m */,
+				1B80EC0C1B23DE9800C4614A /* LaunchScreen.xib */,
 			);
 			path = "Supporting Files";
 			sourceTree = "<group>";
@@ -222,6 +225,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1B80EC0D1B23DE9800C4614A /* LaunchScreen.xib in Resources */,
 				2DD801281AF336BC005580A8 /* test.js in Resources */,
 				2D5D892E1B0B8C3B009382EC /* JSPatch.js in Resources */,
 				2D6D12FD1B0B8CF20095A435 /* Images.xcassets in Resources */,

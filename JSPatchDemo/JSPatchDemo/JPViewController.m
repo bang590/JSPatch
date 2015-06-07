@@ -13,6 +13,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor whiteColor];
     UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 100, [UIScreen mainScreen].bounds.size.width, 50)];
     [btn setTitle:@"Push JPTableViewController" forState:UIControlStateNormal];
     [btn addTarget:self action:@selector(handleBtn:) forControlEvents:UIControlEventTouchUpInside];

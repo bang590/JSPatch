@@ -134,10 +134,21 @@ static const void *propKey(NSString *propName) {
     return (__bridge const void *)(key);
 }
 static id getPropIMP(id slf, SEL selector, NSString *propName) {
-    return objc_getAssociatedObject(slf, propKey(propName));
+    SEL propSelector = NSSelectorFromString(propName);
+    if ([slf respondsToSelector:propSelector]) {
+        return [slf performSelector:propSelector];
+    } else {
+        return objc_getAssociatedObject(slf, propKey(propName));
+    }
 }
 static void setPropIMP(id slf, SEL selector, id val, NSString *propName) {
-    objc_setAssociatedObject(slf, propKey(propName), val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    NSString *propSelectorString = [[[[NSMutableString alloc] initWithString:@"set"] stringByAppendingString:[propName capitalizedString]] stringByAppendingString:@":"];
+    SEL propSelector = NSSelectorFromString(propSelectorString);
+    if ([slf respondsToSelector:propSelector]) {
+        [slf performSelector:propSelector withObject:val];
+    } else {
+        objc_setAssociatedObject(slf, propKey(propName), val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
 }
 
 static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods)

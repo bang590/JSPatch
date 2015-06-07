@@ -56,6 +56,7 @@
 @property (nonatomic, strong) UIView *testView;
 @property (nonatomic, assign) BOOL propertySetFramePassed;
 @property (nonatomic, assign) BOOL propertySetViewPassed;
+@property (nonatomic, assign) BOOL propertySetInheritedPropertyPassed;
 
 @property (nonatomic, assign) BOOL newTestObjectReturnViewPassed;
 @property (nonatomic, assign) BOOL newTestObjectReturnBoolPassed;

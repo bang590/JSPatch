@@ -6,6 +6,11 @@ defineClass('JPViewController', {
 })
 
 defineClass('JPTableViewController : UITableViewController', {
+  init: function() {
+    self = self.super.init()
+    self.setProp_forKey("View controller from JS", 'title')
+    return self
+  },
   dataSource: function() {
     var data = self.getProp('data')
     if (data) return data;

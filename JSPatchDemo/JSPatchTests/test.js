@@ -126,6 +126,8 @@ var global = this;
 
   obj.testView = view 
   obj.setPropertySetViewPassed(obj.testView.frame().x == 10)
+  obj.testView.setBackgroundColor(require("UIColor").redColor())
+  obj.setPropertySetInheritedPropertyPassed(obj.testView.backgroundColor().isEqual(require("UIColor").redColor()))
 
   /////Block
   var blk = obj.funcReturnBlock();
