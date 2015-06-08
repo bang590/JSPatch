@@ -25,12 +25,14 @@
 
 - (NSString*)m1;
 - (NSString*)m2;
+- (NSString*)m3;
 
 @end
 
 @interface InheritTest02ObjectB : InheritTest02ObjectA
 
 - (NSString*)m1;
+- (NSString*)m3;
 
 @end
 
