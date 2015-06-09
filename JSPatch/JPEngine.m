@@ -32,6 +32,11 @@ static NSRegularExpression* regex;
 
 + (JSValue *)evaluateScript:(NSString *)script
 {
+    if (!script) {
+        NSAssert(NO, @"script is nil");
+        return nil;
+    }
+    
     if (!regex) {
         regex = [NSRegularExpression regularExpressionWithPattern:regexStr options:0 error:nil];
     }
