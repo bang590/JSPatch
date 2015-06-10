@@ -35,7 +35,8 @@ static NSRegularExpression* regex;
     if (!regex) {
         regex = [NSRegularExpression regularExpressionWithPattern:regexStr options:0 error:nil];
     }
-    NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:replaceStr]];
+    NSRange range = NSMakeRange(0, script.length);
+    NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [regex stringByReplacingMatchesInString:script options:0 range:range withTemplate:replaceStr]];
     return [_context evaluateScript:formatedScript];
 }
 
@@ -152,6 +153,9 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
     Class cls = NSClassFromString(className);
     if (!cls) {
         Class superCls = NSClassFromString(superClassName);
+        if(!superCls){
+            return @{@"cls": @""};
+        }
         cls = objc_allocateClassPair(superCls, className.UTF8String, 0);
         objc_registerClassPair(cls);
     }
