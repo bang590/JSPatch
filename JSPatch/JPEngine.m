@@ -583,7 +583,10 @@ static id callSelector(NSString *className, NSString *selectorName, NSArray *arg
                 JP_CALL_ARG_CASE('B', BOOL, boolValue)
                 
             case ':': {
-                SEL value = NSSelectorFromString(valObj);
+                SEL value = nil;
+                if (![valObj isEqual:[NSNull null]]) {
+                    value = NSSelectorFromString(valObj);
+                }
                 [invocation setArgument:&value atIndex:i];
                 break;
             }
@@ -605,9 +608,17 @@ static id callSelector(NSString *className, NSString *selectorName, NSArray *arg
             default: {
                 static const char *blockType = @encode(typeof(^{}));
                 if (!strcmp(argumentType, blockType)) {
+                    if ([valObj isEqual:[NSNull null]]) {
+                        valObj = nil;
+                        [invocation setArgument: &valObj atIndex:i];
+                    }else{
                     __autoreleasing id cb = genCallbackBlock(valObj);
                     [invocation setArgument:&cb atIndex:i];
+                    }
                 } else {
+                    if ([valObj isEqual:[NSNull null]]) {
+                        valObj = nil;
+                    }
                     [invocation setArgument:&valObj atIndex:i];
                 }
             }
