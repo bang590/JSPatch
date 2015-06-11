@@ -84,6 +84,8 @@ var global = this;
 
   obj.funcWithInt(42);
   obj.funcWithDict_andDouble({test: "test"}, 4.2)
+  obj.funcWithNil(null)
+  obj.funcWithNull(nsnull)
 
   ///////UIView/NSObject
   var view = obj.funcReturnViewWithFrame({

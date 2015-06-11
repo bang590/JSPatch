@@ -50,6 +50,8 @@
     XCTAssert(obj.funcReturnStringPassed, @"funcReturnStringPassed");
     
     XCTAssert(obj.funcWithIntPassed, @"funcWithIntPassed");
+    XCTAssert(obj.funcWithNilPassed, @"funcWithNilPassed");
+    XCTAssert(obj.funcWithNullPassed, @"funcWithNullPassed");
     
     XCTAssert(obj.funcWithDictAndDoublePassed, @"funcWithDictAndDoublePassed");
     

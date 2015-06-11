@@ -55,6 +55,16 @@
     self.funcWithIntPassed = intValue == 42;
 }
 
+- (void)funcWithNil:(NSObject *)nilObj
+{
+    self.funcWithNilPassed = nilObj == nil;
+}
+
+- (void)funcWithNull:(NSNull *)nullObj
+{
+    self.funcWithNullPassed = [nullObj isKindOfClass:[NSNull class]];
+}
+
 #pragma mark - NSDictionary / NSArray
 
 - (void)funcWithDict:(NSDictionary *)dict andDouble:(double)doubleValue

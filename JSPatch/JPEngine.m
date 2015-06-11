@@ -10,20 +10,16 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 
-@interface JPEngine ()
-@property (nonatomic, strong) NSMutableDictionary *cacheArguments;
-@property (nonatomic, assign) NSInteger cacheArgumentsIdx;
-@end
-
 @implementation JPEngine
 
 static JSContext *_context;
 
 #pragma mark - APIS
 
-static NSString *regexStr = @"\\.\\s*(\\w+)\\s*\\(";
-static NSString *replaceStr = @".__c(\"$1\")(";
-static NSRegularExpression* regex;
+static NSString *_regexStr = @"\\.\\s*(\\w+)\\s*\\(";
+static NSString *_replaceStr = @".__c(\"$1\")(";
+static NSRegularExpression* _regex;
+static NSObject *_nullObj;
 
 + (JSContext *)context
 {
@@ -37,10 +33,10 @@ static NSRegularExpression* regex;
         return nil;
     }
     
-    if (!regex) {
-        regex = [NSRegularExpression regularExpressionWithPattern:regexStr options:0 error:nil];
+    if (!_regex) {
+        _regex = [NSRegularExpression regularExpressionWithPattern:_regexStr options:0 error:nil];
     }
-    NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:replaceStr]];
+    NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [_regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:_replaceStr]];
     return [_context evaluateScript:formatedScript];
 }
 
@@ -70,6 +66,8 @@ static NSRegularExpression* regex;
             return nil;
         }
     };
+    _nullObj = [[NSObject alloc] init];
+    context[@"_OC_null"] = toJSObj(_nullObj);
     
     __weak JSContext *weakCtx = context;
     context[@"dispatch_after"] = ^(double time, JSValue *func) {
@@ -583,7 +581,10 @@ static id callSelector(NSString *className, NSString *selectorName, NSArray *arg
                 JP_CALL_ARG_CASE('B', BOOL, boolValue)
                 
             case ':': {
-                SEL value = NSSelectorFromString(valObj);
+                SEL value = nil;
+                if (![valObj isEqual:[NSNull null]]) {
+                    value = NSSelectorFromString(valObj);
+                }
                 [invocation setArgument:&value atIndex:i];
                 break;
             }
@@ -603,6 +604,16 @@ static id callSelector(NSString *className, NSString *selectorName, NSArray *arg
                 break;
             }
             default: {
+                if (valObj == _nullObj) {
+                    valObj = [NSNull null];
+                    [invocation setArgument:&valObj atIndex:i];
+                    break;
+                }
+                if ([valObj isEqual:[NSNull null]]) {
+                    valObj = nil;
+                    [invocation setArgument:&valObj atIndex:i];
+                    break;
+                }
                 static const char *blockType = @encode(typeof(^{}));
                 if (!strcmp(argumentType, blockType)) {
                     __autoreleasing id cb = genCallbackBlock(valObj);
