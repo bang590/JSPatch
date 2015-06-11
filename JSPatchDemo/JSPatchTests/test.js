@@ -39,8 +39,21 @@ var global = this;
     },
     funcToSwizzleReturnRange: function(range) {
       return range;
+    },
+    funcToSwizzleTestGCD: function(completeBlock) {
+      var execCount = 0
+      var dispatchExecBlock = function() {
+        console.log(execCount)
+        if (++execCount >= 4) {
+          self.setFuncToSwizzleTestGCDPassed(1)
+          completeBlock()
+        }
+      }
+      dispatch_async_main(dispatchExecBlock);
+      dispatch_async_global_queue(dispatchExecBlock);
+      dispatch_sync_main(dispatchExecBlock);
+      dispatch_after(1, dispatchExecBlock);
     }
-    
   },
   {
     classFuncToSwizzle_int: function(o, num) {

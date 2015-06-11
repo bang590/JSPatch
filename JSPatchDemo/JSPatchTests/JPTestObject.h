@@ -49,6 +49,7 @@
 @property (nonatomic, assign) BOOL funcToSwizzleReturnPointPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleReturnSizePassed;
 @property (nonatomic, assign) BOOL funcToSwizzleReturnRangePassed;
+@property (nonatomic, assign) BOOL funcToSwizzleTestGCDPassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzlePassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnObjPassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnObjCalledOriginalPassed;
@@ -71,7 +72,7 @@
 @property (nonatomic, assign) BOOL overrideParentMethodPassed;
 
 - (NSString*)funcOverrideParentMethod;
-
+- (void)funcToSwizzleTestGCD:(void(^)())block;
 @end
 
 

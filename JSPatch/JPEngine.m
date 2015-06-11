@@ -71,34 +71,41 @@ static NSRegularExpression* regex;
         }
     };
     
-    __weak JSContext *weakCtx = nil;
+    __weak JSContext *weakCtx = context;
     context[@"dispatch_after"] = ^(double time, JSValue *func) {
         JSValue *currSelf = weakCtx[@"self"];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            JSValue *prevSelf = weakCtx[@"self"];
             weakCtx[@"self"] = currSelf;
             [func callWithArguments:nil];
-            weakCtx[@"self"] = nil;
+            weakCtx[@"self"] = prevSelf;
         });
     };
     context[@"dispatch_async_main"] = ^(JSValue *func) {
         JSValue *currSelf = weakCtx[@"self"];
         dispatch_async(dispatch_get_main_queue(), ^{
+            JSValue *prevSelf = weakCtx[@"self"];
             weakCtx[@"self"] = currSelf;
             [func callWithArguments:nil];
-            weakCtx[@"self"] = nil;
+            weakCtx[@"self"] = prevSelf;
         });
     };
     context[@"dispatch_sync_main"] = ^(JSValue *func) {
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        if ([NSThread currentThread].isMainThread) {
             [func callWithArguments:nil];
-        });
+        } else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [func callWithArguments:nil];
+            });
+        }
     };
     context[@"dispatch_async_global_queue"] = ^(JSValue *func) {
         JSValue *currSelf = weakCtx[@"self"];
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            JSValue *prevSelf = weakCtx[@"self"];
             weakCtx[@"self"] = currSelf;
             [func callWithArguments:nil];
-            weakCtx[@"self"] = nil;
+            weakCtx[@"self"] = prevSelf;
         });
     };
 
