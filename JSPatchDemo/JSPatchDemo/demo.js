@@ -1,8 +1,26 @@
 defineClass('JPViewController', {
+//  viewDidLoad: function() {
+//    self.super.viewDidLoad();
+//    var width = require('UIScreen').mainScreen().bounds().width
+//    var btn = require('UIButton').alloc().initWithFrame({x:0, y:100, width:width, height:50})
+//    btn.setTitle_forState('Push JPTableViewController', 0)
+//    btn.addTarget_action_forControlEvents(self, 'testNilBlock:', 1 << 6)  //Test nil selector
+//    btn.setBackgroundColor(require('UIColor').grayColor())
+//    self.view().addSubview(btn)
+//  },      
+
   handleBtn: function(sender) {
     var tableViewCtrl = JPTableViewController.alloc().init()
     self.navigationController().pushViewController_animated(tableViewCtrl, YES)
-  }
+  },
+
+//  testNilBlock: function(sender) {
+//    var url     = require('NSURL').URLWithString("http://www.baidu.com")
+//    var request = require('NSURLRequest').requestWithURL(url)
+//    var queue   = require('NSOperationQueue').alloc().init()
+//    require('NSURLConnection').sendAsynchronousRequest_queue_completionHandler(request,queue,undefined)
+//
+//  }
 })
 
 defineClass('JPTableViewController : UITableViewController', {
@@ -34,10 +52,10 @@ defineClass('JPTableViewController : UITableViewController', {
     return 60
   },
   tableView_didSelectRowAtIndexPath: function(tableView, indexPath) {
-     var alertView = require('UIAlertView').alloc().init()
-     alertView.setTitle('Alert')
-     alertView.setMessage(self.dataSource()[indexPath.row()])
-     alertView.addButtonWithTitle('OK')
+     var alertView = require('UIAlertView').alloc().initWithTitle_message_delegate_cancelButtonTitle_otherButtonTitles("Alert",self.dataSource()[indexPath.row()],undefined,"OK",undefined);
+//     alertView.setTitle('Alert')
+//     alertView.setMessage(self.dataSource()[indexPath.row()])
+//     alertView.addButtonWithTitle('OK')
      alertView.show()
   }
 })
