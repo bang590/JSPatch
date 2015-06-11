@@ -31,3 +31,5 @@ Pods/
 # Carthage/Checkouts
 
 Carthage/Build
+
+JSPatchDemo/JSPatchTests/JSPatchTests.m
