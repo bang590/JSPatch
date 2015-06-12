@@ -616,17 +616,9 @@ static id callSelector(NSString *className, NSString *selectorName, NSArray *arg
                 }
                 static const char *blockType = @encode(typeof(^{}));
                 if (!strcmp(argumentType, blockType)) {
-                    if ([valObj isEqual:[NSNull null]]) {
-                        valObj = nil;
-                        [invocation setArgument: &valObj atIndex:i];
-                    }else{
                     __autoreleasing id cb = genCallbackBlock(valObj);
                     [invocation setArgument:&cb atIndex:i];
-                    }
                 } else {
-                    if ([valObj isEqual:[NSNull null]]) {
-                        valObj = nil;
-                    }
                     [invocation setArgument:&valObj atIndex:i];
                 }
             }
