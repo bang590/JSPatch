@@ -17,6 +17,9 @@
 @property (nonatomic, assign) BOOL funcWithViewAndReturnViewPassed;
 
 @property (nonatomic, assign) BOOL funcWithIntPassed;
+@property (nonatomic, assign) BOOL funcWithNilPassed;
+@property (nonatomic, assign) BOOL funcWithNullPassed;
+
 @property (nonatomic, assign) BOOL funcWithDictAndDoublePassed;
 
 @property (nonatomic, assign) BOOL funcWithRangeAndReturnRangePassed;
