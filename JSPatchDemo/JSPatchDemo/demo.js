@@ -20,14 +20,14 @@ defineClass('JPTableViewController : UITableViewController', {
     return 1;
   },
   tableView_numberOfRowsInSection: function(tableView, section) {
-    return self.dataSource().length;
+    return self.dataSource().count();
   },
   tableView_cellForRowAtIndexPath: function(tableView, indexPath) {
     var cell = tableView.dequeueReusableCellWithIdentifier("cell") 
     if (!cell) {
       cell = require('UITableViewCell').alloc().initWithStyle_reuseIdentifier(0, "cell")
     }
-    cell.textLabel().setText(self.dataSource()[indexPath.row()])
+    cell.textLabel().setText(self.dataSource().objectAtIndex(indexPath.row()))
     return cell
   },
   tableView_heightForRowAtIndexPath: function(tableView, indexPath) {
@@ -36,7 +36,7 @@ defineClass('JPTableViewController : UITableViewController', {
   tableView_didSelectRowAtIndexPath: function(tableView, indexPath) {
      var alertView = require('UIAlertView').alloc().init()
      alertView.setTitle('Alert')
-     alertView.setMessage(self.dataSource()[indexPath.row()])
+     alertView.setMessage(self.dataSource().objectAtIndex(indexPath.row()))
      alertView.addButtonWithTitle('OK')
      alertView.show()
   }
