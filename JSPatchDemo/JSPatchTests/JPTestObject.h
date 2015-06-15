@@ -17,6 +17,9 @@
 @property (nonatomic, assign) BOOL funcWithViewAndReturnViewPassed;
 
 @property (nonatomic, assign) BOOL funcWithIntPassed;
+@property (nonatomic, assign) BOOL funcWithNilPassed;
+@property (nonatomic, assign) BOOL funcWithNullPassed;
+
 @property (nonatomic, assign) BOOL funcWithDictAndDoublePassed;
 
 @property (nonatomic, assign) BOOL funcWithRangeAndReturnRangePassed;
@@ -49,6 +52,7 @@
 @property (nonatomic, assign) BOOL funcToSwizzleReturnPointPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleReturnSizePassed;
 @property (nonatomic, assign) BOOL funcToSwizzleReturnRangePassed;
+@property (nonatomic, assign) BOOL funcToSwizzleTestGCDPassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzlePassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnObjPassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnObjCalledOriginalPassed;
@@ -67,11 +71,19 @@
 @property (nonatomic, assign) BOOL newTestObjectReturnBoolPassed;
 @property (nonatomic, assign) BOOL newTestObjectCustomFuncPassed;
 
+@property (nonatomic, assign) BOOL mutableArrayPassed;
+@property (nonatomic, assign) BOOL mutableStringPassed;
+@property (nonatomic, assign) BOOL mutableDictionaryPassed;
+
 @property (nonatomic, assign) BOOL consoleLogPassed;
 @property (nonatomic, assign) BOOL overrideParentMethodPassed;
 
 - (NSString*)funcOverrideParentMethod;
+- (void)funcToSwizzleTestGCD:(void(^)())block;
 
+- (NSDictionary *)funcToSwizzleReturnDictionary:(NSDictionary *)dict;
+- (NSArray *)funcToSwizzleReturnArray:(NSArray *)arr;
+- (NSString *)funcToSwizzleReturnString:(NSString *)str;
 @end
 
 

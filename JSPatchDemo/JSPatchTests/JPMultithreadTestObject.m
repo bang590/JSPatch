@@ -8,7 +8,7 @@
 
 #import "JPMultithreadTestObject.h"
 
-@implementation MultithreadTestObject
+@implementation JPMultithreadTestObject
 
 - (instancetype)init {
     self = [super init];

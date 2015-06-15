@@ -1,4 +1,4 @@
-//
+
 //  JPEngine.m
 //  JSPatch
 //
@@ -10,9 +10,21 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 
-@interface JPEngine ()
-@property (nonatomic, strong) NSMutableDictionary *cacheArguments;
-@property (nonatomic, assign) NSInteger cacheArgumentsIdx;
+@interface JPBoxing : NSObject
+@property (nonatomic, strong) id obj;
+@end
+
+@implementation JPBoxing
++ (instancetype)boxObj:(id)obj
+{
+    JPBoxing *boxing = [[JPBoxing alloc] init];
+    boxing.obj = obj;
+    return boxing;
+}
+- (id)unbox
+{
+    return self.obj;
+}
 @end
 
 @implementation JPEngine
@@ -21,9 +33,10 @@ static JSContext *_context;
 
 #pragma mark - APIS
 
-static NSString *regexStr = @"\\.\\s*(\\w+)\\s*\\(";
-static NSString *replaceStr = @".__c(\"$1\")(";
-static NSRegularExpression* regex;
+static NSString *_regexStr = @"\\.\\s*(\\w+)\\s*\\(";
+static NSString *_replaceStr = @".__c(\"$1\")(";
+static NSRegularExpression* _regex;
+static NSObject *_nullObj;
 
 + (JSContext *)context
 {
@@ -32,10 +45,15 @@ static NSRegularExpression* regex;
 
 + (JSValue *)evaluateScript:(NSString *)script
 {
-    if (!regex) {
-        regex = [NSRegularExpression regularExpressionWithPattern:regexStr options:0 error:nil];
+    if (!script) {
+        NSAssert(NO, @"script is nil");
+        return nil;
     }
-    NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:replaceStr]];
+    
+    if (!_regex) {
+        _regex = [NSRegularExpression regularExpressionWithPattern:_regexStr options:0 error:nil];
+    }
+    NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [_regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:_replaceStr]];
     return [_context evaluateScript:formatedScript];
 }
 
@@ -49,10 +67,10 @@ static NSRegularExpression* regex;
         return defineClass(classDeclaration, instanceMethods, classMethods);
     };
     
-    context[@"_OC_callI"] = ^id(id obj, NSString *selectorName, NSArray *arguments, BOOL isSuper) {
+    context[@"_OC_callI"] = ^id(JSValue *obj, NSString *selectorName, JSValue *arguments, BOOL isSuper) {
         return callSelector(nil, selectorName, arguments, obj, isSuper);
     };
-    context[@"_OC_callC"] = ^id(NSString *className, NSString *selectorName, NSArray *arguments) {
+    context[@"_OC_callC"] = ^id(NSString *className, NSString *selectorName, JSValue *arguments) {
         return callSelector(className, selectorName, arguments, nil, NO);
     };
     context[@"_OC_getBlockArguments"] = ^id(NSNumber *idx) {
@@ -65,35 +83,48 @@ static NSRegularExpression* regex;
             return nil;
         }
     };
+    context[@"_OC_formatJSToOC"] = ^id(JSValue *obj) {
+        return formatJSToOC(obj);
+    };
     
-    __weak JSContext *weakCtx = nil;
+    _nullObj = [[NSObject alloc] init];
+    context[@"_OC_null"] = formatOCToJS(_nullObj);
+    
+    __weak JSContext *weakCtx = context;
     context[@"dispatch_after"] = ^(double time, JSValue *func) {
         JSValue *currSelf = weakCtx[@"self"];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            JSValue *prevSelf = weakCtx[@"self"];
             weakCtx[@"self"] = currSelf;
             [func callWithArguments:nil];
-            weakCtx[@"self"] = nil;
+            weakCtx[@"self"] = prevSelf;
         });
     };
     context[@"dispatch_async_main"] = ^(JSValue *func) {
         JSValue *currSelf = weakCtx[@"self"];
         dispatch_async(dispatch_get_main_queue(), ^{
+            JSValue *prevSelf = weakCtx[@"self"];
             weakCtx[@"self"] = currSelf;
             [func callWithArguments:nil];
-            weakCtx[@"self"] = nil;
+            weakCtx[@"self"] = prevSelf;
         });
     };
     context[@"dispatch_sync_main"] = ^(JSValue *func) {
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        if ([NSThread currentThread].isMainThread) {
             [func callWithArguments:nil];
-        });
+        } else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [func callWithArguments:nil];
+            });
+        }
     };
     context[@"dispatch_async_global_queue"] = ^(JSValue *func) {
         JSValue *currSelf = weakCtx[@"self"];
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            JSValue *prevSelf = weakCtx[@"self"];
             weakCtx[@"self"] = currSelf;
             [func callWithArguments:nil];
-            weakCtx[@"self"] = nil;
+            weakCtx[@"self"] = prevSelf;
         });
     };
 
@@ -234,16 +265,20 @@ static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) { 
 #pragma clang diagnostic ignored "-Wunused-variable"
 
 #define JPMETHOD_RET_ID \
-    id obj = [ret toObject]; \
+    id obj = formatJSToOC(ret); \
     if ([obj isKindOfClass:[NSNull class]]) return nil;  \
     return obj;
 
+#define JPMETHOD_RET_STRUCT(_methodName)    \
+    id dict = formatJSToOC(ret);   \
+    return _methodName(dict);
+
 JPMETHOD_IMPLEMENTATION_RET(void, v, nil)
 JPMETHOD_IMPLEMENTATION_RET(id, id, JPMETHOD_RET_ID)
-JPMETHOD_IMPLEMENTATION_RET(CGRect, rect, return dictToRect([ret toObject]))
-JPMETHOD_IMPLEMENTATION_RET(CGSize, size, return dictToSize([ret toObject]))
-JPMETHOD_IMPLEMENTATION_RET(CGPoint, point, return dictToPoint([ret toObject]))
-JPMETHOD_IMPLEMENTATION_RET(NSRange, range, return dictToRange([ret toObject]))
+JPMETHOD_IMPLEMENTATION_RET(CGRect, rect, JPMETHOD_RET_STRUCT(dictToRect))
+JPMETHOD_IMPLEMENTATION_RET(CGSize, size, JPMETHOD_RET_STRUCT(dictToSize))
+JPMETHOD_IMPLEMENTATION_RET(CGPoint, point, JPMETHOD_RET_STRUCT(dictToPoint))
+JPMETHOD_IMPLEMENTATION_RET(NSRange, range, JPMETHOD_RET_STRUCT(dictToRange))
 JPMETHOD_IMPLEMENTATION(char, c, charValue)
 JPMETHOD_IMPLEMENTATION(unsigned char, C, unsignedCharValue)
 JPMETHOD_IMPLEMENTATION(short, s, shortValue)
@@ -272,8 +307,8 @@ JPMETHOD_IMPLEMENTATION(BOOL, B, boolValue)
 static id JPMETHOD_NEW_IMPLEMENTATION_NAME(_argCount) JPMETHOD_NEW_IMPLEMENTATION_ARG_##_argCount { \
     NSString *selectorName = NSStringFromSelector(selector);    \
     NSString *clsName = NSStringFromClass([slf class]); \
-    JSValue *ret = [_JSOverideMethods[clsName][selectorName] callWithArguments:formatOCObj(@[slf _argArr])];    \
-    return [ret toObject]; \
+    JSValue *ret = [_JSOverideMethods[clsName][selectorName] callWithArguments:formatOCToJSList(@[slf _argArr])];    \
+    return formatJSToOC(ret); \
 }
 
 #define COMMA ,
@@ -370,7 +405,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
     }
     
     @synchronized(_context) {
-        _TMPInvocationArguments = formatOCObj(argList);
+        _TMPInvocationArguments = formatOCToJSList(argList);
 
         [invocation setSelector:JPSelector];
         [invocation invoke];
@@ -512,7 +547,17 @@ static void addNewMethod(Class cls, NSString *selectorName, JSValue *function, i
 
 #pragma mark -
 
-static id callSelector(NSString *className, NSString *selectorName, NSArray *arguments, id instance, BOOL isSuper) {
+static id callSelector(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper)
+{
+    if (instance) instance = formatJSToOC(instance);
+    arguments = formatJSToOC(arguments);
+    
+    if (instance && [selectorName isEqualToString:@"toJS"]) {
+        if ([instance isKindOfClass:[NSString class]] || [instance isKindOfClass:[NSDictionary class]] || [instance isKindOfClass:[NSArray class]]) {
+            return unboxOCObjectToJS(instance);
+        }
+    }
+
     Class cls = className ? NSClassFromString(className) : [instance class];
     SEL selector = NSSelectorFromString(selectorName);
     
@@ -571,7 +616,10 @@ static id callSelector(NSString *className, NSString *selectorName, NSArray *arg
                 JP_CALL_ARG_CASE('B', BOOL, boolValue)
                 
             case ':': {
-                SEL value = NSSelectorFromString(valObj);
+                SEL value = nil;
+                if (![valObj isEqual:[NSNull null]]) {
+                    value = NSSelectorFromString(valObj);
+                }
                 [invocation setArgument:&value atIndex:i];
                 break;
             }
@@ -591,6 +639,16 @@ static id callSelector(NSString *className, NSString *selectorName, NSArray *arg
                 break;
             }
             default: {
+                if (valObj == _nullObj) {
+                    valObj = [NSNull null];
+                    [invocation setArgument:&valObj atIndex:i];
+                    break;
+                }
+                if ([valObj isEqual:[NSNull null]]) {
+                    valObj = nil;
+                    [invocation setArgument:&valObj atIndex:i];
+                    break;
+                }
                 static const char *blockType = @encode(typeof(^{}));
                 if (!strcmp(argumentType, blockType)) {
                     __autoreleasing id cb = genCallbackBlock(valObj);
@@ -611,7 +669,7 @@ static id callSelector(NSString *className, NSString *selectorName, NSArray *arg
             [invocation getReturnValue:&tempResultSet];
             returnValue = tempResultSet;
             
-            return formatOCObj(returnValue);
+            return formatOCToJS(returnValue);
             
         } else {
             switch (returnType[0]) {
@@ -672,11 +730,11 @@ static id genCallbackBlock(id valObj)
 #define BLK_DEFINE_3 cb = ^(void *p0, void *p1, void *p2) {
 #define BLK_DEFINE_4 cb = ^(void *p0, void *p1, void *p2, void *p3) {
 
-#define BLK_ADD_OBJ(_paramName) [list addObject:formatOCObj((__bridge id)_paramName)];
-#define BLK_ADD_INT(_paramName) [list addObject:formatOCObj([NSNumber numberWithLongLong:(long long)_paramName])];
+#define BLK_ADD_OBJ(_paramName) [list addObject:formatOCToJS((__bridge id)_paramName)];
+#define BLK_ADD_INT(_paramName) [list addObject:formatOCToJS([NSNumber numberWithLongLong:(long long)_paramName])];
 
 #define BLK_TRAITS_ARG(_idx, _paramName) \
-    if (typeIsObject(trim(argTypes[_idx]))) {  \
+    if (blockTypeIsObject(trim(argTypes[_idx]))) {  \
         BLK_ADD_OBJ(_paramName) \
     } else {  \
         BLK_ADD_INT(_paramName) \
@@ -772,14 +830,75 @@ static NSString *trim(NSString *string)
     return [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
-static id formatOCObj(id obj) {
-    if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSNumber class]]) {
+static BOOL blockTypeIsObject(NSString *typeString)
+{
+    return [typeString rangeOfString:@"*"].location != NSNotFound || [typeString isEqualToString:@"id"];
+}
+
+#pragma mark - Object format
+
+static id formatOCToJSList(NSArray *list)
+{
+    NSMutableArray *arr = [NSMutableArray new];
+    for (id obj in list) {
+        [arr addObject:formatOCToJS(obj)];
+    }
+    return arr;
+}
+
+static id formatOCToJS(id obj)
+{
+    if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSDictionary class]] || [obj isKindOfClass:[NSArray class]]) {
+        return wrapObj([JPBoxing boxObj:obj]);
+    }
+    if ([obj isKindOfClass:[NSNumber class]] || [obj isKindOfClass:NSClassFromString(@"NSBlock")]) {
         return obj;
     }
+    return wrapObj(obj);
+}
+
+static NSDictionary *wrapObj(id obj)
+{
+    if (!obj || [obj isKindOfClass:[NSNull class]]) {
+        return @{@"__isNull": @(YES)};
+    }
+    return @{@"__clsName": NSStringFromClass([obj class]), @"__obj": obj};
+}
+
+static id formatJSToOC(JSValue *jsval)
+{
+    id obj = [jsval toObject];
+    if (!obj) return [NSNull null]; 
+    if ([obj isKindOfClass:[JPBoxing class]]) return [obj unbox];
     if ([obj isKindOfClass:[NSArray class]]) {
         NSMutableArray *newArr = [[NSMutableArray alloc] init];
         for (int i = 0; i < [obj count]; i ++) {
-            [newArr addObject:formatOCObj(obj[i])];
+            [newArr addObject:formatJSToOC(jsval[i])];
+        }
+        return newArr;
+    }
+    if ([obj isKindOfClass:[NSDictionary class]]) {
+        if (obj[@"__obj"]) {
+            id ocObj = [obj objectForKey:@"__obj"];
+            if ([ocObj isKindOfClass:[JPBoxing class]]) return [ocObj unbox];
+            return ocObj;
+        }
+        NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+        for (NSString *key in [obj allKeys]) {
+            if ([key isEqualToString:@"__c"]) continue;
+            [newDict setObject:formatJSToOC(jsval[key]) forKey:key];
+        }
+        return newDict;
+    }
+    return obj;
+}
+
+static id unboxOCObjectToJS(id obj)
+{
+    if ([obj isKindOfClass:[NSArray class]]) {
+        NSMutableArray *newArr = [[NSMutableArray alloc] init];
+        for (int i = 0; i < [obj count]; i ++) {
+            [newArr addObject:unboxOCObjectToJS(obj[i])];
         }
         return newArr;
     }
@@ -787,26 +906,13 @@ static id formatOCObj(id obj) {
         NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
         for (NSString *key in [obj allKeys]) {
             if ([key isEqualToString:@"__c"]) continue;
-            [newDict setObject:formatOCObj(obj[key]) forKey:key];
+            [newDict setObject:unboxOCObjectToJS(obj[key]) forKey:key];
         }
         return newDict;
     }
-    if ([obj isKindOfClass:NSClassFromString(@"NSBlock")]) {
+    if ([obj isKindOfClass:[NSString class]] ||[obj isKindOfClass:[NSNumber class]] || [obj isKindOfClass:NSClassFromString(@"NSBlock")]) {
         return obj;
     }
-    
-    return toJSObj(obj);
-}
-
-static BOOL typeIsObject(NSString *typeString) {
-    return [typeString rangeOfString:@"*"].location != NSNotFound || [typeString isEqualToString:@"id"];
-}
-
-static NSDictionary *toJSObj(id obj)
-{
-    if (!obj || [obj isKindOfClass:[NSNull class]]) {
-        return @{@"__isNull": @(YES)};
-    }
-    return @{@"__isObj": @(YES), @"cls": NSStringFromClass([obj class]), @"obj": obj};
+    return wrapObj(obj);
 }
 @end

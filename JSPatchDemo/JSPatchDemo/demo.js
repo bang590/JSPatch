@@ -20,24 +20,21 @@ defineClass('JPTableViewController : UITableViewController', {
     return 1;
   },
   tableView_numberOfRowsInSection: function(tableView, section) {
-    return self.dataSource().length;
+    return self.dataSource().count();
   },
   tableView_cellForRowAtIndexPath: function(tableView, indexPath) {
     var cell = tableView.dequeueReusableCellWithIdentifier("cell") 
     if (!cell) {
       cell = require('UITableViewCell').alloc().initWithStyle_reuseIdentifier(0, "cell")
     }
-    cell.textLabel().setText(self.dataSource()[indexPath.row()])
+    cell.textLabel().setText(self.dataSource().objectAtIndex(indexPath.row()))
     return cell
   },
   tableView_heightForRowAtIndexPath: function(tableView, indexPath) {
     return 60
   },
   tableView_didSelectRowAtIndexPath: function(tableView, indexPath) {
-     var alertView = require('UIAlertView').alloc().init()
-     alertView.setTitle('Alert')
-     alertView.setMessage(self.dataSource()[indexPath.row()])
-     alertView.addButtonWithTitle('OK')
+     var alertView = require('UIAlertView').alloc().initWithTitle_message_delegate_cancelButtonTitle_otherButtonTitles("Alert",self.dataSource().objectAtIndex(indexPath.row()),undefined,"OK",undefined);
      alertView.show()
   }
 })

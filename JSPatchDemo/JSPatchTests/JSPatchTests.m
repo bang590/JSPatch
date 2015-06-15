@@ -13,31 +13,17 @@
 #import "JPInheritanceTestObjects.h"
 #import "JPMultithreadTestObject.h"
 
-@interface PatchLoader : NSObject
-
-+ (void)loadPatch:(NSString*)patchName;
-
-@end
-
-@implementation PatchLoader
-
-+ (void)loadPatch:(NSString *)patchName
-{
-    NSString *jsPath = [[NSBundle bundleForClass:[self class]] pathForResource:patchName ofType:@"js"];
-    NSError *error;
-    NSString *jsScript = [NSString stringWithContentsOfFile:jsPath encoding:NSUTF8StringEncoding error:&error];
-    [JPEngine evaluateScript:jsScript];
-}
-
-@end
-
-void thread(void* context);
-
 @interface JSPatchTests : XCTestCase
 
 @end
 
 @implementation JSPatchTests
+- (void)loadPatch:(NSString *)patchName
+{
+    NSString *jsPath = [[NSBundle bundleForClass:[self class]] pathForResource:patchName ofType:@"js"];
+    NSString *jsScript = [NSString stringWithContentsOfFile:jsPath encoding:NSUTF8StringEncoding error:nil];
+    [JPEngine evaluateScript:jsScript];
+}
 
 - (void)setUp {
     [super setUp];
@@ -64,6 +50,8 @@ void thread(void* context);
     XCTAssert(obj.funcReturnStringPassed, @"funcReturnStringPassed");
     
     XCTAssert(obj.funcWithIntPassed, @"funcWithIntPassed");
+    XCTAssert(obj.funcWithNilPassed, @"funcWithNilPassed");
+    XCTAssert(obj.funcWithNullPassed, @"funcWithNullPassed");
     
     XCTAssert(obj.funcWithDictAndDoublePassed, @"funcWithDictAndDoublePassed");
     
@@ -100,6 +88,19 @@ void thread(void* context);
     XCTAssert(obj.funcToSwizzleReturnSizePassed, @"funcToSwizzleReturnSizePassed");
     XCTAssert(obj.funcToSwizzleReturnRangePassed, @"funcToSwizzleReturnRangePassed");
     
+    NSDictionary *originalDict = @{@"k": @"v"};
+    NSDictionary *dict = [obj funcToSwizzleReturnDictionary:originalDict];
+    XCTAssert(originalDict == dict, @"funcToSwizzleReturnDictionary");
+    
+    NSArray *originalArr = @[@"js", @"patch"];
+    NSArray *arr = [obj funcToSwizzleReturnArray:originalArr];
+    XCTAssert(originalArr == arr, @"funcToSwizzleReturnArray");
+    
+    NSString *originalStr = @"JSPatch";
+    NSString *str = [obj funcToSwizzleReturnString:originalStr];
+    XCTAssert(originalStr == str, @"funcToSwizzleReturnString");
+    
+    
     XCTAssert(obj.classFuncToSwizzlePassed, @"classFuncToSwizzlePassed");
     XCTAssert(obj.classFuncToSwizzleReturnObjPassed, @"classFuncToSwizzleReturnObjPassed");
     XCTAssert(obj.classFuncToSwizzleReturnObjCalledOriginalPassed, @"classFuncToSwizzleReturnObjCalledOriginalPassed");
@@ -116,21 +117,35 @@ void thread(void* context);
     XCTAssert(obj.newTestObjectReturnViewPassed, @"newTestObjectReturnViewPassed");
     XCTAssert(obj.newTestObjectReturnBoolPassed, @"newTestObjectReturnBoolPassed");
     XCTAssert(obj.newTestObjectCustomFuncPassed, @"newTestObjectCustomFuncPassed");
+
+    XCTAssert(obj.mutableArrayPassed, @"mutableArrayPassed");
+    XCTAssert(obj.mutableDictionaryPassed, @"mutableDictionaryPassed");
+    XCTAssert(obj.mutableStringPassed, @"mutableStringPassed");
     
     XCTAssertEqualObjects(@"overrided",[subObj funcOverrideParentMethod]);
     
+    
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    [obj funcToSwizzleTestGCD:^{
+        XCTAssert(obj.funcToSwizzleTestGCDPassed, @"funcToSwizzleTestGCDPassed");
+        dispatch_semaphore_signal(semaphore);
+    }];
+    
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:[NSDate dateWithTimeIntervalSinceNow:10]];
 }
 
 - (void)testInheritance
 {
     /*get values before patch*/
-    id t1objB = [[InheritTest01ObjectB alloc] init];
+    id t1objB = [[JPInheritTest01ObjectB alloc] init];
     NSString* t1m1Return = [t1objB m1];
     NSString* t1m2Return = [t1objB m2];
     
-    id t2objA = [[InheritTest02ObjectA alloc] init];
-    id t2objB = [[InheritTest02ObjectB alloc] init];
-    id t2objC = [[InheritTest02ObjectC alloc] init];
+    id t2objA = [[JPInheritTest02ObjectA alloc] init];
+    id t2objB = [[JPInheritTest02ObjectB alloc] init];
+    id t2objC = [[JPInheritTest02ObjectC alloc] init];
     NSString* t2m1Return = [t2objA m1];
     NSString* t2m2Return = [t2objA m2];
     NSString* t2Bm1Return = [t2objB m1];
@@ -139,9 +154,9 @@ void thread(void* context);
     NSString* t2Cm2Return = [t2objC m2];
     NSString* t2Cm3Return = [t2objC m3];
     
-    id t3objA = [[InheritTest03ObjectA alloc] init];
-    id t3objB = [[InheritTest03ObjectB alloc] init];
-    id t3objC = [[InheritTest03ObjectC alloc] init];
+    id t3objA = [[JPInheritTest03ObjectA alloc] init];
+    id t3objB = [[JPInheritTest03ObjectB alloc] init];
+    id t3objC = [[JPInheritTest03ObjectC alloc] init];
     NSString* t3m1Return = [t3objA m1];
     NSString* t3m2Return = [t3objA m2];
     NSString* t3Bm1Return = [t3objB m1];
@@ -149,7 +164,7 @@ void thread(void* context);
     NSString* t3Cm1Return = [t3objC m1];
     NSString* t3Cm2Return = [t3objC m2];
     
-    [PatchLoader loadPatch:@"InheritTest"];
+    [self loadPatch:@"inheritTest"];
     
     /*Test 1*/
     XCTAssertNotEqualObjects(t1m1Return, [t1objB m1]);
@@ -188,19 +203,22 @@ void thread(void* context);
     XCTAssertEqualObjects(@"JP_03ObjC_m2",[t3objC m2]);
 }
 
+#pragma mark - multithreadTest
+
 dispatch_semaphore_t sem;
 int finishcount = 0;
 bool success = false;
-#define LOOPCOUNT 200
+#define LOOPCOUNT 100
+void thread(void* context);
 
 - (void)testDispatchQueue
 {
-    [PatchLoader loadPatch:@"multithreadTest"];
+    [self loadPatch:@"multithreadTest"];
     
     success = false;
     NSMutableArray *objs = [[NSMutableArray alloc] init];
     for (int i = 0; i < LOOPCOUNT; i++) {
-        MultithreadTestObject *obj = [[MultithreadTestObject alloc] init];
+        JPMultithreadTestObject *obj = [[JPMultithreadTestObject alloc] init];
         obj.objectId = i;
         [objs addObject:obj];
     }
@@ -231,10 +249,9 @@ bool success = false;
 
 void thread(void* context)
 {
-    MultithreadTestObject *obj = (__bridge MultithreadTestObject*)context;
+    JPMultithreadTestObject *obj = (__bridge JPMultithreadTestObject*)context;
     for (int i = 0; i < LOOPCOUNT; i++) {
         [obj addValue:[NSNumber numberWithInt:obj.objectId]];
-        //NSLog(@"obj %d ok", obj.objectId);
     }
     
     finishcount++;
@@ -245,8 +262,6 @@ void thread(void* context)
         return;
     }
 
-    NSLog(@"obj %d ok, count %d ", obj.objectId, finishcount);
-    
     if (finishcount == LOOPCOUNT) {
         finishcount = 0;
         success = true;
