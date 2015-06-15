@@ -4,6 +4,29 @@ var global = this
   var callbacks = {}
   var localMethods = {}
   var callbackID = 0
+  var JSClass
+
+  var _getJSClass = function(className) {
+    if (!JSClass) {
+      JSClass = function(obj, className, isSuper) {
+          this.__obj = obj
+          this.__isSuper = isSuper
+          this.__clsName = className
+      }
+      JSClass.prototype.__defineGetter__('super', function(){
+        if (!this.__super) {
+          this.__super = new JSClass(this.__obj, this.__clsName, 1)
+        }
+        return this.__super
+      })
+    }
+    return JSClass
+  }
+
+  var _toJSObj = function(meta) {
+    var JSClass = _getJSClass()
+    return new JSClass(meta["obj"], meta["cls"])
+  }
   
   var _methodNameOCToJS = function(name) {
     name = name.replace(/\:/g, '_')
@@ -16,7 +39,7 @@ var global = this
   var _formatOCToJS = function(obj) {
      if (obj === undefined || obj === null) return null
      if (typeof obj == "object") {
-       if (obj.__obj) return obj
+       if (obj.__isObj) return _toJSObj(obj)
        if (obj.__isNull) return null
      }
      if (obj instanceof Array) {
@@ -29,7 +52,7 @@ var global = this
      if (obj instanceof Function) {
         return function() {
           var args = Array.prototype.slice.call(arguments)
-          obj.apply(obj, _OC_formatJSToOC(args))
+          obj.apply(obj, _formatJSToOC(args))
         }
      }
      if (obj instanceof Object) {
@@ -41,8 +64,35 @@ var global = this
      }
      return obj
   }
+
+  var _formatJSToOC = function(obj) {
+    if (obj instanceof Object && obj.__obj) {
+     return obj.__obj
+    }
+    if (obj instanceof Array) {
+      var ret = []
+      obj.forEach(function(o){
+        ret.push(_formatJSToOC(o))
+      })
+      return ret
+    }
+    if (obj instanceof Function) {
+      return obj
+    }
+    if (obj instanceof Object) {
+      var ret = {}
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          ret[key] = _formatJSToOC(obj[key])
+        }
+      }
+      return ret
+    }
+    return obj
+  }
   
   var _methodFunc = function(instance, clsName, methodName, args, isSuper) {
+    var args = _formatJSToOC(args)
     methodName = methodName.replace(/__/g, "-")
     var selectorName = methodName.replace(/_/g, ":").replace(/-/g, "_")
     var marchArr = selectorName.match(/:/g)
@@ -74,11 +124,6 @@ var global = this
       return customMethod.bind(this)
     }
     var self = this
-    if (methodName == 'super') {
-      return function() {
-        return {__obj: self.__obj, __clsName: self.__clsName, __isSuper: 1}
-      }
-    }
     return function(){
       var args = Array.prototype.slice.call(arguments)
       return _methodFunc(self.__obj, self.__clsName, methodName, args, self.__isSuper)
@@ -113,7 +158,7 @@ var global = this
           
           global.self = args[0]
           args.splice(0,1)
-          var ret = originMethod.apply(originMethod, args)
+          var ret = _formatJSToOC(originMethod.apply(originMethod, args))
           global.self = lastSelf
           
           return ret

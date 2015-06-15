@@ -209,21 +209,6 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     return 0;
 }
 
-- (NSDictionary *)funcToSwizzleReturnDictionary:(NSDictionary *)dict
-{
-    return nil;
-}
-
-- (NSArray *)funcToSwizzleReturnArray:(NSArray *)arr
-{
-    return nil;
-}
-
-- (NSString *)funcToSwizzleReturnString:(NSString *)str
-{
-    return nil;
-}
-
 - (void)funcToSwizzleWithBlock:(void(^)(UIView *view, int num))block
 {
 

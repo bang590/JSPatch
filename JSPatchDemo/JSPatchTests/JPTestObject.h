@@ -71,19 +71,11 @@
 @property (nonatomic, assign) BOOL newTestObjectReturnBoolPassed;
 @property (nonatomic, assign) BOOL newTestObjectCustomFuncPassed;
 
-@property (nonatomic, assign) BOOL mutableArrayPassed;
-@property (nonatomic, assign) BOOL mutableStringPassed;
-@property (nonatomic, assign) BOOL mutableDictionaryPassed;
-
 @property (nonatomic, assign) BOOL consoleLogPassed;
 @property (nonatomic, assign) BOOL overrideParentMethodPassed;
 
 - (NSString*)funcOverrideParentMethod;
 - (void)funcToSwizzleTestGCD:(void(^)())block;
-
-- (NSDictionary *)funcToSwizzleReturnDictionary:(NSDictionary *)dict;
-- (NSArray *)funcToSwizzleReturnArray:(NSArray *)arr;
-- (NSString *)funcToSwizzleReturnString:(NSString *)str;
 @end
 
 
