@@ -868,6 +868,7 @@ static NSDictionary *wrapObj(id obj)
 static id formatJSToOC(JSValue *jsval)
 {
     id obj = [jsval toObject];
+    if (!obj) return [NSNull null]; 
     if ([obj isKindOfClass:[JPBoxing class]]) return [obj unbox];
     if ([obj isKindOfClass:[NSArray class]]) {
         NSMutableArray *newArr = [[NSMutableArray alloc] init];
