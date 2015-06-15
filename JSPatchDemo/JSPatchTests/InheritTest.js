@@ -25,9 +25,9 @@ var global = this;
     m2:function(){
       return "JP_02ObjC_m2";
     },
-    m3:function(){
+    /*m3:function(){
       return self.super.m3();
-    }
+    }*/
   },
   {});
  }
