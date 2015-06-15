@@ -1,6 +1,4 @@
 # JSPatch
-[![Travis](https://img.shields.io/travis/bang590/JSPatch.svg)](https://github.com/bang590/JSPatch)
-[![License](https://img.shields.io/github/license/bang590/JSPatch.svg?style=flat)](https://github.com/bang590/JSPatch/blob/master/LICENSE)
 
 JSPatch 可以让你用 JavaScript 书写原生 iOS APP。只需在项目引入极小的引擎，就可以使用 JavaScript 调用任何 Objective-C 的原生接口，获得脚本语言的优势：为项目动态添加模块，或替换项目原生代码动态修复 bug。
 
@@ -132,8 +130,8 @@ JPObject.__privateMethod()
 defineClass("JPViewController: UIViewController", {
   // instance method definitions
   viewDidLoad: function() {
-    //use self.super to call super method
-    self.super.viewDidLoad()
+    //use self.super() to call super method
+    self.super().viewDidLoad()
 
     // do something here
   },
@@ -178,8 +176,8 @@ defineClass("JPTableViewController", {
   // instance method definitions
   tableView_didSelectRowAtIndexPath: function(tableView, indexPath) {
     var row = indexPath.row()
-    if (self.dataSource().length > row) {  //fix the out of bound bug here
-      var content = self.dataSource()[row];
+    if (self.dataSource().count() > row) {  //fix the out of bound bug here
+      var content = self.dataSource().objectAtIndex(row);
       var ctrl = JPViewController.alloc().initWithContent(content);
       self.navigationController().pushViewController(ctrl);
     }
