@@ -8,13 +8,22 @@ var global = this;
       self.setFuncToSwizzleViewPassed(view && 4.2 - num < 0.01)
     },
     funcToSwizzleWithString_view_int: function(str, view, i) {
-      self.setFuncToSwizzleWithStringViewIntPassed(str == "stringFromOC" && view && i == 42)
+      self.setFuncToSwizzleWithStringViewIntPassed(str.toJS() == "stringFromOC" && view && i == 42)
     },
     funcToSwizzleReturnView: function(view) {
       return view
     },
     funcToSwizzleReturnInt: function(num) {
       return num
+    },
+    funcToSwizzleReturnDictionary: function(dict) {
+      return dict
+    },
+    funcToSwizzleReturnArray: function(arr) {
+      return arr
+    },
+    funcToSwizzleReturnString: function(str) {
+      return str
     },
     funcCustom: function(num) {
       self.setCallCustomFuncPassed(num == 10)
@@ -43,7 +52,6 @@ var global = this;
     funcToSwizzleTestGCD: function(completeBlock) {
       var execCount = 0
       var dispatchExecBlock = function() {
-        console.log(execCount)
         if (++execCount >= 4) {
           self.setFuncToSwizzleTestGCDPassed(1)
           completeBlock()
@@ -79,7 +87,7 @@ var global = this;
 
   ////////Base
   obj.funcReturnVoid();
-  var testReturnString = obj.funcReturnString();
+  var testReturnString = obj.funcReturnString().toJS();
   obj.setFuncReturnStringPassed(testReturnString == "stringFromOC")
 
   obj.funcWithInt(42);
@@ -135,17 +143,17 @@ var global = this;
   obj.setFuncWithRangeAndReturnRangePassed(range.location == 0 && range.length == 100)
 
   /////Dictionary/Array
-  var dict = obj.funcReturnDictStringInt();
+  var dict = obj.funcReturnDictStringInt().toJS()
   obj.setFuncReturnDictStringIntPassed(dict["str"] == "stringFromOC" && dict["num"] == 42)
 
-  var dict = obj.funcReturnDictStringView();
+  var dict = obj.funcReturnDictStringView().toJS();
   var dictViewFrame = dict["view"].frame() 
   obj.setFuncReturnDictStringViewPassed(dict.str == "stringFromOC" && dictViewFrame.width == 100)
 
-  var arr = obj.funcReturnArrayControllerViewString()
+  var arr = obj.funcReturnArrayControllerViewString().toJS()
   obj.setFuncReturnArrayControllerViewStringPassed(arr[0] && arr[1] && arr[2] == "stringFromOC")
 
-  var dict = obj.funcReturnDict({name: "JSPatch"})
+  var dict = obj.funcReturnDict({name: "JSPatch"}).toJS()
   obj.setFuncReturnDictPassed(dict.name == "JSPatch")
  
   //////property
@@ -178,11 +186,12 @@ var global = this;
   }, view)
 
   obj.callBlockWithStringAndInt(block("NSString *, int", function(str, num) {
-    obj.setCallBlockWithStringAndIntPassed(str == "stringFromOC" && num == 42)
+    obj.setCallBlockWithStringAndIntPassed(str.toJS() == "stringFromOC" && num == 42)
   }))
 
   obj.callBlockWithArrayAndView(block("NSArray *, UIView *", function(arr, view) {
     var viewFrame = view.frame()
+    arr = arr.toJS()
     obj.setCallBlockWithArrayAndViewPassed(arr[0] == "stringFromOC" && arr[1] && viewFrame.width == 100)
   }))
 
@@ -191,7 +200,8 @@ var global = this;
   }))
 
   obj.callBlockWithObjectAndBlock(block("UIView *, NSBlock *", function(view, blk) {
-    var viewFrame = view.frame() 
+    var viewFrame = view.frame()
+                                        console.log(blk)
     blk((viewFrame.width == 100 ? {
       "str": "stringFromJS",
       "view": view
@@ -201,7 +211,7 @@ var global = this;
   //////super
   var subObj = require("JPTestSubObject").alloc().init() 
   global.subObj = subObj.__obj;
-  subObj.super.funcCallSuper()
+  subObj.super().funcCallSuper()
 
   //////forwardInvocation
   obj.callTestForward()
@@ -237,6 +247,20 @@ var global = this;
   obj.setNewTestObjectReturnBoolPassed(JPNewTestObject.funcReturnBool(view, 42))
   newTestObj.customFunc(42)
  
+  //mutable
+  var arr = require('NSMutableArray').alloc().init()
+  arr.addObject("ctn")
+  obj.setMutableArrayPassed(arr.objectAtIndex(0).toJS() == "ctn")
+
+  var dict = require('NSMutableDictionary').alloc().init()
+  dict.setObject_forKey("ctn", "k")
+  obj.setMutableDictionaryPassed(dict.objectForKey("k").toJS() == "ctn")
+
+  var str = require('NSMutableString').alloc().init()
+  str.appendString("JS")
+  str.appendString("Patch")
+  obj.setMutableStringPassed(str.toJS() == "JSPatch")
+
   obj.setConsoleLogPassed(console.log != undefined)
 
 })();
