@@ -872,7 +872,12 @@ static id formatJSToOC(JSValue *jsval)
     if ([obj isKindOfClass:[NSArray class]]) {
         NSMutableArray *newArr = [[NSMutableArray alloc] init];
         for (int i = 0; i < [obj count]; i ++) {
-            [newArr addObject:formatJSToOC(jsval[i])];
+            id _obj = [jsval[i] toObject];
+            if (_obj == nil || [_obj isEqual:[NSNull null]]) {
+                [newArr addObject:[NSNull null]];
+            }else{
+                [newArr addObject:formatJSToOC(jsval[i])];
+            }
         }
         return newArr;
     }
@@ -885,7 +890,12 @@ static id formatJSToOC(JSValue *jsval)
         NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
         for (NSString *key in [obj allKeys]) {
             if ([key isEqualToString:@"__c"]) continue;
-            [newDict setObject:formatJSToOC(jsval[key]) forKey:key];
+            id _obj = jsval[key];
+            if (_obj == nil || [_obj isEqual:[NSNull null]]) {
+                 [newDict setObject:[NSNull null] forKey:key];
+            }else{
+                [newDict setObject:formatJSToOC(jsval[key]) forKey:key];
+            }
         }
         return newDict;
     }

@@ -36,7 +36,7 @@ defineClass('JPTableViewController : UITableViewController', {
   },
   tableView_didSelectRowAtIndexPath: function(tableView, indexPath) {
 
-     var alertView = require('UIAlertView').alloc().initWithTitle_message_delegate_cancelButtonTitle_otherButtonTitles("Alert",self.dataSource()[indexPath.row()],undefined,"OK",undefined);
+     var alertView = require('UIAlertView').alloc().initWithTitle_message_delegate_cancelButtonTitle_otherButtonTitles("Alert",self.dataSource().objectAtIndex(indexPath.row()),undefined,"OK",undefined);
 
      alertView.show()
   }
