@@ -12,6 +12,7 @@
 #import "JPTestObject.h"
 #import "JPInheritanceTestObjects.h"
 #import "JPMultithreadTestObject.h"
+#import "JPTestContainer.h"
 
 @interface JSPatchTests : XCTestCase
 
@@ -105,6 +106,19 @@
     
     XCTAssertEqualObjects(@"overrided",[subObj funcOverrideParentMethod]);
     
+}
+
+- (void)testContainer {
+    
+    NSString *testPath = [[NSBundle mainBundle] pathForResource:@"container" ofType:@"js"];
+    NSString *jsTest = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:testPath] encoding:NSUTF8StringEncoding];
+    [JPEngine evaluateScript:jsTest];
+    
+    JSValue *objValue = [JPEngine context][@"ocObj"];
+    JPTestContainer *obj = [objValue toObjectOfClass:[JPTestContainer class]];
+    
+    
+
 }
 
 - (void)testInheritance
