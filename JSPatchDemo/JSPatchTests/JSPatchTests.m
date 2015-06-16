@@ -51,6 +51,7 @@
     
     XCTAssert(obj.funcWithIntPassed, @"funcWithIntPassed");
     XCTAssert(obj.funcWithNilPassed, @"funcWithNilPassed");
+    XCTAssert(obj.funcWithNilAndOthersPassed, @"funcWithNilAndOthersPassed");
     XCTAssert(obj.funcWithNullPassed, @"funcWithNullPassed");
     
     XCTAssert(obj.funcWithDictAndDoublePassed, @"funcWithDictAndDoublePassed");
@@ -67,6 +68,7 @@
     XCTAssert(obj.funcReturnDictStringIntPassed, @"funcReturnDictStringIntPassed");
     XCTAssert(obj.funcReturnArrayControllerViewStringPassed, @"funcReturnArrayControllerViewStringPassed");
     XCTAssert(obj.funcReturnDictPassed, @"funcReturnDictPassed");
+    XCTAssert(obj.funcReturnDictPassed, @"testBoxingObjPassed");
     
     XCTAssert(obj.funcReturnBlockPassed, @"funcReturnBlockPassed");
     XCTAssert(obj.funcReturnObjectBlockPassed, @"funcReturnObjectBlockPassed");
