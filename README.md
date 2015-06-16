@@ -147,8 +147,8 @@ You can define a new Objective-C class in JavaScript:
 defineClass("JPViewController: UIViewController", {
   //instance method definitions
   viewDidLoad: function() {
-    //use self.super to call super method
-    self.super.viewDidLoad()
+    //use self.super() to call super method
+    self.super().viewDidLoad()
 
     //do something here
   },
@@ -193,8 +193,8 @@ defineClass("JPTableViewController", {
   // instance method definitions
   tableView_didSelectRowAtIndexPath: function(tableView, indexPath) {
     var row = indexPath.row()
-    if (self.dataSource().length > row) {  //fix the out of bound bug here
-      var content = self.dataSource()[row];
+    if (self.dataSource().count() > row) {  //fix the out of bound bug here
+      var content = self.dataSource().objectAtIndex(row);
       var ctrl = JPViewController.alloc().initWithContent(content);
       self.navigationController().pushViewController(ctrl);
     }

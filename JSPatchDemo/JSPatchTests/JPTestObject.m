@@ -55,6 +55,16 @@
     self.funcWithIntPassed = intValue == 42;
 }
 
+- (void)funcWithNil:(NSObject *)nilObj
+{
+    self.funcWithNilPassed = nilObj == nil;
+}
+
+- (void)funcWithNull:(NSNull *)nullObj
+{
+    self.funcWithNullPassed = [nullObj isKindOfClass:[NSNull class]];
+}
+
 #pragma mark - NSDictionary / NSArray
 
 - (void)funcWithDict:(NSDictionary *)dict andDouble:(double)doubleValue
@@ -178,7 +188,6 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     NSRange range = [self funcToSwizzleReturnRange:NSMakeRange(0, 42)];
     self.funcToSwizzleReturnRangePassed = range.length == 42;
     
-
 }
 - (void)funcToSwizzleWithString:(NSString *)str view:(UIView *)view int:(NSInteger)i
 {
@@ -198,6 +207,21 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
 - (int)funcToSwizzleReturnInt:(int)num
 {
     return 0;
+}
+
+- (NSDictionary *)funcToSwizzleReturnDictionary:(NSDictionary *)dict
+{
+    return nil;
+}
+
+- (NSArray *)funcToSwizzleReturnArray:(NSArray *)arr
+{
+    return nil;
+}
+
+- (NSString *)funcToSwizzleReturnString:(NSString *)str
+{
+    return nil;
 }
 
 - (void)funcToSwizzleWithBlock:(void(^)(UIView *view, int num))block
@@ -225,6 +249,11 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
 - (NSRange)funcToSwizzleReturnRange:(NSRange)range
 {
     return NSMakeRange(0, 0);
+}
+
+- (void)funcToSwizzleTestGCD:(void(^)())block
+{
+    
 }
 
 + (void)classFuncToSwizzle:(JPTestObject *)testObject int:(NSInteger)i

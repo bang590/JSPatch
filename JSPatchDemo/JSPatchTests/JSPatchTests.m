@@ -51,6 +51,8 @@
     XCTAssert(obj.funcReturnStringPassed, @"funcReturnStringPassed");
     
     XCTAssert(obj.funcWithIntPassed, @"funcWithIntPassed");
+    XCTAssert(obj.funcWithNilPassed, @"funcWithNilPassed");
+    XCTAssert(obj.funcWithNullPassed, @"funcWithNullPassed");
     
     XCTAssert(obj.funcWithDictAndDoublePassed, @"funcWithDictAndDoublePassed");
     
@@ -87,6 +89,19 @@
     XCTAssert(obj.funcToSwizzleReturnSizePassed, @"funcToSwizzleReturnSizePassed");
     XCTAssert(obj.funcToSwizzleReturnRangePassed, @"funcToSwizzleReturnRangePassed");
     
+    NSDictionary *originalDict = @{@"k": @"v"};
+    NSDictionary *dict = [obj funcToSwizzleReturnDictionary:originalDict];
+    XCTAssert(originalDict == dict, @"funcToSwizzleReturnDictionary");
+    
+    NSArray *originalArr = @[@"js", @"patch"];
+    NSArray *arr = [obj funcToSwizzleReturnArray:originalArr];
+    XCTAssert(originalArr == arr, @"funcToSwizzleReturnArray");
+    
+    NSString *originalStr = @"JSPatch";
+    NSString *str = [obj funcToSwizzleReturnString:originalStr];
+    XCTAssert(originalStr == str, @"funcToSwizzleReturnString");
+    
+    
     XCTAssert(obj.classFuncToSwizzlePassed, @"classFuncToSwizzlePassed");
     XCTAssert(obj.classFuncToSwizzleReturnObjPassed, @"classFuncToSwizzleReturnObjPassed");
     XCTAssert(obj.classFuncToSwizzleReturnObjCalledOriginalPassed, @"classFuncToSwizzleReturnObjCalledOriginalPassed");
@@ -103,9 +118,23 @@
     XCTAssert(obj.newTestObjectReturnViewPassed, @"newTestObjectReturnViewPassed");
     XCTAssert(obj.newTestObjectReturnBoolPassed, @"newTestObjectReturnBoolPassed");
     XCTAssert(obj.newTestObjectCustomFuncPassed, @"newTestObjectCustomFuncPassed");
+
+    XCTAssert(obj.mutableArrayPassed, @"mutableArrayPassed");
+    XCTAssert(obj.mutableDictionaryPassed, @"mutableDictionaryPassed");
+    XCTAssert(obj.mutableStringPassed, @"mutableStringPassed");
     
     XCTAssertEqualObjects(@"overrided",[subObj funcOverrideParentMethod]);
     
+    
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    [obj funcToSwizzleTestGCD:^{
+        XCTAssert(obj.funcToSwizzleTestGCDPassed, @"funcToSwizzleTestGCDPassed");
+        dispatch_semaphore_signal(semaphore);
+    }];
+    
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                                 beforeDate:[NSDate dateWithTimeIntervalSinceNow:10]];
 }
 
 - (void)testContainer {
@@ -244,8 +273,6 @@ void thread(void* context)
         return;
     }
 
-//    NSLog(@"obj %d ok, count %d ", obj.objectId, finishcount);
-    
     if (finishcount == LOOPCOUNT) {
         finishcount = 0;
         success = true;
