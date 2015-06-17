@@ -779,7 +779,7 @@ static id genCallbackBlock(id valObj)
         BLK_TRAITS_ARG(2, p2)
         BLK_END
     }
-    if (count == 3) {
+    if (count == 4) {
         BLK_DEFINE_4
         BLK_TRAITS_ARG(0, p0)
         BLK_TRAITS_ARG(1, p1)
