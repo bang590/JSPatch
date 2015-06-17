@@ -202,13 +202,42 @@ defineClass("JPTableViewController", {
 
   dataSource: function() {
     // get the original method by adding prefix 'ORIG'
-    var data = self.ORIGdataSource();
+    var data = self.ORIGdataSource().toJS();
     return data.push('Good!');
   }
 }, {})
 ```
 
-#### 4. CGRect / CGPoint / CGSize / NSRange
+#### 4. NSArray / NSString / NSDictionary
+
+use `NSArray` / `NSString` / `NSDictionary` as `NSObject` :
+
+```objc
+// OC
+@implementation JPObject
++ (NSArray *)data
+{
+  return @[[NSMutableString stringWithString:@"JSPatch"]]
+}
+@end
+``` 
+
+```js
+// JS
+var ocStr = require('JPObject').data().objectAtIndex(0)
+ocStr.appendString("is Good")
+```
+
+use `.toJS()` to convert `NSArray` / `NSString` / `NSDictionary` to JS type.
+
+```js
+// JS
+var data = require('JPObject').data().toJS()
+//data[0] == "JSPatch"
+data.push("is Good")
+```
+
+#### 5. CGRect / CGPoint / CGSize / NSRange
 Use hashes:
 
 ```objc
@@ -223,7 +252,7 @@ var view = UIView.alloc().initWithFrame({x:20, y:20, width:100, height:100});
 var x = view.bounds.x;
 ```
 
-#### 5. block
+#### 6. block
 You should indicate each type of params when passing block from js to objc.
 ```objc
 // OC
@@ -265,7 +294,7 @@ var blk = require('JPObject').genBlock();
 blk({v: "0.0.1"});  //output: I'm JSPatch, version: 0.0.1
 ```
 
-####6. dispatch
+#### 7. dispatch
 Using `dispatch_after()` `dispatch_async_main()` `dispatch_sync_main()` `dispatch_async_global_queue()` to call GCD.
 
 ```objc
