@@ -11,7 +11,7 @@
 
 @interface JPTestContainer : NSObject
 
-@property (nonatomic, assign) BOOL funcReturnVoidPassed;
+@property (nonatomic, assign) BOOL newArray;
 
 
 @end

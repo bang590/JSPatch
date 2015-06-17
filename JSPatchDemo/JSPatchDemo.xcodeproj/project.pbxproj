@@ -23,6 +23,7 @@
 		E1B89EA31B218986000645C2 /* JPInheritanceTestObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = E1B89EA21B218986000645C2 /* JPInheritanceTestObjects.m */; };
 		E1B89EAE1B228818000645C2 /* multithreadTest.js in Resources */ = {isa = PBXBuildFile; fileRef = E1B89EAD1B228818000645C2 /* multithreadTest.js */; };
 		E2ED7E651B2ED77500059A95 /* JPTestContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = E2ED7E641B2ED77500059A95 /* JPTestContainer.m */; };
+		E2ED7E671B3005E300059A95 /* testContainer.js in Resources */ = {isa = PBXBuildFile; fileRef = E2ED7E661B3005E300059A95 /* testContainer.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,7 @@
 		E1B89EAD1B228818000645C2 /* multithreadTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = multithreadTest.js; sourceTree = "<group>"; };
 		E2ED7E631B2ED77500059A95 /* JPTestContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPTestContainer.h; sourceTree = "<group>"; };
 		E2ED7E641B2ED77500059A95 /* JPTestContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPTestContainer.m; sourceTree = "<group>"; };
+		E2ED7E661B3005E300059A95 /* testContainer.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = testContainer.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +150,7 @@
 				E1B89EA21B218986000645C2 /* JPInheritanceTestObjects.m */,
 				2D0DF7061B22F75C005695DA /* inheritTest.js */,
 				DE94AE451AF2480000E461D4 /* test.js */,
+				E2ED7E661B3005E300059A95 /* testContainer.js */,
 				E1B89EAD1B228818000645C2 /* multithreadTest.js */,
 				DE94AE2A1AF246C000E461D4 /* JSPatchTests.m */,
 				DE94AE281AF246C000E461D4 /* Supporting Files */,
@@ -256,6 +259,7 @@
 			files = (
 				2D0DF7071B22F75C005695DA /* inheritTest.js in Resources */,
 				DE94AE471AF2480000E461D4 /* test.js in Resources */,
+				E2ED7E671B3005E300059A95 /* testContainer.js in Resources */,
 				E1B89EAE1B228818000645C2 /* multithreadTest.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

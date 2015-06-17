@@ -146,8 +146,7 @@
     JSValue *objValue = [JPEngine context][@"ocObj"];
     JPTestContainer *obj = [objValue toObjectOfClass:[JPTestContainer class]];
     
-    
-
+    XCTAssert(obj.newArray, @"newArray");
 }
 
 - (void)testInheritance
