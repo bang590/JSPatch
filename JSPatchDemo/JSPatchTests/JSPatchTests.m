@@ -154,6 +154,7 @@
     NSString* t2Bm2Return = [t2objB m2];
     NSString* t2Cm1Return = [t2objC m1];
     NSString* t2Cm2Return = [t2objC m2];
+    NSString* t2Cm3Return = [t2objC m3];
     
     id t3objA = [[JPInheritTest03ObjectA alloc] init];
     id t3objB = [[JPInheritTest03ObjectB alloc] init];
@@ -186,6 +187,8 @@
     
     XCTAssertNotEqualObjects(t2Cm2Return,[t2objC m2]);
     XCTAssertEqualObjects(@"JP_02ObjC_m2",[t2objC m2]);
+    
+    XCTAssertEqualObjects(@"JP_02ObjC_m3", [t2objC m3]);
     
     /*Test 3*/
     XCTAssertEqualObjects(t3m1Return,[t3objA m1]);

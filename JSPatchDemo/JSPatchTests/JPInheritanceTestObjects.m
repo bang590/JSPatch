@@ -44,6 +44,11 @@
     return @"02ObjA_m2";
 }
 
+- (NSString*)m3
+{
+    return @"02ObjA_m3";
+}
+
 @end
 
 @implementation JPInheritTest02ObjectB
@@ -53,6 +58,10 @@
     return @"02ObjB_m1";
 }
 
+- (NSString*)m3
+{
+    return @"02ObjB_m3";
+}
 
 @end
 
