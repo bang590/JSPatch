@@ -33,6 +33,9 @@ var global = this;
   defineClass("JPInheritTest02ObjectC", {
     m2:function(){
       return "JP_02ObjC_m2";
+    },
+    m3:function(){
+      return self.super().m3();
     }
   },
   {});

@@ -570,6 +570,13 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         IMP superIMP = method_getImplementation(superMethod);
         
         class_addMethod(cls, superSelector, superIMP, method_getTypeEncoding(superMethod));
+        
+        NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
+        JSValue *overideFunction = _JSOverideMethods[NSStringFromClass(superCls)][JPSelectorName];
+        if (overideFunction) {
+            overrideMethod(cls, superSelectorName, overideFunction, NO);
+        }
+        
         selector = superSelector;
     }
     
