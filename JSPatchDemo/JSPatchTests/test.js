@@ -92,6 +92,7 @@ var global = this;
 
   obj.funcWithInt(42);
   obj.funcWithDict_andDouble({test: "test"}, 4.2)
+  obj.funcWithNil_dict_str_num(null, {k: "JSPatch"}, "JSPatch", 4.2)
   obj.funcWithNil(null)
   obj.funcWithNull(nsnull)
 
@@ -201,7 +202,6 @@ var global = this;
 
   obj.callBlockWithObjectAndBlock(block("UIView *, NSBlock *", function(view, blk) {
     var viewFrame = view.frame()
-                                        console.log(blk)
     blk((viewFrame.width == 100 ? {
       "str": "stringFromJS",
       "view": view
@@ -260,6 +260,10 @@ var global = this;
   str.appendString("JS")
   str.appendString("Patch")
   obj.setMutableStringPassed(str.toJS() == "JSPatch")
+ 
+  var arr = []
+  arr.push(obj.getString(), obj.getDictionary(), obj.getArray())
+  obj.funcTestBoxingObj(arr)
 
   obj.setConsoleLogPassed(console.log != undefined)
 

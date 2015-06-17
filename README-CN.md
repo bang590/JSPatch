@@ -185,7 +185,7 @@ defineClass("JPTableViewController", {
 
   dataSource: function() {
     // 函数名前加'ORIG'可以调回OC定义的原方法
-    var data = self.ORIGdataSource();
+    var data = self.ORIGdataSource().toJS();
     return data.push('Good!');
   }
 }, {})
@@ -193,7 +193,36 @@ defineClass("JPTableViewController", {
 执行以上 JavaScript 脚本后，JPTableViewController 的方法就被替换成 JavaScript 里的实现。
 
 
-#### 4. CGRect / CGPoint / CGSize / NSRange
+#### 4. NSArray / NSString / NSDictionary
+
+在JS里 `NSArray` / `NSString` / `NSDictionary` 与普通 `NSObject` 一样:
+
+```objc
+// OC
+@implementation JPObject
++ (NSArray *)data
+{
+  return @[[NSMutableString stringWithString:@"JSPatch"]]
+}
+@end
+``` 
+
+```js
+// JS
+var ocStr = require('JPObject').data().objectAtIndex(0)
+ocStr.appendString("is Good")
+```
+
+如果要把 `NSArray` / `NSString` / `NSDictionary` 转为对应的 JS 类型，使用 `.toJS()` 接口.
+
+```js
+// JS
+var data = require('JPObject').data().toJS()
+//data[0] == "JSPatch"
+data.push("is Good")
+```
+
+#### 5. CGRect / CGPoint / CGSize / NSRange
 针对这几个常用的 struct 会转为字典表示：
 
 ```objc
@@ -208,7 +237,7 @@ var view = UIView.alloc().initWithFrame({x:20, y:20, width:100, height:100});
 var x = view.bounds.x;
 ```
 
-#### 5. block
+#### 6. block
 block 从 JavaScript 传入 Objective-C 时，需要写上每个参数的类型。
 
 ```objc
@@ -251,7 +280,7 @@ var blk = require('JPObject').genBlock();
 blk({v: "0.0.1"});  //output: I'm JSPatch, version: 0.0.1
 ```
 
-#### 6. dispatch
+#### 7. dispatch
 Using `dispatch_after()` `dispatch_async_main()` `dispatch_sync_main()` `dispatch_async_global_queue()` to call GCD.
 
 ```objc

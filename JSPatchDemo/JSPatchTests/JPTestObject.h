@@ -18,6 +18,7 @@
 
 @property (nonatomic, assign) BOOL funcWithIntPassed;
 @property (nonatomic, assign) BOOL funcWithNilPassed;
+@property (nonatomic, assign) BOOL funcWithNilAndOthersPassed;
 @property (nonatomic, assign) BOOL funcWithNullPassed;
 
 @property (nonatomic, assign) BOOL funcWithDictAndDoublePassed;
@@ -31,6 +32,7 @@
 @property (nonatomic, assign) BOOL funcReturnDictStringViewPassed;
 @property (nonatomic, assign) BOOL funcReturnArrayControllerViewStringPassed;
 @property (nonatomic, assign) BOOL funcReturnDictPassed;
+@property (nonatomic, assign) BOOL testBoxingObjPassed;
 
 @property (nonatomic, assign) BOOL funcReturnBlockPassed;
 @property (nonatomic, assign) BOOL funcReturnObjectBlockPassed;
