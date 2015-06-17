@@ -60,6 +60,10 @@
     self.funcWithNilPassed = nilObj == nil;
 }
 
+- (void)funcWithNil:(NSObject *)nilObj dict:(NSDictionary *)dict str:(NSString *)str num:(double)num
+{
+    self.funcWithNilAndOthersPassed = nilObj == nil && [dict[@"k"] isEqualToString:@"JSPatch"] && [str isEqualToString:@"JSPatch"] && num - 4.2 < 0.001;
+}
 - (void)funcWithNull:(NSNull *)nullObj
 {
     self.funcWithNullPassed = [nullObj isKindOfClass:[NSNull class]];
@@ -94,6 +98,29 @@
     UIViewController *controller = [[UIViewController alloc] init];
     UIView *view = [[UIView alloc] init];
     return @[controller, view, @"stringFromOC"];
+}
+
+- (NSString *)getString
+{
+    return @"JSPatch";
+}
+
+- (NSArray *)getArray
+{
+    return @[@"JSPatch", @(1)];
+}
+
+- (NSDictionary *)getDictionary
+{
+    return @{@"k": @"JSPatch"};
+}
+
+- (void)funcTestBoxingObj:(NSArray *)data
+{
+    NSString *str = data[0];
+    NSDictionary *dict = data[1];
+    NSArray *arr = data[2];
+    self.testBoxingObjPassed = [str isEqualToString:[self getString]] && [dict[@"k"] isEqualToString:[[self getDictionary] objectForKey:@"k"]] && [arr[0] isEqualToString:[[self getArray] objectAtIndex:0]];
 }
 
 
