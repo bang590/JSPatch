@@ -18,10 +18,10 @@ var global = this;
       return "JP_02ObjC_m2";
     }
   });
- 
+ })();
 
 (function(){
-  defineClass("InheritTest02ObjectB", {
+  defineClass("JPInheritTest02ObjectB", {
     m1:function(){
       return "JP_02ObjB_m1";
     },
@@ -30,31 +30,25 @@ var global = this;
     }
   },
   {});
-  defineClass("InheritTest02ObjectC", {
+  defineClass("JPInheritTest02ObjectC", {
     m2:function(){
       return "JP_02ObjC_m2";
-    },
-    /*m3:function(){
-      return self.super.m3();
-    }*/
+    }
   },
   {});
- }
- )();
+ })();
 
 (function(){
-  defineClass("InheritTest03ObjectB", {
-     m1:function(){
-       return "JP_03ObjB_m1";
-     }
+  defineClass("JPInheritTest03ObjectB", {
+    m1:function(){
+      return "JP_03ObjB_m1";
+    }
   },
   {});
-  defineClass("InheritTest03ObjectC", {
-     m2:function(){
-       return "JP_03ObjC_m2";
-     }
+  defineClass("JPInheritTest03ObjectC", {
+    m2:function(){
+      return "JP_03ObjC_m2";
+    }
   },
   {});
- }
- )();
-
+ })();
