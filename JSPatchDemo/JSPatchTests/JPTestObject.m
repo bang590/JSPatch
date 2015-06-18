@@ -384,3 +384,16 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
 }
 
 @end
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wprotocol"
+@implementation JPTestProtocolObject
+- (BOOL)testProtocolMethods
+{
+    double dNum = [self protocolWithDouble:4.2 dict:@{@"name": @"JSPatch"}];
+    NSInteger iNum = [self protocolWithInt:42];
+    NSString *str = [JPTestProtocolObject classProtocolWithString:@"JSPatch" int:42];
+    return dNum - 4.2 < 0.001 && iNum == 42 && [str isEqualToString:@"JSPatch"];
+}
+#pragma clang diagnostic pop
+@end

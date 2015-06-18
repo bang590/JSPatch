@@ -126,6 +126,8 @@
     
     XCTAssertEqualObjects(@"overrided",[subObj funcOverrideParentMethod]);
     
+    JPTestProtocolObject *testProtocolObj = [[JPTestProtocolObject alloc] init];
+    XCTAssert([testProtocolObj testProtocolMethods], @"testProtocolMethodsPassed");
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     [obj funcToSwizzleTestGCD:^{
@@ -154,7 +156,6 @@
     NSString* t2Bm2Return = [t2objB m2];
     NSString* t2Cm1Return = [t2objC m1];
     NSString* t2Cm2Return = [t2objC m2];
-    NSString* t2Cm3Return = [t2objC m3];
     
     id t3objA = [[JPInheritTest03ObjectA alloc] init];
     id t3objB = [[JPInheritTest03ObjectB alloc] init];

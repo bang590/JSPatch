@@ -92,3 +92,17 @@
 @interface JPTestSubObject : JPTestObject
 @property (nonatomic, assign) BOOL funcCallSuperSubObjectPassed;
 @end
+
+@protocol JPTestProtocol <NSObject>
+- (double)protocolWithDouble:(double)num dict:(NSDictionary *)dictionary;
++ (NSString *)classProtocolWithString:(NSString *)string int:(NSInteger)num;
+@end
+
+@protocol JPTestProtocol2 <NSObject>
+@optional
+- (NSInteger)protocolWithInt:(NSInteger)num;
+@end
+
+@interface JPTestProtocolObject : NSObject <JPTestProtocol, JPTestProtocol2>
+- (BOOL)testProtocolMethods;
+@end
