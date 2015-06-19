@@ -25,9 +25,6 @@ var global = this;
     funcToSwizzleReturnString: function(str) {
       return str
     },
-    funcCustom: function(num) {
-      self.setCallCustomFuncPassed(num == 10)
-    },
     funcToSwizzleWithBlock: function(blk) {
       blk(UIView.alloc().init(), 42)
     },
@@ -82,8 +79,7 @@ var global = this;
   global.ocObj = obj.__obj;
 
   ////////Swizzle
-  obj.callSwizzleMethod() 
-  obj.funcCustom(10)
+  obj.callSwizzleMethod()
 
   ////////Base
   obj.funcReturnVoid();
@@ -232,12 +228,6 @@ var global = this;
     funcReturnBool: function(view, num) {
       return view && num == 42
     }
-  },
-  {
-    customFunc: function(num) {
-      var view = self.funcReturnView(num)
-      obj.setNewTestObjectCustomFuncPassed(view.frame().x == num)
-    }
   })
 
   var newTestObj = JPNewTestObject.alloc().init()
@@ -245,7 +235,6 @@ var global = this;
   var view = newTestObj.funcReturnView(42) 
   obj.setNewTestObjectReturnViewPassed(view.frame().x == 42) 
   obj.setNewTestObjectReturnBoolPassed(JPNewTestObject.funcReturnBool(view, 42))
-  newTestObj.customFunc(42)
  
   //mutable
   var arr = require('NSMutableArray').alloc().init()

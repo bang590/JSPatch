@@ -107,7 +107,6 @@
     XCTAssert(obj.classFuncToSwizzleReturnObjPassed, @"classFuncToSwizzleReturnObjPassed");
     XCTAssert(obj.classFuncToSwizzleReturnObjCalledOriginalPassed, @"classFuncToSwizzleReturnObjCalledOriginalPassed");
     XCTAssert(obj.classFuncToSwizzleReturnIntPassed, @"classFuncToSwizzleReturnIntPassed");
-    XCTAssert(obj.callCustomFuncPassed, @"callCustomFuncPassed");
     
     XCTAssert(subObj.funcCallSuperSubObjectPassed, @"funcCallSuperSubObjectPassed");
     XCTAssert(subObj.funcCallSuperPassed, @"funcCallSuperPassed");
@@ -118,7 +117,6 @@
     
     XCTAssert(obj.newTestObjectReturnViewPassed, @"newTestObjectReturnViewPassed");
     XCTAssert(obj.newTestObjectReturnBoolPassed, @"newTestObjectReturnBoolPassed");
-    XCTAssert(obj.newTestObjectCustomFuncPassed, @"newTestObjectCustomFuncPassed");
 
     XCTAssert(obj.mutableArrayPassed, @"mutableArrayPassed");
     XCTAssert(obj.mutableDictionaryPassed, @"mutableDictionaryPassed");

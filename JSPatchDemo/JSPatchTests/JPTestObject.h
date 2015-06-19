@@ -59,7 +59,6 @@
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnObjPassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnObjCalledOriginalPassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnIntPassed;
-@property (nonatomic, assign) BOOL callCustomFuncPassed;
 
 
 @property (nonatomic, assign) BOOL funcCallSuperPassed;
