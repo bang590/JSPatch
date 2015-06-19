@@ -28,7 +28,7 @@
 
 @implementation JPEngine
 
-static JSContext *_context;
+static JSContext *_context = nil;
 
 #pragma mark - APIS
 
@@ -59,6 +59,10 @@ static NSObject *_nullObj;
 
 + (void)startEngine
 {
+    if (_context) {
+        return;
+    }
+    
     JSContext *context = [[JSContext alloc] init];
     _cacheArguments = [[NSMutableDictionary alloc] init];
     
