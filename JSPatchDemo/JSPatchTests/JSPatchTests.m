@@ -89,7 +89,13 @@
     XCTAssert(obj.funcToSwizzleReturnPointPassed, @"funcToSwizzleReturnPointPassed");
     XCTAssert(obj.funcToSwizzleReturnSizePassed, @"funcToSwizzleReturnSizePassed");
     XCTAssert(obj.funcToSwizzleReturnRangePassed, @"funcToSwizzleReturnRangePassed");
-    
+    XCTAssert(obj.funcToSwizzleTestClassPassed, @"funcToSwizzleTestClassPassed");
+    XCTAssert(obj.funcToSwizzleTestSelectorPassed, @"funcToSwizzleTestSelectorPassed");
+    XCTAssert(obj.funcToSwizzleTestCharPassed, @"funcToSwizzleTestCharPassed");
+    XCTAssert(obj.funcTestCharPassed, @"funcTestCharPassed");
+    XCTAssert(obj.funcToSwizzleTestPointerPassed, @"funcToSwizzleTestPointerPassed");
+    XCTAssert(obj.funcTestPointerPassed, @"funcTestPointerPassed");
+
     NSDictionary *originalDict = @{@"k": @"v"};
     NSDictionary *dict = [obj funcToSwizzleReturnDictionary:originalDict];
     XCTAssert(originalDict == dict, @"funcToSwizzleReturnDictionary");
@@ -209,7 +215,7 @@
 dispatch_semaphore_t sem;
 int finishcount = 0;
 bool success = false;
-#define LOOPCOUNT 100
+#define LOOPCOUNT 1
 void thread(void* context);
 
 - (void)testDispatchQueue

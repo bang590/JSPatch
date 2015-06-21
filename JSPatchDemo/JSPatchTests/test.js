@@ -58,6 +58,18 @@ var global = this;
       dispatch_async_global_queue(dispatchExecBlock);
       dispatch_sync_main(dispatchExecBlock);
       dispatch_after(1, dispatchExecBlock);
+    },
+    funcToSwizzleTestClass: function(cls) {
+      return cls
+    },
+    funcToSwizzleTestSelector: function(sel) {
+      return sel
+    },
+    funcToSwizzleTestChar: function(cStr) {
+      return cStr
+    },
+    funcToSwizzleTestPointer: function(pointer) {
+      return pointer
     }
   },
   {
@@ -80,6 +92,14 @@ var global = this;
 
   ////////Swizzle
   obj.callSwizzleMethod()
+
+  var cls = obj.funcToSwizzleTestClass(JPTestObject.class())
+  obj.setFuncToSwizzleTestClassPassed(obj.isKindOfClass(cls))
+
+  obj.funcTestChar(obj.funcReturnChar())
+  var pointer = obj.funcReturnPointer()
+  obj.funcTestPointer(pointer)
+  free(pointer)
 
   ////////Base
   obj.funcReturnVoid();

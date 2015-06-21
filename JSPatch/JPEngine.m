@@ -10,25 +10,43 @@
 #import <objc/message.h>
 
 @interface JPBoxing : NSObject
-@property (nonatomic, strong) id obj;
+@property (nonatomic) id obj;
+@property (nonatomic) void *pointer;
+@property (nonatomic) Class cls;
 @end
 
 @implementation JPBoxing
-+ (instancetype)boxObj:(id)obj
-{
-    JPBoxing *boxing = [[JPBoxing alloc] init];
-    boxing.obj = obj;
-    return boxing;
+
+#define JPBOXING_GEN(_name, _prop, _type) \
++ (instancetype)_name:(_type)obj  \
+{   \
+    JPBoxing *boxing = [[JPBoxing alloc] init]; \
+    boxing._prop = obj;   \
+    return boxing;  \
 }
+
+JPBOXING_GEN(boxObj, obj, id)
+JPBOXING_GEN(boxPointer, pointer, void *)
+JPBOXING_GEN(boxClass, cls, Class)
+
 - (id)unbox
 {
-    return self.obj;
+    if (self.obj) return self.obj;
+    return self;
+}
+- (void *)unboxPointer
+{
+    return self.pointer;
+}
+- (Class)unboxClass
+{
+    return self.cls;
 }
 @end
 
 @implementation JPEngine
 
-static JSContext *_context = nil;
+static JSContext *_context;
 
 #pragma mark - APIS
 
@@ -134,7 +152,14 @@ static NSObject *_nullObj;
     context[@"_OC_log"] = ^() {
         NSArray *args = [JSContext currentArguments];
         for (JSValue *jsVal in args) {
-            NSLog(@"JSPatch.log: %@", jsVal);
+            NSLog(@"JSPatch.log: %@", formatJSToOC(jsVal));
+        }
+    };
+    
+    context[@"_OC_free"] = ^(JSValue *jsVal) {
+        JPBoxing *obj = formatJSToOC(jsVal);
+        if ([obj isKindOfClass:[JPBoxing class]] && obj.pointer) {
+            free(obj.pointer);
         }
     };
     
@@ -312,8 +337,32 @@ static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) { 
     id dict = formatJSToOC(ret);   \
     return _methodName(dict);
 
+#define JPMETHOD_RET_POINTER    \
+    id obj = formatJSToOC(ret); \
+    if ([obj isKindOfClass:[JPBoxing class]]) { \
+        return [((JPBoxing *)obj) unboxPointer]; \
+    }   \
+    return NULL;
+
+#define JPMETHOD_RET_CLASS    \
+    id obj = formatJSToOC(ret); \
+    if ([obj isKindOfClass:[JPBoxing class]]) { \
+        return [((JPBoxing *)obj) unboxClass]; \
+    }   \
+    return nil;
+
+#define JPMETHOD_RET_SEL    \
+    id obj = formatJSToOC(ret); \
+    if ([obj isKindOfClass:[NSString class]]) { \
+        return NSSelectorFromString(obj); \
+    }   \
+    return nil;
+
 JPMETHOD_IMPLEMENTATION_RET(void, v, nil)
 JPMETHOD_IMPLEMENTATION_RET(id, id, JPMETHOD_RET_ID)
+JPMETHOD_IMPLEMENTATION_RET(void *, pointer, JPMETHOD_RET_POINTER)
+JPMETHOD_IMPLEMENTATION_RET(Class, cls, JPMETHOD_RET_CLASS)
+JPMETHOD_IMPLEMENTATION_RET(SEL, sel, JPMETHOD_RET_SEL)
 JPMETHOD_IMPLEMENTATION_RET(CGRect, rect, JPMETHOD_RET_STRUCT(dictToRect))
 JPMETHOD_IMPLEMENTATION_RET(CGSize, size, JPMETHOD_RET_STRUCT(dictToSize))
 JPMETHOD_IMPLEMENTATION_RET(CGPoint, point, JPMETHOD_RET_STRUCT(dictToPoint))
@@ -436,6 +485,26 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                 JP_FWD_ARG_STRUCT(NSRange, rangeToDictionary)
                 break;
             }
+            case ':': {
+                SEL selector;
+                [invocation getArgument:&selector atIndex:i];
+                NSString *selectorName = NSStringFromSelector(selector);
+                [argList addObject:(selectorName ? selectorName: [NSNull null])];
+                break;
+            }
+            case '^':
+            case '*': {
+                void *arg;
+                [invocation getArgument:&arg atIndex:i];
+                [argList addObject:[JPBoxing boxPointer:arg]];
+                break;
+            }
+            case '#': {
+                Class arg;
+                [invocation getArgument:&arg atIndex:i];
+                [argList addObject:[JPBoxing boxClass:arg]];
+                break;
+            }
             default: {
                 NSLog(@"error type %s", argumentType);
                 break;
@@ -538,7 +607,11 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
             JP_OVERRIDE_RET_CASE(f, 'f')
             JP_OVERRIDE_RET_CASE(d, 'd')
             JP_OVERRIDE_RET_CASE(B, 'B')
-                
+            JP_OVERRIDE_RET_CASE(pointer, '^')
+            JP_OVERRIDE_RET_CASE(pointer, '*')
+            JP_OVERRIDE_RET_CASE(cls, '#')
+            JP_OVERRIDE_RET_CASE(sel, ':')
+            
             case '{': {
                 NSString *typeString = [NSString stringWithUTF8String:returnType];
                 
@@ -691,6 +764,21 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 
                 break;
             }
+            case '*':
+            case '^': {
+                if ([valObj isKindOfClass:[JPBoxing class]]) {
+                    void *value = [((JPBoxing *)valObj) unboxPointer];
+                    [invocation setArgument:&value atIndex:i];
+                    break;
+                }
+            }
+            case '#': {
+                if ([valObj isKindOfClass:[JPBoxing class]]) {
+                    Class value = [((JPBoxing *)valObj) unboxClass];
+                    [invocation setArgument:&value atIndex:i];
+                    break;
+                }
+            }
             default: {
                 if (valObj == _nullObj) {
                     valObj = [NSNull null];
@@ -761,8 +849,21 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     JP_CALL_RET_STRUCT(CGPoint, pointToDictionary)
                     JP_CALL_RET_STRUCT(CGSize, sizeToDictionary)
                     JP_CALL_RET_STRUCT(NSRange, rangeToDictionary)
-                }
                     break;
+                }
+                case '*':
+                case '^': {
+                    void *result;
+                    [invocation getReturnValue:&result];
+                    returnValue = formatOCToJS([JPBoxing boxPointer:result]);
+                    break;
+                }
+                case '#': {
+                    Class result;
+                    [invocation getReturnValue:&result];
+                    returnValue = formatOCToJS([JPBoxing boxClass:result]);
+                    break;
+                }
             }
             return returnValue;
         }
@@ -777,7 +878,6 @@ static NSInteger _cacheArgumentsIdx = 0;
 
 static id genCallbackBlock(id valObj)
 {
-
 #define BLK_DEFINE_1 cb = ^(void *p0) {
 #define BLK_DEFINE_2 cb = ^(void *p0, void *p1) {
 #define BLK_DEFINE_3 cb = ^(void *p0, void *p1, void *p2) {
