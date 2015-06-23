@@ -108,6 +108,39 @@ static NSObject *_nullObj;
         return formatJSToOC(obj);
     };
     
+    context[@"_OC_NSSelectorFromString"] = ^id(JSValue *selString){
+        if ([[selString toObject] isKindOfClass:[NSString class]]) {
+            return [JPBoxing boxPointer:NSSelectorFromString([selString toString])];
+        }
+        return nil;
+    };
+    
+    context[@"_OC_NSStringFromSelector"] = ^id(JSValue *selector){
+        if ([[selector toObject] isKindOfClass:[JPBoxing class]]) {
+            SEL ret = (SEL)[(JPBoxing *)[selector toObject] unboxPointer];
+            return NSStringFromSelector(ret);
+        }else if([[selector toObject] isKindOfClass:[NSString class]]){
+            return selector;
+        }
+        return nil;
+    };
+    
+    context[@"_OC_NSClassFromString"] = ^id(JSValue *classString){
+        if ([[classString toObject] isKindOfClass:[NSString class]]) {
+            return [JPBoxing boxClass:NSClassFromString([classString toString])];
+        }
+        return nil;
+    };
+    
+    context[@"_OC_NSStringFromClass"] = ^id(JSValue *class){
+        if ([[class toObject] isKindOfClass:[JPBoxing class]]) {
+            Class ret = (Class)[(JPBoxing *)[class toObject] unboxClass];
+            return NSStringFromClass(ret);
+        }else{
+            return NSStringFromClass([[class toObjectOfClass:[JPBoxing class]] unboxClass]);
+        }
+    };
+    
     _nullObj = [[NSObject alloc] init];
     context[@"_OC_null"] = formatOCToJS(_nullObj);
     
@@ -341,7 +374,9 @@ static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) { 
     id obj = formatJSToOC(ret); \
     if ([obj isKindOfClass:[JPBoxing class]]) { \
         return [((JPBoxing *)obj) unboxPointer]; \
-    }   \
+    }else if([obj isKindOfClass:[NSString class]]){   \
+        return NSSelectorFromString(obj);        \
+    } \
     return NULL;
 
 #define JPMETHOD_RET_CLASS    \
@@ -362,7 +397,6 @@ JPMETHOD_IMPLEMENTATION_RET(void, v, nil)
 JPMETHOD_IMPLEMENTATION_RET(id, id, JPMETHOD_RET_ID)
 JPMETHOD_IMPLEMENTATION_RET(void *, pointer, JPMETHOD_RET_POINTER)
 JPMETHOD_IMPLEMENTATION_RET(Class, cls, JPMETHOD_RET_CLASS)
-JPMETHOD_IMPLEMENTATION_RET(SEL, sel, JPMETHOD_RET_SEL)
 JPMETHOD_IMPLEMENTATION_RET(CGRect, rect, JPMETHOD_RET_STRUCT(dictToRect))
 JPMETHOD_IMPLEMENTATION_RET(CGSize, size, JPMETHOD_RET_STRUCT(dictToSize))
 JPMETHOD_IMPLEMENTATION_RET(CGPoint, point, JPMETHOD_RET_STRUCT(dictToPoint))
@@ -610,7 +644,7 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
             JP_OVERRIDE_RET_CASE(pointer, '^')
             JP_OVERRIDE_RET_CASE(pointer, '*')
             JP_OVERRIDE_RET_CASE(cls, '#')
-            JP_OVERRIDE_RET_CASE(sel, ':')
+            JP_OVERRIDE_RET_CASE(pointer, ':') 
             
             case '{': {
                 NSString *typeString = [NSString stringWithUTF8String:returnType];

@@ -25,6 +25,20 @@ var global = this;
     funcToSwizzleReturnString: function(str) {
       return str
     },
+    funcToTestNSSelectorFromString: function() {
+      return NSSelectorFromString("funcToTestNSSelectorFromString")
+    },
+    funcToTestNSStringFromSelector: function() {
+      var selector = NSSelectorFromString("funcToTestNSStringFromSelector")
+      return NSStringFromSelector(selector)
+    },
+    funcToTestNSClassFromString: function(){
+      return NSClassFromString("NSString")
+    },
+    funcToTestNSStringFromClass : function(){
+      var clazz = NSClassFromString("NSString")
+      return NSStringFromClass(clazz)
+    },
     funcToSwizzleWithBlock: function(blk) {
       blk(UIView.alloc().init(), 42)
     },
