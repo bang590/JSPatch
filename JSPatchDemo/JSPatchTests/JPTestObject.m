@@ -173,6 +173,12 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
 }
 
 #pragma mark - swizzle
+
+typedef struct {
+    char *name;
+    int idx;
+}JPTestStruct;
+
 - (void)callSwizzleMethod
 {
     [self funcToSwizzleWithString:@"stringFromOC" view:[[UIView alloc] init] int:42];
@@ -215,6 +221,18 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     NSRange range = [self funcToSwizzleReturnRange:NSMakeRange(0, 42)];
     self.funcToSwizzleReturnRangePassed = range.length == 42;
     
+    SEL selector = [self funcToSwizzleTestSelector:@selector(funcToSwizzleTestSelector:)];
+    self.funcToSwizzleTestSelectorPassed = [NSStringFromSelector(selector) isEqualToString:@"funcToSwizzleTestSelector:"];
+    
+    char *cStr = [self funcToSwizzleTestChar:"JSPatch"];
+    self.funcToSwizzleTestCharPassed = strcmp("JSPatch", cStr) == 0;
+    
+    JPTestStruct *testStruct = (JPTestStruct*)malloc(sizeof(JPTestStruct));
+    testStruct->idx = 42;
+    testStruct->name = "JSPatch";
+    
+    JPTestStruct *testStructReturn = [self funcToSwizzleTestPointer:testStruct];
+    self.funcToSwizzleTestPointerPassed = testStructReturn->idx == 42 && strcmp(testStructReturn->name, "JSPatch") == 0;
 }
 - (void)funcToSwizzleWithString:(NSString *)str view:(UIView *)view int:(NSInteger)i
 {
@@ -282,6 +300,51 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
 {
     
 }
+
+- (Class)funcToSwizzleTestClass:(Class)cls
+{
+    return nil;
+}
+
+- (SEL)funcToSwizzleTestSelector:(SEL)selector
+{
+    return nil;
+}
+
+- (char *)funcToSwizzleTestChar:(char *)cStr
+{
+    return NULL;
+}
+
+- (char *)funcReturnChar
+{
+    return "JSPatch";
+}
+
+- (void)funcTestChar:(char *)cStr
+{
+    self.funcTestCharPassed = strcmp("JSPatch", cStr) == 0;
+}
+
+- (void *)funcToSwizzleTestPointer:(void *)pointer
+{
+    return NULL;
+}
+
+- (void *)funcReturnPointer
+{
+    JPTestStruct *testStruct = (JPTestStruct*)malloc(sizeof(JPTestStruct));
+    testStruct->idx = 42;
+    testStruct->name = "JSPatch";
+    return testStruct;
+}
+
+- (void)funcTestPointer:(void *)pointer
+{
+    JPTestStruct *testStruct = pointer;
+    self.funcTestPointerPassed = testStruct->idx == 42 && strcmp(testStruct->name, "JSPatch") == 0;
+}
+
 
 + (void)classFuncToSwizzle:(JPTestObject *)testObject int:(NSInteger)i
 {
@@ -383,4 +446,17 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     self.funcCallSuperSubObjectPassed = NO;
 }
 
+@end
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wprotocol"
+@implementation JPTestProtocolObject
+- (BOOL)testProtocolMethods
+{
+    double dNum = [self protocolWithDouble:4.2 dict:@{@"name": @"JSPatch"}];
+    NSInteger iNum = [self protocolWithInt:42];
+    NSString *str = [JPTestProtocolObject classProtocolWithString:@"JSPatch" int:42];
+    return dNum - 4.2 < 0.001 && iNum == 42 && [str isEqualToString:@"JSPatch"];
+}
+#pragma clang diagnostic pop
 @end

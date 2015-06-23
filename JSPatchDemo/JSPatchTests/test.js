@@ -25,9 +25,6 @@ var global = this;
     funcToSwizzleReturnString: function(str) {
       return str
     },
-    funcCustom: function(num) {
-      self.setCallCustomFuncPassed(num == 10)
-    },
     funcToSwizzleWithBlock: function(blk) {
       blk(UIView.alloc().init(), 42)
     },
@@ -61,6 +58,18 @@ var global = this;
       dispatch_async_global_queue(dispatchExecBlock);
       dispatch_sync_main(dispatchExecBlock);
       dispatch_after(1, dispatchExecBlock);
+    },
+    funcToSwizzleTestClass: function(cls) {
+      return cls
+    },
+    funcToSwizzleTestSelector: function(sel) {
+      return sel
+    },
+    funcToSwizzleTestChar: function(cStr) {
+      return cStr
+    },
+    funcToSwizzleTestPointer: function(pointer) {
+      return pointer
     }
   },
   {
@@ -82,8 +91,15 @@ var global = this;
   global.ocObj = obj.__obj;
 
   ////////Swizzle
-  obj.callSwizzleMethod() 
-  obj.funcCustom(10)
+  obj.callSwizzleMethod()
+
+  var cls = obj.funcToSwizzleTestClass(JPTestObject.class())
+  obj.setFuncToSwizzleTestClassPassed(obj.isKindOfClass(cls))
+
+  obj.funcTestChar(obj.funcReturnChar())
+  var pointer = obj.funcReturnPointer()
+  obj.funcTestPointer(pointer)
+  free(pointer)
 
   ////////Base
   obj.funcReturnVoid();
@@ -232,12 +248,6 @@ var global = this;
     funcReturnBool: function(view, num) {
       return view && num == 42
     }
-  },
-  {
-    customFunc: function(num) {
-      var view = self.funcReturnView(num)
-      obj.setNewTestObjectCustomFuncPassed(view.frame().x == num)
-    }
   })
 
   var newTestObj = JPNewTestObject.alloc().init()
@@ -245,7 +255,6 @@ var global = this;
   var view = newTestObj.funcReturnView(42) 
   obj.setNewTestObjectReturnViewPassed(view.frame().x == 42) 
   obj.setNewTestObjectReturnBoolPassed(JPNewTestObject.funcReturnBool(view, 42))
-  newTestObj.customFunc(42)
  
   //mutable
   var arr = require('NSMutableArray').alloc().init()
@@ -267,4 +276,22 @@ var global = this;
 
   obj.setConsoleLogPassed(console.log != undefined)
 
+
+  //protocol
+  defineClass("JPTestProtocolObject : NSObject <JPTestProtocol, JPTestProtocol2>", {
+    protocolWithDouble_dict: function(num, dict) {
+      if (dict.objectForKey("name").toJS() == "JSPatch" && num - 4.2 < 0.001) {
+        return num
+      }
+      return 0
+    },
+    protocolWithInt: function(num) {
+      return num
+    }
+  }, {
+    classProtocolWithString_int: function(str, num) {
+      if (num == 42) return str
+      return null
+    }
+  })
 })();

@@ -55,11 +55,16 @@
 @property (nonatomic, assign) BOOL funcToSwizzleReturnSizePassed;
 @property (nonatomic, assign) BOOL funcToSwizzleReturnRangePassed;
 @property (nonatomic, assign) BOOL funcToSwizzleTestGCDPassed;
+@property (nonatomic, assign) BOOL funcToSwizzleTestClassPassed;
+@property (nonatomic, assign) BOOL funcToSwizzleTestSelectorPassed;
+@property (nonatomic, assign) BOOL funcToSwizzleTestCharPassed;
+@property (nonatomic, assign) BOOL funcTestCharPassed;
+@property (nonatomic, assign) BOOL funcToSwizzleTestPointerPassed;
+@property (nonatomic, assign) BOOL funcTestPointerPassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzlePassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnObjPassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnObjCalledOriginalPassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnIntPassed;
-@property (nonatomic, assign) BOOL callCustomFuncPassed;
 
 
 @property (nonatomic, assign) BOOL funcCallSuperPassed;
@@ -91,4 +96,18 @@
 
 @interface JPTestSubObject : JPTestObject
 @property (nonatomic, assign) BOOL funcCallSuperSubObjectPassed;
+@end
+
+@protocol JPTestProtocol <NSObject>
+- (double)protocolWithDouble:(double)num dict:(NSDictionary *)dictionary;
++ (NSString *)classProtocolWithString:(NSString *)string int:(NSInteger)num;
+@end
+
+@protocol JPTestProtocol2 <NSObject>
+@optional
+- (NSInteger)protocolWithInt:(NSInteger)num;
+@end
+
+@interface JPTestProtocolObject : NSObject <JPTestProtocol, JPTestProtocol2>
+- (BOOL)testProtocolMethods;
 @end

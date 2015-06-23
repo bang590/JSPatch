@@ -2,7 +2,6 @@ var global = this
 
 ;(function(){
   var callbacks = {}
-  var localMethods = {}
   var callbackID = 0
   
   var _methodNameOCToJS = function(name) {
@@ -56,23 +55,11 @@ var global = this
     return _formatOCToJS(ret)
   }
 
-  var _getCustomMethod = function(clsName, methodName, isInstance) {
-    var obj = localMethods[clsName]
-    if (!obj) return undefined
-
-    if (isInstance) {
-      return obj.instMethods && obj.instMethods[methodName]
-    } else {
-      return obj.clsMethods && obj.clsMethods[methodName]
-    }
-  }
-
   Object.prototype.__c = function(methodName) {
-    if (!this.__obj && !this.__clsName) return this[methodName].bind(this);
-    var customMethod = _getCustomMethod(this.__clsName, methodName, !!this.__obj)
-    if (customMethod) {
-      return customMethod.bind(this)
+    if (!this.__obj && !this.__clsName) {
+      return this[methodName].bind(this);
     }
+
     var self = this
     if (methodName == 'super') {
       return function() {
@@ -103,7 +90,7 @@ var global = this
     return lastRequire
   }
 
-  var _formatDefineMethod = function(methods, newMethods) {
+  var _formatDefineMethods = function(methods, newMethods) {
     for (var methodName in methods) {
       (function(){
        var originMethod = methods[methodName]
@@ -122,35 +109,12 @@ var global = this
     }
   }
 
-  var _formatLocalMethods = function(methods) {
-    for (var methodName in methods) {
-      (function(){
-        var originMethod = methods[methodName]
-        methods[methodName] = function() {
-          var args = Array.prototype.slice.call(arguments)
-          var lastSelf = global.self
-          global.self = this
-          var ret = originMethod.apply(this, args)
-          global.self = lastSelf
-          return ret
-        }
-      })()  
-    }
-  }
-
-  global.defineClass = function(declaration, instMethods, clsMethods, customMethods) {
+  global.defineClass = function(declaration, instMethods, clsMethods) {
     var newInstMethods = {}, newClsMethods = {}
-    _formatDefineMethod(instMethods, newInstMethods)
-    _formatDefineMethod(clsMethods, newClsMethods)
+    _formatDefineMethods(instMethods, newInstMethods)
+    _formatDefineMethods(clsMethods, newClsMethods)
 
     var ret = _OC_defineClass(declaration, newInstMethods, newClsMethods)
-
-    if (customMethods) {
-      _formatLocalMethods(customMethods)
-      localMethods[ret["cls"]] = {
-        instMethods: customMethods
-      }
-    }
 
     return require(ret["cls"])
   }
@@ -173,6 +137,7 @@ var global = this
   
   global.YES = 1
   global.NO = 0
+  global.free = _OC_free;
   
   global.__defineGetter__("nsnull", function() {
     return _formatOCToJS(_OC_null)

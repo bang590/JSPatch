@@ -90,7 +90,13 @@
     XCTAssert(obj.funcToSwizzleReturnPointPassed, @"funcToSwizzleReturnPointPassed");
     XCTAssert(obj.funcToSwizzleReturnSizePassed, @"funcToSwizzleReturnSizePassed");
     XCTAssert(obj.funcToSwizzleReturnRangePassed, @"funcToSwizzleReturnRangePassed");
-    
+    XCTAssert(obj.funcToSwizzleTestClassPassed, @"funcToSwizzleTestClassPassed");
+    XCTAssert(obj.funcToSwizzleTestSelectorPassed, @"funcToSwizzleTestSelectorPassed");
+    XCTAssert(obj.funcToSwizzleTestCharPassed, @"funcToSwizzleTestCharPassed");
+    XCTAssert(obj.funcTestCharPassed, @"funcTestCharPassed");
+    XCTAssert(obj.funcToSwizzleTestPointerPassed, @"funcToSwizzleTestPointerPassed");
+    XCTAssert(obj.funcTestPointerPassed, @"funcTestPointerPassed");
+
     NSDictionary *originalDict = @{@"k": @"v"};
     NSDictionary *dict = [obj funcToSwizzleReturnDictionary:originalDict];
     XCTAssert(originalDict == dict, @"funcToSwizzleReturnDictionary");
@@ -108,7 +114,6 @@
     XCTAssert(obj.classFuncToSwizzleReturnObjPassed, @"classFuncToSwizzleReturnObjPassed");
     XCTAssert(obj.classFuncToSwizzleReturnObjCalledOriginalPassed, @"classFuncToSwizzleReturnObjCalledOriginalPassed");
     XCTAssert(obj.classFuncToSwizzleReturnIntPassed, @"classFuncToSwizzleReturnIntPassed");
-    XCTAssert(obj.callCustomFuncPassed, @"callCustomFuncPassed");
     
     XCTAssert(subObj.funcCallSuperSubObjectPassed, @"funcCallSuperSubObjectPassed");
     XCTAssert(subObj.funcCallSuperPassed, @"funcCallSuperPassed");
@@ -119,7 +124,6 @@
     
     XCTAssert(obj.newTestObjectReturnViewPassed, @"newTestObjectReturnViewPassed");
     XCTAssert(obj.newTestObjectReturnBoolPassed, @"newTestObjectReturnBoolPassed");
-    XCTAssert(obj.newTestObjectCustomFuncPassed, @"newTestObjectCustomFuncPassed");
 
     XCTAssert(obj.mutableArrayPassed, @"mutableArrayPassed");
     XCTAssert(obj.mutableDictionaryPassed, @"mutableDictionaryPassed");
@@ -127,6 +131,8 @@
     
     XCTAssertEqualObjects(@"overrided",[subObj funcOverrideParentMethod]);
     
+    JPTestProtocolObject *testProtocolObj = [[JPTestProtocolObject alloc] init];
+    XCTAssert([testProtocolObj testProtocolMethods], @"testProtocolMethodsPassed");
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     [obj funcToSwizzleTestGCD:^{
@@ -167,7 +173,6 @@
     NSString* t2Bm2Return = [t2objB m2];
     NSString* t2Cm1Return = [t2objC m1];
     NSString* t2Cm2Return = [t2objC m2];
-    NSString* t2Cm3Return = [t2objC m3];
     
     id t3objA = [[JPInheritTest03ObjectA alloc] init];
     id t3objB = [[JPInheritTest03ObjectB alloc] init];
@@ -223,7 +228,7 @@
 dispatch_semaphore_t sem;
 int finishcount = 0;
 bool success = false;
-#define LOOPCOUNT 100
+#define LOOPCOUNT 1
 void thread(void* context);
 
 - (void)testDispatchQueue
