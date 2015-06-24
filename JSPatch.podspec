@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "JSPatch"
-  s.version      = "0.0.2"
+  s.version      = "0.0.3"
   s.summary      = "JSPatch bridge Objective-C and JavaScript. You can call any"  \
                    " Objective-C class and method in JavaScript by just" \
                    " including a small engine."
