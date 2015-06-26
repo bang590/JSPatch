@@ -806,10 +806,13 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     id returnValue;
     if (strncmp(returnType, "v", 1) != 0) {
         if (strncmp(returnType, "@", 1) == 0) {
-            id __unsafe_unretained tempResultSet;
-            [invocation getReturnValue:&tempResultSet];
-            returnValue = tempResultSet;
-            
+            void *result;
+            [invocation getReturnValue:&result];
+            if ([selectorName isEqualToString:@"alloc"] || [selectorName isEqualToString:@"new"]) {
+                returnValue = (__bridge_transfer id)result;
+            } else {
+                returnValue = (__bridge id)result;
+            }
             return formatOCToJS(returnValue);
             
         } else {
