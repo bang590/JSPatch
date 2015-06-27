@@ -224,6 +224,18 @@ typedef struct {
     SEL selector = [self funcToSwizzleTestSelector:@selector(funcToSwizzleTestSelector:)];
     self.funcToSwizzleTestSelectorPassed = [NSStringFromSelector(selector) isEqualToString:@"funcToSwizzleTestSelector:"];
     
+    SEL testNSSelectorFromString = [self funcToTestNSSelectorFromString];
+    self.funcToSwizzleTestNSSelectorFromStringPassed = [NSStringFromSelector(testNSSelectorFromString) isEqualToString:@"funcToTestNSSelectorFromString"];
+    
+    NSString *testNSStringFromSelector = [self funcToTestNSStringFromSelector];
+    self.funcToSwizzleTestNSStringFromSelectorPassed = [testNSStringFromSelector isEqualToString:@"funcToTestNSStringFromSelector"];
+    
+    Class testNSClassFromString = [self funcToTestNSClassFromString];
+    self.funcToSwizzleTestNSClassFromStringPassed = [NSStringFromClass(testNSClassFromString) isEqualToString:@"NSString"];
+    
+    NSString *testNSStringFromClass = [self funcToTestNSStringFromClass];
+    self.funcToSwizzleTestNSStringFromClassPassed = [testNSStringFromClass isEqualToString:@"NSString"];
+    
     char *cStr = [self funcToSwizzleTestChar:"JSPatch"];
     self.funcToSwizzleTestCharPassed = strcmp("JSPatch", cStr) == 0;
     
@@ -265,6 +277,26 @@ typedef struct {
 }
 
 - (NSString *)funcToSwizzleReturnString:(NSString *)str
+{
+    return nil;
+}
+
+- (SEL)funcToTestNSSelectorFromString
+{
+    return nil;
+}
+
+- (NSString *)funcToTestNSStringFromSelector
+{
+    return nil;
+}
+
+- (Class)funcToTestNSClassFromString
+{
+    return nil;
+}
+
+- (NSString *)funcToTestNSStringFromClass
 {
     return nil;
 }

@@ -57,6 +57,12 @@
 @property (nonatomic, assign) BOOL funcToSwizzleTestGCDPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleTestClassPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleTestSelectorPassed;
+
+@property (nonatomic, assign) BOOL funcToSwizzleTestNSSelectorFromStringPassed;
+@property (nonatomic, assign) BOOL funcToSwizzleTestNSClassFromStringPassed;
+@property (nonatomic, assign) BOOL funcToSwizzleTestNSStringFromSelectorPassed;
+@property (nonatomic, assign) BOOL funcToSwizzleTestNSStringFromClassPassed;
+
 @property (nonatomic, assign) BOOL funcToSwizzleTestCharPassed;
 @property (nonatomic, assign) BOOL funcTestCharPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleTestPointerPassed;

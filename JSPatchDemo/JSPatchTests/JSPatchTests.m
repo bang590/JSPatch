@@ -95,7 +95,11 @@
     XCTAssert(obj.funcTestCharPassed, @"funcTestCharPassed");
     XCTAssert(obj.funcToSwizzleTestPointerPassed, @"funcToSwizzleTestPointerPassed");
     XCTAssert(obj.funcTestPointerPassed, @"funcTestPointerPassed");
-
+    
+    XCTAssert(obj.funcToSwizzleTestNSClassFromStringPassed, @"funcToSwizzleTestNSClassFromStringPassed");
+    XCTAssert(obj.funcToSwizzleTestNSSelectorFromStringPassed,@"funcToSwizzleTestNSSelectorFromStringPassed");
+    XCTAssert(obj.funcToSwizzleTestNSStringFromClassPassed,@"funcToSwizzleTestNSStringFromClassPassed");
+    XCTAssert(obj.funcToSwizzleTestNSStringFromSelectorPassed,@"funcToSwizzleTestNSStringFromSelectorPassed");
     NSDictionary *originalDict = @{@"k": @"v"};
     NSDictionary *dict = [obj funcToSwizzleReturnDictionary:originalDict];
     XCTAssert(originalDict == dict, @"funcToSwizzleReturnDictionary");

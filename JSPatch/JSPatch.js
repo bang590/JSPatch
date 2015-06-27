@@ -138,6 +138,10 @@ var global = this
   global.YES = 1
   global.NO = 0
   global.free = _OC_free;
+  global.NSSelectorFromString = _OC_NSSelectorFromString;
+  global.NSStringFromSelector = _OC_NSStringFromSelector;
+  global.NSClassFromString    = _OC_NSClassFromString;
+  global.NSStringFromClass    = _OC_NSStringFromClass;
   
   global.__defineGetter__("nsnull", function() {
     return _formatOCToJS(_OC_null)
