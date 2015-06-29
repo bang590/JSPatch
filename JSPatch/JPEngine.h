@@ -13,4 +13,6 @@
 + (void)startEngine;
 + (JSValue *)evaluateScript:(NSString *)script;
 + (JSContext *)context;
+
++ (void)implementInclude:(void(^)(NSString *filePath))block;
 @end

@@ -15,7 +15,7 @@
 		2D6D12FD1B0B8CF20095A435 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D12FA1B0B8CF20095A435 /* Images.xcassets */; };
 		2D6D12FF1B0B8CF20095A435 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6D12FC1B0B8CF20095A435 /* main.m */; };
 		2D6D13011B0B8CFF0095A435 /* demo.js in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D13001B0B8CFF0095A435 /* demo.js */; };
-		2DD801281AF336BC005580A8 /* test.js in Resources */ = {isa = PBXBuildFile; fileRef = DE94AE451AF2480000E461D4 /* test.js */; };
+		DE6FFEE61B40F5790005EE83 /* protocolTest.js in Resources */ = {isa = PBXBuildFile; fileRef = DE6FFEE51B40F5790005EE83 /* protocolTest.js */; };
 		DE94AE2B1AF246C000E461D4 /* JSPatchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94AE2A1AF246C000E461D4 /* JSPatchTests.m */; };
 		DE94AE461AF2480000E461D4 /* JPTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94AE441AF2480000E461D4 /* JPTestObject.m */; };
 		DE94AE471AF2480000E461D4 /* test.js in Resources */ = {isa = PBXBuildFile; fileRef = DE94AE451AF2480000E461D4 /* test.js */; };
@@ -47,6 +47,7 @@
 		2D6D12FB1B0B8CF20095A435 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D6D12FC1B0B8CF20095A435 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2D6D13001B0B8CFF0095A435 /* demo.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = demo.js; sourceTree = "<group>"; };
+		DE6FFEE51B40F5790005EE83 /* protocolTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = protocolTest.js; sourceTree = "<group>"; };
 		DE94AE0B1AF246BF00E461D4 /* JSPatchDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSPatchDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE94AE241AF246C000E461D4 /* JSPatchDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JSPatchDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE94AE291AF246C000E461D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -141,6 +142,7 @@
 				DE94AE441AF2480000E461D4 /* JPTestObject.m */,
 				E1B89EA11B218986000645C2 /* JPInheritanceTestObjects.h */,
 				E1B89EA21B218986000645C2 /* JPInheritanceTestObjects.m */,
+				DE6FFEE51B40F5790005EE83 /* protocolTest.js */,
 				2D0DF7061B22F75C005695DA /* inheritTest.js */,
 				DE94AE451AF2480000E461D4 /* test.js */,
 				E1B89EAD1B228818000645C2 /* multithreadTest.js */,
@@ -238,7 +240,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DD801281AF336BC005580A8 /* test.js in Resources */,
 				2D5D892E1B0B8C3B009382EC /* JSPatch.js in Resources */,
 				2D6D12FD1B0B8CF20095A435 /* Images.xcassets in Resources */,
 				2D6D13011B0B8CFF0095A435 /* demo.js in Resources */,
@@ -249,6 +250,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE6FFEE61B40F5790005EE83 /* protocolTest.js in Resources */,
 				2D0DF7071B22F75C005695DA /* inheritTest.js in Resources */,
 				DE94AE471AF2480000E461D4 /* test.js in Resources */,
 				E1B89EAE1B228818000645C2 /* multithreadTest.js in Resources */,

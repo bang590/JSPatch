@@ -36,7 +36,16 @@
 
 - (void)testEngine {
     
-    NSString *testPath = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"js"];
+    [JPEngine implementInclude:^(NSString *filePath) {
+        NSArray *component = [filePath componentsSeparatedByString:@"."];
+        if (component.count > 1) {
+            NSString *testPath = [[NSBundle bundleForClass:[self class]] pathForResource:component[0] ofType:component[1]];
+            NSString *script = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:testPath] encoding:NSUTF8StringEncoding];
+            [JPEngine evaluateScript:script];
+        }
+    }];
+    
+    NSString *testPath = [[NSBundle bundleForClass:[self class]] pathForResource:@"test" ofType:@"js"];
     NSString *jsTest = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:testPath] encoding:NSUTF8StringEncoding];
     [JPEngine evaluateScript:jsTest];
     

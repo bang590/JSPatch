@@ -50,10 +50,12 @@ static JSContext *_context;
 
 #pragma mark - APIS
 
+
 static NSString *_regexStr = @"\\.\\s*(\\w+)\\s*\\(";
 static NSString *_replaceStr = @".__c(\"$1\")(";
 static NSRegularExpression* _regex;
 static NSObject *_nullObj;
+static void(^includeBlock)(NSString *filePath);
 
 + (JSContext *)context
 {
@@ -73,7 +75,6 @@ static NSObject *_nullObj;
     NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [_regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:_replaceStr]];
     return [_context evaluateScript:formatedScript];
 }
-
 
 + (void)startEngine
 {
@@ -156,15 +157,20 @@ static NSObject *_nullObj;
         }
     };
     
-    context[@"_OC_free"] = ^(JSValue *jsVal) {
+    context[@"_OC_catch"] = ^(JSValue *msg, JSValue *stack) {
+        NSAssert(NO, @"js exception, \nmsg: %@, \nstack: \n %@", [msg toObject], [stack toObject]);
+    };
+    
+    context[@"free"] = ^(JSValue *jsVal) {
         JPBoxing *obj = formatJSToOC(jsVal);
         if ([obj isKindOfClass:[JPBoxing class]] && obj.pointer) {
             free(obj.pointer);
         }
     };
     
-    context[@"_OC_catch"] = ^(JSValue *msg, JSValue *stack) {
-        NSAssert(NO, @"js exception, \nmsg: %@, \nstack: \n %@", [msg toObject], [stack toObject]);
+    context[@"include"] = ^(JSValue *path) {
+        NSAssert(includeBlock, @"please setup include by +implementInclude:");
+        if (includeBlock) includeBlock([path toString]);
     };
     
     context.exceptionHandler = ^(JSContext *con, JSValue *exception) {
@@ -178,6 +184,11 @@ static NSObject *_nullObj;
     NSAssert(path, @"can't find JSPatch.js");
     NSString *jsCore = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:path] encoding:NSUTF8StringEncoding];
     [_context evaluateScript:jsCore];
+}
+
++ (void)implementInclude:(void(^)(NSString *filePath))block
+{
+    includeBlock = block;
 }
 
 #pragma mark - Implements
