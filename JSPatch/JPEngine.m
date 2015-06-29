@@ -240,6 +240,9 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
     Class cls = NSClassFromString(className);
     if (!cls) {
         Class superCls = NSClassFromString(superClassName);
+        if(!superCls){
+            return @{@"cls": @""};
+        }
         cls = objc_allocateClassPair(superCls, className.UTF8String, 0);
         objc_registerClassPair(cls);
     }

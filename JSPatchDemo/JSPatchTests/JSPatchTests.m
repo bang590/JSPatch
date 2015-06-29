@@ -12,6 +12,7 @@
 #import "JPTestObject.h"
 #import "JPInheritanceTestObjects.h"
 #import "JPMultithreadTestObject.h"
+#import "JPTestContainer.h"
 
 @interface JSPatchTests : XCTestCase
 
@@ -142,6 +143,18 @@
     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
                                  beforeDate:[NSDate dateWithTimeIntervalSinceNow:10]];
+}
+
+- (void)testContainer {
+    
+    NSString *testPath = [[NSBundle mainBundle] pathForResource:@"container" ofType:@"js"];
+    NSString *jsTest = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:testPath] encoding:NSUTF8StringEncoding];
+    [JPEngine evaluateScript:jsTest];
+    
+    JSValue *objValue = [JPEngine context][@"ocObj"];
+    JPTestContainer *obj = [objValue toObjectOfClass:[JPTestContainer class]];
+    
+    XCTAssert(obj.newArray, @"newArray");
 }
 
 - (void)testInheritance
