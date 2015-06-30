@@ -3,7 +3,7 @@
 //  InstaScript
 //
 //  Created by bang on 15/4/30.
-//  Copyright (c) 2015年 bang. All rights reserved.
+//  Copyright (c) 2015 bang. All rights reserved.
 //
 
 #import "JPTestObject.h"
@@ -429,7 +429,14 @@ typedef struct {
     return @"orgi";
 }
 
+#pragma mark CGAffineTransform
+- (CGAffineTransform)funcWithTransform:(CGAffineTransform)transform
+{
+    return transform;
+}
+
 @end
+
 
 
 @implementation JPTestSubObject

@@ -15,6 +15,9 @@
 		2D6D12FD1B0B8CF20095A435 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D12FA1B0B8CF20095A435 /* Images.xcassets */; };
 		2D6D12FF1B0B8CF20095A435 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6D12FC1B0B8CF20095A435 /* main.m */; };
 		2D6D13011B0B8CFF0095A435 /* demo.js in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D13001B0B8CFF0095A435 /* demo.js */; };
+		DE6FFEEC1B4243500005EE83 /* JPCGTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6FFEE91B4243500005EE83 /* JPCGTransform.m */; };
+		DE6FFEED1B4243500005EE83 /* JPInclude.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6FFEEB1B4243500005EE83 /* JPInclude.m */; };
+		DE6FFF031B42B01C0005EE83 /* protocolTest.js in Resources */ = {isa = PBXBuildFile; fileRef = DE6FFF021B42B01C0005EE83 /* protocolTest.js */; };
 		DE94AE2B1AF246C000E461D4 /* JSPatchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94AE2A1AF246C000E461D4 /* JSPatchTests.m */; };
 		DE94AE461AF2480000E461D4 /* JPTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94AE441AF2480000E461D4 /* JPTestObject.m */; };
 		DE94AE471AF2480000E461D4 /* test.js in Resources */ = {isa = PBXBuildFile; fileRef = DE94AE451AF2480000E461D4 /* test.js */; };
@@ -46,6 +49,11 @@
 		2D6D12FB1B0B8CF20095A435 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D6D12FC1B0B8CF20095A435 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2D6D13001B0B8CFF0095A435 /* demo.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = demo.js; sourceTree = "<group>"; };
+		DE6FFEE81B4243500005EE83 /* JPCGTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCGTransform.h; sourceTree = "<group>"; };
+		DE6FFEE91B4243500005EE83 /* JPCGTransform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCGTransform.m; sourceTree = "<group>"; };
+		DE6FFEEA1B4243500005EE83 /* JPInclude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPInclude.h; sourceTree = "<group>"; };
+		DE6FFEEB1B4243500005EE83 /* JPInclude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPInclude.m; sourceTree = "<group>"; };
+		DE6FFF021B42B01C0005EE83 /* protocolTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = protocolTest.js; sourceTree = "<group>"; };
 		DE94AE0B1AF246BF00E461D4 /* JSPatchDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSPatchDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE94AE241AF246C000E461D4 /* JSPatchDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JSPatchDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE94AE291AF246C000E461D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -81,6 +89,7 @@
 		2D5D89161B0B8BFF009382EC /* JSPatchDemo */ = {
 			isa = PBXGroup;
 			children = (
+				DE6FFEE71B4243500005EE83 /* Extensions */,
 				2D5D89291B0B8C3B009382EC /* JSPatch */,
 				2D6D12F91B0B8CF20095A435 /* Supporting Files */,
 				2D5D89171B0B8BFF009382EC /* AppDelegate.h */,
@@ -113,6 +122,18 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		DE6FFEE71B4243500005EE83 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				DE6FFEE81B4243500005EE83 /* JPCGTransform.h */,
+				DE6FFEE91B4243500005EE83 /* JPCGTransform.m */,
+				DE6FFEEA1B4243500005EE83 /* JPInclude.h */,
+				DE6FFEEB1B4243500005EE83 /* JPInclude.m */,
+			);
+			name = Extensions;
+			path = ../../Extensions;
+			sourceTree = "<group>";
+		};
 		DE94AE021AF246BE00E461D4 = {
 			isa = PBXGroup;
 			children = (
@@ -140,6 +161,7 @@
 				DE94AE441AF2480000E461D4 /* JPTestObject.m */,
 				E1B89EA11B218986000645C2 /* JPInheritanceTestObjects.h */,
 				E1B89EA21B218986000645C2 /* JPInheritanceTestObjects.m */,
+				DE6FFF021B42B01C0005EE83 /* protocolTest.js */,
 				2D0DF7061B22F75C005695DA /* inheritTest.js */,
 				DE94AE451AF2480000E461D4 /* test.js */,
 				E1B89EAD1B228818000645C2 /* multithreadTest.js */,
@@ -247,6 +269,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE6FFF031B42B01C0005EE83 /* protocolTest.js in Resources */,
 				2D0DF7071B22F75C005695DA /* inheritTest.js in Resources */,
 				DE94AE471AF2480000E461D4 /* test.js in Resources */,
 				E1B89EAE1B228818000645C2 /* multithreadTest.js in Resources */,
@@ -260,7 +283,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE6FFEEC1B4243500005EE83 /* JPCGTransform.m in Sources */,
 				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
+				DE6FFEED1B4243500005EE83 /* JPInclude.m in Sources */,
 				2D5D892D1B0B8C3B009382EC /* JPEngine.m in Sources */,
 				E1B89EA01B203482000645C2 /* JPMultithreadTestObject.m in Sources */,
 				2D5D89251B0B8BFF009382EC /* JPViewController.m in Sources */,

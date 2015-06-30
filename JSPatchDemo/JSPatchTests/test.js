@@ -1,3 +1,4 @@
+include('protocolTest.js')
 var global = this;
 
 (function() {
@@ -277,21 +278,11 @@ var global = this;
   obj.setConsoleLogPassed(console.log != undefined)
 
 
-  //protocol
-  defineClass("JPTestProtocolObject : NSObject <JPTestProtocol, JPTestProtocol2>", {
-    protocolWithDouble_dict: function(num, dict) {
-      if (dict.objectForKey("name").toJS() == "JSPatch" && num - 4.2 < 0.001) {
-        return num
-      }
-      return 0
-    },
-    protocolWithInt: function(num) {
-      return num
-    }
-  }, {
-    classProtocolWithString_int: function(str, num) {
-      if (num == 42) return str
-      return null
-    }
-  })
+
+  //extension
+  var transform = obj.funcWithTransform({tx: 100, ty: 100, a: 1, b: 0, c: 0, d: 1})
+  obj.setFuncWithTransformPassed(transform.tx == 100 && transform.ty == 100 && transform.a == 1)
+  var translated = CGAffineTransformTranslate(transform, 10, 10);
+  obj.setTransformTranslatePassed(translated.tx == 110 && translated.ty == 110)
+  
 })();
