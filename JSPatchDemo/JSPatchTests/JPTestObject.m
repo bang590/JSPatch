@@ -60,6 +60,21 @@
     self.funcWithNilPassed = nilObj == nil;
 }
 
+- (id)funcReturnNil
+{
+    return nil;
+}
+
+- (BOOL)funcTestBool:(BOOL)b
+{
+    return b;
+}
+
+- (NSNumber *)funcTestNSNumber:(NSNumber *)num
+{
+    return num;
+}
+
 - (void)funcWithNil:(NSObject *)nilObj dict:(NSDictionary *)dict str:(NSString *)str num:(double)num
 {
     self.funcWithNilAndOthersPassed = nilObj == nil && [dict[@"k"] isEqualToString:@"JSPatch"] && [str isEqualToString:@"JSPatch"] && num - 4.2 < 0.001;

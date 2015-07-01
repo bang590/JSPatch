@@ -85,6 +85,7 @@ static NSString *_regexStr = @"\\.\\s*(\\w+)\\s*\\(";
 static NSString *_replaceStr = @".__c(\"$1\")(";
 static NSRegularExpression* _regex;
 static NSObject *_nullObj;
+static NSObject *_nilObj;
 static NSMutableArray *_extensions;
 static NSMutableArray *_structExtensions;
 
@@ -159,6 +160,7 @@ static NSMutableArray *_structExtensions;
     };
     
     _nullObj = [[NSObject alloc] init];
+    _nilObj = [[NSObject alloc] init];
     context[@"_OC_null"] = formatOCToJS(_nullObj);
     
     __weak JSContext *weakCtx = context;
@@ -392,7 +394,8 @@ static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) { 
 
 #define JPMETHOD_RET_ID \
     id obj = formatJSToOC(ret); \
-    if ([obj isKindOfClass:[NSNull class]]) return nil;  \
+    if (obj == _nilObj ||   \
+        ([obj isKindOfClass:[NSNumber class]] && strcmp([obj objCType], "c") == 0 && ![obj boolValue])) return nil;  \
     return obj;
 
 #define JPMETHOD_RET_STRUCT(_methodName)    \
@@ -500,9 +503,9 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                 [invocation getArgument:&arg atIndex:i];
                 static const char *blockType = @encode(typeof(^{}));
                 if (!strcmp(argumentType, blockType)) {
-                    [argList addObject:(arg ? [arg copy]: [NSNull null])];
+                    [argList addObject:(arg ? [arg copy]: _nilObj)];
                 } else {
-                    [argList addObject:(arg ? arg: [NSNull null])];
+                    [argList addObject:(arg ? arg: _nilObj)];
                 }
                 break;
             }
@@ -540,7 +543,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                 SEL selector;
                 [invocation getArgument:&selector atIndex:i];
                 NSString *selectorName = NSStringFromSelector(selector);
-                [argList addObject:(selectorName ? selectorName: [NSNull null])];
+                [argList addObject:(selectorName ? selectorName: _nilObj)];
                 break;
             }
             case '^':
@@ -767,7 +770,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 
             case ':': {
                 SEL value = nil;
-                if (![valObj isEqual:[NSNull null]]) {
+                if (valObj == _nilObj) {
                     value = NSSelectorFromString(valObj);
                 }
                 [invocation setArgument:&value atIndex:i];
@@ -821,7 +824,8 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     [invocation setArgument:&valObj atIndex:i];
                     break;
                 }
-                if ([valObj isEqual:[NSNull null]]) {
+                if (valObj == _nilObj ||
+                    ([valObj isKindOfClass:[NSNumber class]] && strcmp([valObj objCType], "c") == 0 && ![valObj boolValue])) {
                     valObj = nil;
                     [invocation setArgument:&valObj atIndex:i];
                     break;
@@ -1055,7 +1059,8 @@ id formatOCToJS(id obj)
 id formatJSToOC(JSValue *jsval)
 {
     id obj = [jsval toObject];
-    if (!obj) return [NSNull null]; 
+    if (!obj || [obj isKindOfClass:[NSNull class]]) return _nilObj;
+    
     if ([obj isKindOfClass:[JPBoxing class]]) return [obj unbox];
     if ([obj isKindOfClass:[NSArray class]]) {
         NSMutableArray *newArr = [[NSMutableArray alloc] init];
@@ -1091,7 +1096,7 @@ static id _formatOCToJSList(NSArray *list)
 
 static NSDictionary *_wrapObj(id obj)
 {
-    if (!obj || [obj isKindOfClass:[NSNull class]]) {
+    if (!obj || obj == _nilObj) {
         return @{@"__isNull": @(YES)};
     }
     return @{@"__clsName": NSStringFromClass([obj class]), @"__obj": obj};

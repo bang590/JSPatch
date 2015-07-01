@@ -54,8 +54,11 @@
     
     XCTAssert(obj.funcWithIntPassed, @"funcWithIntPassed");
     XCTAssert(obj.funcWithNilPassed, @"funcWithNilPassed");
+    XCTAssert(obj.funcReturnNilPassed, @"funcReturnNilPassed");
     XCTAssert(obj.funcWithNilAndOthersPassed, @"funcWithNilAndOthersPassed");
     XCTAssert(obj.funcWithNullPassed, @"funcWithNullPassed");
+    XCTAssert(obj.funcTestBoolPassed, @"funcTestBoolPassed");
+    XCTAssert(obj.funcTestNSNumberPassed, @"funcTestNSNumberPassed");
     
     XCTAssert(obj.funcWithDictAndDoublePassed, @"funcWithDictAndDoublePassed");
     

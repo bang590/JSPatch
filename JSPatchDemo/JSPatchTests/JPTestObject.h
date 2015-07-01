@@ -18,8 +18,12 @@
 
 @property (nonatomic, assign) BOOL funcWithIntPassed;
 @property (nonatomic, assign) BOOL funcWithNilPassed;
+@property (nonatomic, assign) BOOL funcReturnNilPassed;
 @property (nonatomic, assign) BOOL funcWithNilAndOthersPassed;
 @property (nonatomic, assign) BOOL funcWithNullPassed;
+@property (nonatomic, assign) BOOL funcTestBoolPassed;
+@property (nonatomic, assign) BOOL funcTestNSNumberPassed;
+
 
 @property (nonatomic, assign) BOOL funcWithDictAndDoublePassed;
 

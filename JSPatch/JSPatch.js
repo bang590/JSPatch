@@ -14,10 +14,10 @@ var global = this
   }
 
   var _formatOCToJS = function(obj) {
-    if (obj === undefined || obj === null) return null
+    if (obj === undefined || obj === null) return false
     if (typeof obj == "object") {
       if (obj.__obj) return obj
-      if (obj.__isNull) return null
+      if (obj.__isNull) return false
     }
     if (obj instanceof Array) {
       var ret = []
@@ -57,6 +57,12 @@ var global = this
   }
 
   Object.prototype.__c = function(methodName) {
+    if (this instanceof Boolean) {
+      return function() {
+        return false
+      }
+    }
+    
     if (!this.__obj && !this.__clsName) {
       return this[methodName].bind(this);
     }
