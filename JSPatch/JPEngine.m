@@ -52,26 +52,36 @@ id formatJSToOC(JSValue *val);
 id formatOCToJS(id obj);
 
 @implementation JPExtension
+
 + (instancetype)instance
 {
     return [[self alloc] init];
 }
+
 - (void *)formatPointerJSToOC:(JSValue *)val
 {
-    return [((JPBoxing *)[val toObject]) unboxPointer];
+    if ([[val toObject] isKindOfClass:[NSDictionary class]]) {
+        return [(JPBoxing *)([val toObject][@"__obj"]) unboxPointer];
+    }else{
+        return [((JPBoxing *)[val toObject]) unboxPointer];
+    }
 }
+
 - (id)formatPointerOCToJS:(void *)pointer
 {
-    return [JPBoxing boxPointer:pointer];
+    return formatOCToJS([JPBoxing boxPointer:pointer]);
 }
+
 - (id)formatJSToOC:(JSValue *)val
 {
     return formatJSToOC(val);
 }
+
 - (id)formatOCToJS:(id)obj
 {
     return formatOCToJS(obj);
 }
+
 @end
 
 
