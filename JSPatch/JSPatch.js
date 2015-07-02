@@ -1,6 +1,7 @@
 var global = this
 
-;(function(){
+;(function() {
+
   var callbacks = {}
   var callbackID = 0
   
@@ -13,32 +14,32 @@ var global = this
   }
 
   var _formatOCToJS = function(obj) {
-     if (obj === undefined || obj === null) return null
-     if (typeof obj == "object") {
-       if (obj.__obj) return obj
-       if (obj.__isNull) return null
-     }
-     if (obj instanceof Array) {
-        var ret = []
-        obj.forEach(function(o){
-          ret.push(_formatOCToJS(o))
-        })
-        return ret
-     }
-     if (obj instanceof Function) {
-        return function() {
-          var args = Array.prototype.slice.call(arguments)
-          obj.apply(obj, _OC_formatJSToOC(args))
-        }
-     }
-     if (obj instanceof Object) {
-        var ret = {}
-        for (var key in obj) {
-          ret[key] = _formatOCToJS(obj[key])
-        }
-        return ret
-     }
-     return obj
+    if (obj === undefined || obj === null) return false
+    if (typeof obj == "object") {
+      if (obj.__obj) return obj
+      if (obj.__isNull) return false
+    }
+    if (obj instanceof Array) {
+      var ret = []
+      obj.forEach(function(o) {
+        ret.push(_formatOCToJS(o))
+      })
+      return ret
+    }
+    if (obj instanceof Function) {
+      return function() {
+        var args = Array.prototype.slice.call(arguments)
+        obj.apply(obj, _OC_formatJSToOC(args))
+      }
+    }
+    if (obj instanceof Object) {
+      var ret = {}
+      for (var key in obj) {
+        ret[key] = _formatOCToJS(obj[key])
+      }
+      return ret
+    }
+    return obj
   }
   
   var _methodFunc = function(instance, clsName, methodName, args, isSuper) {
@@ -56,6 +57,12 @@ var global = this
   }
 
   Object.prototype.__c = function(methodName) {
+    if (this instanceof Boolean) {
+      return function() {
+        return false
+      }
+    }
+    
     if (!this.__obj && !this.__clsName) {
       return this[methodName].bind(this);
     }
@@ -122,7 +129,7 @@ var global = this
   global._callCB = function(cbID, arg) {
     if (callbacks[cbID]) callbacks[cbID](arg)
   }
-  global.block = function(args, cb){
+  global.block = function(args, cb) {
     var id = callbackID++
     callbacks[id] = function(cacheIdx) {
       var args = _OC_getBlockArguments(cacheIdx)

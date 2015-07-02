@@ -3,7 +3,7 @@
 //  InstaScript
 //
 //  Created by bang on 15/4/30.
-//  Copyright (c) 2015年 bang. All rights reserved.
+//  Copyright (c) 2015 bang. All rights reserved.
 //
 
 #import "JPTestObject.h"
@@ -58,6 +58,21 @@
 - (void)funcWithNil:(NSObject *)nilObj
 {
     self.funcWithNilPassed = nilObj == nil;
+}
+
+- (id)funcReturnNil
+{
+    return nil;
+}
+
+- (BOOL)funcTestBool:(BOOL)b
+{
+    return b;
+}
+
+- (NSNumber *)funcTestNSNumber:(NSNumber *)num
+{
+    return num;
 }
 
 - (void)funcWithNil:(NSObject *)nilObj dict:(NSDictionary *)dict str:(NSString *)str num:(double)num
@@ -429,7 +444,14 @@ typedef struct {
     return @"orgi";
 }
 
+#pragma mark CGAffineTransform
+- (CGAffineTransform)funcWithTransform:(CGAffineTransform)transform
+{
+    return transform;
+}
+
 @end
+
 
 
 @implementation JPTestSubObject

@@ -3,7 +3,7 @@
 //  InstaScript
 //
 //  Created by bang on 15/4/30.
-//  Copyright (c) 2015年 bang. All rights reserved.
+//  Copyright (c) 2015 bang. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -18,8 +18,12 @@
 
 @property (nonatomic, assign) BOOL funcWithIntPassed;
 @property (nonatomic, assign) BOOL funcWithNilPassed;
+@property (nonatomic, assign) BOOL funcReturnNilPassed;
 @property (nonatomic, assign) BOOL funcWithNilAndOthersPassed;
 @property (nonatomic, assign) BOOL funcWithNullPassed;
+@property (nonatomic, assign) BOOL funcTestBoolPassed;
+@property (nonatomic, assign) BOOL funcTestNSNumberPassed;
+
 
 @property (nonatomic, assign) BOOL funcWithDictAndDoublePassed;
 
@@ -81,6 +85,9 @@
 @property (nonatomic, assign) BOOL mutableArrayPassed;
 @property (nonatomic, assign) BOOL mutableStringPassed;
 @property (nonatomic, assign) BOOL mutableDictionaryPassed;
+
+@property (nonatomic, assign) BOOL funcWithTransformPassed;
+@property (nonatomic, assign) BOOL transformTranslatePassed;
 
 @property (nonatomic, assign) BOOL consoleLogPassed;
 @property (nonatomic, assign) BOOL overrideParentMethodPassed;
