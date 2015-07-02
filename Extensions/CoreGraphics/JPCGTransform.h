@@ -7,7 +7,11 @@
 //
 
 #import "JPEngine.h"
+#import <CoreGraphics/CoreGraphics.h>
 
 @interface JPCGTransform : JPExtension
+
++ (NSDictionary *)transDictOfStruct:(CGAffineTransform *)trans;
++ (void)transStruct:(CGAffineTransform *)trans ofDict:(NSDictionary *)dict;
 
 @end

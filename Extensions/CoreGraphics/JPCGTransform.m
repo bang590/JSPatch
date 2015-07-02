@@ -14,32 +14,32 @@
 {
     context[@"CGAffineTransformTranslate"] = ^id(NSDictionary *transformDict, CGFloat tx, CGFloat ty) {
         CGAffineTransform trans;
-        [self _transStruct:&trans ofDict:transformDict];
+        [JPCGTransform transStruct:&trans ofDict:transformDict];
         CGAffineTransform translatedTransform = CGAffineTransformTranslate(trans, tx, ty);
-        return [self _transDictOfStruct:&translatedTransform];
+        return [JPCGTransform transDictOfStruct:&translatedTransform];
     };
     
     context[@"CGAffineTransformScale"] = ^id(NSDictionary *transformDict, CGFloat sx, CGFloat sy) {
         CGAffineTransform trans;
-        [self _transStruct:&trans ofDict:transformDict];
+        [JPCGTransform transStruct:&trans ofDict:transformDict];
         CGAffineTransform translatedTransform = CGAffineTransformScale(trans, sx, sy);
-        return [self _transDictOfStruct:&translatedTransform];
+        return [JPCGTransform transDictOfStruct:&translatedTransform];
     };
     
     context[@"CGAffineTransformRotate"] = ^id(NSDictionary *transformDict, CGFloat angle) {
         CGAffineTransform trans;
-        [self _transStruct:&trans ofDict:transformDict];
+        [JPCGTransform transStruct:&trans ofDict:transformDict];
         CGAffineTransform translatedTransform = CGAffineTransformRotate(trans, angle);
-        return [self _transDictOfStruct:&translatedTransform];
+        return [JPCGTransform transDictOfStruct:&translatedTransform];
     };
 }
 
-- (NSDictionary *)_transDictOfStruct:(CGAffineTransform *)trans
++ (NSDictionary *)transDictOfStruct:(CGAffineTransform *)trans
 {
     return @{@"tx": @(trans->tx), @"ty": @(trans->ty), @"a": @(trans->a), @"b": @(trans->b), @"c": @(trans->c), @"d": @(trans->d)};
 }
 
-- (void)_transStruct:(CGAffineTransform *)trans ofDict:(NSDictionary *)dict
++ (void)transStruct:(CGAffineTransform *)trans ofDict:(NSDictionary *)dict
 {
     trans->tx = [dict[@"tx"] floatValue];
     trans->ty = [dict[@"ty"] floatValue];
@@ -62,7 +62,7 @@
 {
     if ([typeEncoding rangeOfString:@"CGAffineTransform"].location == 1) {
         CGAffineTransform *trans = (CGAffineTransform *)structData;
-        return [self _transDictOfStruct:trans];
+        return [JPCGTransform transDictOfStruct:trans];
     }
     return nil;
 }
@@ -70,7 +70,7 @@
 - (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeEncoding:(NSString *)typeEncoding
 {
     if ([typeEncoding rangeOfString:@"CGAffineTransform"].location == 1) {
-        [self _transStruct:structData ofDict:dict];
+        [JPCGTransform transStruct:structData ofDict:dict];
     }
 }
 @end
