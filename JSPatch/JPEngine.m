@@ -62,7 +62,10 @@ id formatOCToJS(id obj);
 {
     if ([[val toObject] isKindOfClass:[NSDictionary class]]) {
         return [(JPBoxing *)([val toObject][@"__obj"]) unboxPointer];
-    }else{
+    }else if(![val toBool]) {
+        return NULL;
+    }
+    else{
         return [((JPBoxing *)[val toObject]) unboxPointer];
     }
 }
@@ -74,6 +77,9 @@ id formatOCToJS(id obj);
 
 - (id)formatJSToOC:(JSValue *)val
 {
+    if (![val toBool]) {
+        return nil;
+    }
     return formatJSToOC(val);
 }
 
@@ -845,7 +851,12 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     __autoreleasing id cb = genCallbackBlock(valObj);
                     [invocation setArgument:&cb atIndex:i];
                 } else {
-                    [invocation setArgument:&valObj atIndex:i];
+                    if ([valObj isMemberOfClass:[JPBoxing class]]) {
+                        id obj = (__bridge id)[valObj unboxPointer];
+                        [invocation setArgument:&obj atIndex:i];
+                    }else{
+                        [invocation setArgument:&valObj atIndex:i];
+                    }
                 }
             }
         }

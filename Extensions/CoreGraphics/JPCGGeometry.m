@@ -10,7 +10,7 @@
 
 @implementation JPCGGeometry
 
-+ (void)transCGRectStruct:(CGRect *)rect ofDict:(NSDictionary *)dict
++ (void)rectStruct:(CGRect *)rect ofDict:(NSDictionary *)dict
 {
     CGPoint point;
     CGSize size;
@@ -23,40 +23,40 @@
     
 }
 
-+ (void)transCGPointStruct:(CGPoint *)point ofDict:(NSDictionary *)dict
++ (void)pointStruct:(CGPoint *)point ofDict:(NSDictionary *)dict
 {
     point->x = [dict[@"x"] doubleValue];
     point->y = [dict[@"y"] doubleValue];
 }
 
-+ (void)transCGSizeStruct:(CGSize *)size ofDict:(NSDictionary *)dict
++ (void)sizeStruct:(CGSize *)size ofDict:(NSDictionary *)dict
 {
     size->width  = [dict[@"width"] doubleValue];
     size->height = [dict[@"height"] doubleValue];
 }
 
-+ (void)transCGVectorStruct:(CGVector *)vector ofDict:(NSDictionary *)dict
++ (void)vectorStruct:(CGVector *)vector ofDict:(NSDictionary *)dict
 {
     vector->dx = [dict[@"dx"] doubleValue];
     vector->dy = [dict[@"dy"] doubleValue];
 }
 
-+ (NSDictionary *)transCGRectDictOfStruct:(CGRect *)rect
++ (NSDictionary *)rectDictOfStruct:(CGRect *)rect
 {
     return @{@"x": @(rect->origin.x), @"y": @(rect->origin.y), @"width": @(rect->size.width), @"height": @(rect->size.height)};
 }
 
-+ (NSDictionary *)transCGSizeDictOfStruct:(CGSize *)size
++ (NSDictionary *)sizeDictOfStruct:(CGSize *)size
 {
     return @{@"width": @(size->width), @"height": @(size->height)};
 }
 
-+ (NSDictionary *)transCGPointDictOfStruct:(CGPoint *)point
++ (NSDictionary *)pointDictOfStruct:(CGPoint *)point
 {
     return @{@"x": @(point->x), @"y": @(point->y)};
 }
 
-+ (NSDictionary *)transCGVectorDictOfStruct:(CGVector *)vector
++ (NSDictionary *)vectorDictOfStruct:(CGVector *)vector
 {
     return @{@"dx": @(vector->dx), @"dy": @(vector->dy)};
 }
@@ -74,7 +74,7 @@
 {
     if ([typeEncoding rangeOfString:@"CGVector"].location == 1) {
         CGVector *vector = (CGVector *)structData;
-        return [JPCGGeometry transCGVectorDictOfStruct:vector];
+        return [JPCGGeometry vectorDictOfStruct:vector];
     }
     return nil;
 }
@@ -82,7 +82,7 @@
 - (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeEncoding:(NSString *)typeEncoding
 {
     if ([typeEncoding rangeOfString:@"CGVector"].location == 1) {
-        [JPCGGeometry transCGVectorStruct:structData ofDict:dict];
+        [JPCGGeometry vectorStruct:structData ofDict:dict];
     }
 }
 

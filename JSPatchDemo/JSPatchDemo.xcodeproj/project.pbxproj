@@ -97,19 +97,19 @@
 			isa = PBXGroup;
 			children = (
 				2CBAC8071B4571830054EB69 /* CGGeometry */,
-				2CBAC8031B4571440054EB69 /* CGTransform */,
+				2CBAC8031B4571440054EB69 /* CGAffineTransform */,
 				2CBAC80B1B4571DE0054EB69 /* CGContext */,
 			);
 			name = CoreGraphics;
 			sourceTree = "<group>";
 		};
-		2CBAC8031B4571440054EB69 /* CGTransform */ = {
+		2CBAC8031B4571440054EB69 /* CGAffineTransform */ = {
 			isa = PBXGroup;
 			children = (
 				2CBAC8041B45715E0054EB69 /* JPCGTransform.h */,
 				2CBAC8051B45715E0054EB69 /* JPCGTransform.m */,
 			);
-			name = CGTransform;
+			name = CGAffineTransform;
 			sourceTree = "<group>";
 		};
 		2CBAC8071B4571830054EB69 /* CGGeometry */ = {
