@@ -102,7 +102,6 @@ static NSString *_replaceStr = @".__c(\"$1\")(";
 static NSRegularExpression* _regex;
 static NSObject *_nullObj;
 static NSObject *_nilObj;
-static NSMutableArray *_extensions;
 static NSMutableArray *_structExtensions;
 
 + (JSValue *)evaluateScript:(NSString *)script
@@ -123,21 +122,16 @@ static NSMutableArray *_structExtensions;
 {
     NSAssert(_context, @"please call [JPEngine startEngine]");
     @synchronized (_context) {
-        if (!_extensions || !_structExtensions) {
-            _extensions = [[NSMutableArray alloc] init];
+        if (!_structExtensions) {
             _structExtensions = [[NSMutableArray alloc] init];
         }
         for (JPExtension *ext in extensions) {
             if ([ext respondsToSelector:@selector(main:)]) {
-                [_extensions addObject:ext];
+                [ext main:_context];
             }
             if ([ext respondsToSelector:@selector(sizeOfStructWithTypeEncoding:)]) {
                 [_structExtensions addObject:ext];
             }
-        }
-        
-        for (JPExtension *ext in _extensions) {
-            [ext main:_context];
         }
     }
 }
