@@ -62,7 +62,10 @@ id formatOCToJS(id obj);
 {
     if ([[val toObject] isKindOfClass:[NSDictionary class]]) {
         return [(JPBoxing *)([val toObject][@"__obj"]) unboxPointer];
-    }else{
+    }else if(![val toBool]) {
+        return NULL;
+    }
+    else{
         return [((JPBoxing *)[val toObject]) unboxPointer];
     }
 }
@@ -74,6 +77,9 @@ id formatOCToJS(id obj);
 
 - (id)formatJSToOC:(JSValue *)val
 {
+    if (![val toBool]) {
+        return nil;
+    }
     return formatJSToOC(val);
 }
 
@@ -96,7 +102,6 @@ static NSString *_replaceStr = @".__c(\"$1\")(";
 static NSRegularExpression* _regex;
 static NSObject *_nullObj;
 static NSObject *_nilObj;
-static NSMutableArray *_extensions;
 static NSMutableArray *_structExtensions;
 
 + (JSValue *)evaluateScript:(NSString *)script
@@ -117,21 +122,16 @@ static NSMutableArray *_structExtensions;
 {
     NSAssert(_context, @"please call [JPEngine startEngine]");
     @synchronized (_context) {
-        if (!_extensions || !_structExtensions) {
-            _extensions = [[NSMutableArray alloc] init];
+        if (!_structExtensions) {
             _structExtensions = [[NSMutableArray alloc] init];
         }
         for (JPExtension *ext in extensions) {
             if ([ext respondsToSelector:@selector(main:)]) {
-                [_extensions addObject:ext];
+                [ext main:_context];
             }
             if ([ext respondsToSelector:@selector(sizeOfStructWithTypeEncoding:)]) {
                 [_structExtensions addObject:ext];
             }
-        }
-        
-        for (JPExtension *ext in _extensions) {
-            [ext main:_context];
         }
     }
 }
@@ -845,7 +845,12 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     __autoreleasing id cb = genCallbackBlock(valObj);
                     [invocation setArgument:&cb atIndex:i];
                 } else {
-                    [invocation setArgument:&valObj atIndex:i];
+                    if ([valObj isMemberOfClass:[JPBoxing class]]) {
+                        id obj = (__bridge id)[valObj unboxPointer];
+                        [invocation setArgument:&obj atIndex:i];
+                    }else{
+                        [invocation setArgument:&valObj atIndex:i];
+                    }
                 }
             }
         }
