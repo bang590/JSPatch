@@ -780,7 +780,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 
             case ':': {
                 SEL value = nil;
-                if (valObj == _nilObj) {
+                if (valObj != _nilObj) {
                     value = NSSelectorFromString(valObj);
                 }
                 [invocation setArgument:&value atIndex:i];
