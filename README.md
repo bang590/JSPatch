@@ -207,7 +207,7 @@ Go to wiki page for more details: [Usage of defineClass](https://github.com/bang
 
 ####Extensions
 
-There is some extensions provide support for custom struct type, C methods and other functional, call `+addExtensions:` after start engine to add extensions:
+There are some extensions provide support for custom struct type, C methods and other functional, call `+addExtensions:` after starting engine to add extensions:
 
 ```objc
 @implementation AppDelegate
@@ -215,11 +215,16 @@ There is some extensions provide support for custom struct type, C methods and o
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions 
 {
     [JPEngine startEngine];
+
+    //add extensions after startEngine
     [JPEngine addExtensions:@[[JPInclude instance], [JPCGTransform instance]]];
+
     NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"js"];
     NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8StringEncoding error:nil];
     [JPEngine evaluateScript:script];
 }
+
+@end
 ```
 
 ```js
