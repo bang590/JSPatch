@@ -86,19 +86,10 @@ NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8
 
 ### JavaScript:
 
-#### 1. require 
-
-使用某个 Objective-C 类前，先调用 require('className')，然后可以直接使用这个类。可以用逗号分隔一次性引入多个类。
+#### 基础使用方式
 
 ```js
-require('UIView, UIColor')
-var view = UIView.alloc().init()
-var red = UIColor.redColor()
-var ctrl = require('UIViewController').alloc().init()
-```
-
-#### 2. 方法调用
-```js
+// 调用require引入要使用的OC类
 require('UIView, UIColor, UISlider, NSIndexPath')
 
 // 调用类方法
@@ -108,46 +99,51 @@ var redColor = UIColor.redColor();
 var view = UIView.alloc().init();
 view.setNeedsLayout();
 
-// setProerty
+// set proerty
 view.setBackgroundColor(redColor);
 
-// getProperty 
+// get property 
 var bgColor = view.backgroundColor();
 
 // 多参数方法名用'_'隔开：
-// OC：NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1]
+// OC：NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
 var indexPath = NSIndexPath.indexPathForRow_inSection(0, 1);
 
 // 方法名包含下划线'_'，js用双下划线表示
 // OC: [JPObject _privateMethod];
 JPObject.__privateMethod()
-```
 
-#### 3. defineClass
-可以新定义一个 Objective-C class，重写父类里的方法。
+// 如果要把 `NSArray` / `NSString` / `NSDictionary` 转为对应的 JS 类型，使用 `.toJS()` 接口.
+var arr = require('NSMutableArray').alloc().init()
+arr.addObject("JS")
+jsArr = arr.toJS()
+console.log(jsArr.push("Patch").join(''))  //output: JSPatch
 
-```js
-defineClass("JPViewController: UIViewController", {
-  // instance method definitions
-  viewDidLoad: function() {
-    //use self.super() to call super method
-    self.super().viewDidLoad()
+// 在JS用字典的方式表示 CGRect / CGSize / CGPoint / NSRange
+var view = UIView.alloc().initWithFrame({x:20, y:20, width:100, height:100});
+var x = view.bounds.x;
 
-    // do something here
-  },
+// block 从 JavaScript 传入 Objective-C 时，需要写上每个参数的类型。
+// OC Method: + (void)request:(void(^)(NSString *content, BOOL success))callback
+require('JPObject').request(block("NSString *, BOOL", function(ctn, succ) {
+  if (succ) log(ctn)
+}));
 
-  viewDidAppear: function(animated) {
-
-  }
-}, {
-  // class method definitions
-  description: function() {
-    return "I'm JPViewController"
-  } 
+// GCD
+dispatch_after(function(1.0, function(){
+  // do something
+}))
+dispatch_async_main(function(){
+  // do something
 })
 ```
 
-可以定义 Objective-C 里已存在的类，对类和实例方法进行动态替换。
+详细文档请参考wiki页面：[Base Usage](https://github.com/bang590/JSPatch/wiki/Base-usage)
+
+
+#### 定义类/替换方法
+
+用 `defineClass()` 定义 Objective-C 的类，对类和实例方法进行动态替换。
 
 ```objc
 // OC
@@ -155,7 +151,7 @@ defineClass("JPViewController: UIViewController", {
 ...
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  NSString *content = self.dataSource[[indexPath row]];  // may cause out of bound
+  NSString *content = self.dataSource[[indexPath row]];  //may cause out of bound
   JPViewController *ctrl = [[JPViewController alloc] initWithContent:content];
   [self.navigationController pushViewController:ctrl];
 }
@@ -184,125 +180,57 @@ defineClass("JPTableViewController", {
   },
 
   dataSource: function() {
-    // 函数名前加'ORIG'可以调回OC定义的原方法
+    // get the original method by adding prefix 'ORIG'
     var data = self.ORIGdataSource().toJS();
     return data.push('Good!');
   }
 }, {})
 ```
-执行以上 JavaScript 脚本后，JPTableViewController 的方法就被替换成 JavaScript 里的实现。
+
+详细文档请参考wiki页面：[Usage of defineClass](https://github.com/bang590/JSPatch/wiki/Usage-of-defineClass)
 
 
-#### 4. NSArray / NSString / NSDictionary
+#### 扩展
 
-在JS里 `NSArray` / `NSString` / `NSDictionary` 与普通 `NSObject` 一样:
+一些自定义的struct类型、C函数调用以及其他功能可以通过扩展实现，调用 `+addExtensions:` 可以加载扩展接口：
 
 ```objc
-// OC
-@implementation JPObject
-+ (NSArray *)data
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions 
 {
-  return @[[NSMutableString stringWithString:@"JSPatch"]]
+    [JPEngine startEngine];
+
+    //添加扩展
+    [JPEngine addExtensions:@[[JPInclude instance], [JPCGTransform instance]]];
+
+    NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"js"];
+    NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8StringEncoding error:nil];
+    [JPEngine evaluateScript:script];
 }
-@end
-``` 
-
-```js
-// JS
-var ocStr = require('JPObject').data().objectAtIndex(0)
-ocStr.appendString("is Good")
-```
-
-如果要把 `NSArray` / `NSString` / `NSDictionary` 转为对应的 JS 类型，使用 `.toJS()` 接口.
-
-```js
-// JS
-var data = require('JPObject').data().toJS()
-//data[0] == "JSPatch"
-data.push("is Good")
-```
-
-#### 5. CGRect / CGPoint / CGSize / NSRange
-针对这几个常用的 struct 会转为字典表示：
-
-```objc
-// OC
-UIView *view = [[UIView alloc] initWithFrame:CGRectMake(20, 20, 100, 100)];
-CGFloat x = view.frame.origin.x;
 ```
 
 ```js
-// JS
-var view = UIView.alloc().initWithFrame({x:20, y:20, width:100, height:100});
-var x = view.bounds.x;
+include('test.js')   //`include()`方法在扩展 JPInclude.m 里提供
+var view = require('UIView').alloc().init()
+
+//struct CGAffineTransform 类型在 JPCGTransform.m 里提供支持
+view.setTransform({a:1, b:0, c:0, d:1, tx:0, ty:100})
 ```
 
-#### 6. block
-block 从 JavaScript 传入 Objective-C 时，需要写上每个参数的类型。
-
-```objc
-// OC
-@implementation JPObject
-+ (void)request:(void(^)(NSString *content, BOOL success))callback
-{
-  callback(@"I'm content", YES);
-}
-@end
-```
+扩展可以在JS动态加载，更推荐这种加载方式，在需要用到时才加载：
 
 ```js
-// JS
-require('JPObject').request(block("NSString *, BOOL", function(ctn, succ) {
-  if (succ) log(ctn)  // output: I'm content
-}));
+require('JPEngine').addExtensions([
+  require('JPInclude').instance(), 
+  require('JPCGTransform').instance(),
+])
+
+// `include()` and `CGAffineTransform` is avaliable now.
 ```
 
-block 从 Objective-C 传给 JavaScript 时，可以直接调用。
+可以通过新增扩展为自己项目里的 struct 类型以及C函数添加支持，详情请见wiki页面：[Adding new extensions](https://github.com/bang590/JSPatch/wiki/Adding-new-extensions)
 
-```objc
-// OC
-@implementation JPObject
-typedef void (^JSBlock)(NSDictionary *dict);
-+ (JSBlock)genBlock
-{
-  NSString *ctn = @"JSPatch";
-  JSBlock block = ^(NSDictionary *dict) {
-    NSLog(@"I'm %@, version: %@", ctn, dict[@"v"])
-  };
-  return block;
-}
-@end
-```
-
-```js
-// JS
-var blk = require('JPObject').genBlock();
-blk({v: "0.0.1"});  //output: I'm JSPatch, version: 0.0.1
-```
-
-#### 7. dispatch
-Using `dispatch_after()` `dispatch_async_main()` `dispatch_sync_main()` `dispatch_async_global_queue()` to call GCD.
-
-```objc
-// OC
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-  // do something
-});
-
-dispatch_async(dispatch_get_main_queue(), ^{
-  // do something
-});
-```
-
-```js
-// JS
-dispatch_after(function(1.0, function(){
-  // do something
-}))
-dispatch_async_main(function(){
-  // do something
-})
-```
 
 ## 运行环境
 - iOS 7+
