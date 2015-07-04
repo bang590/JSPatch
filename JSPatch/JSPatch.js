@@ -29,7 +29,7 @@ var global = this
     if (obj instanceof Function) {
       return function() {
         var args = Array.prototype.slice.call(arguments)
-        obj.apply(obj, _OC_formatJSToOC(args))
+        return obj.apply(obj, _OC_formatJSToOC(args))
       }
     }
     if (obj instanceof Object) {
