@@ -150,18 +150,20 @@ typedef void (^ISTestBlock)(NSString *str, int num);
     return block;
 }
 
-typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
+typedef id (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
 - (JPTestObjectBlock)funcReturnObjectBlock
 {
     JPTestObjectBlock block = ^(NSDictionary *dict, UIView *view) {
         self.funcReturnObjectBlockPassed = [dict[@"str"] isEqualToString:@"stringFromJS"] && [dict[@"view"] isKindOfClass:[UIView class]] && view.frame.size.width == 100;
+        return @"succ";
     };
     return block;
 }
 
-- (void)callBlockWithStringAndInt:(void(^)(NSString *str, int num))block
+- (void)callBlockWithStringAndInt:(id(^)(NSString *str, int num))block
 {
-    block(@"stringFromOC", 42);
+    id ret = block(@"stringFromOC", 42);
+    self.callBlockWithStringAndIntReturnValuePassed = [ret isEqualToString:@"succ"];
 }
 
 - (void)callBlockWithArrayAndView:(void(^)(NSArray *arr, UIView *view))block
@@ -181,8 +183,9 @@ typedef void (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
 - (void)callBlockWithObjectAndBlock:(void(^)(UIView *view, JPTestObjectBlock block))block
 {
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-    JPTestObjectBlock cbBlock = ^(NSDictionary *dict, UIView *view) {
+    JPTestObjectBlock cbBlock = ^id(NSDictionary *dict, UIView *view) {
         self.callBlockWithObjectAndBlockPassed = [dict[@"str"] isEqualToString:@"stringFromJS"] && [dict[@"view"] isKindOfClass:[UIView class]] && view.frame.size.width == 100;
+        return @"succ";
     };
     block(view, cbBlock);
 }

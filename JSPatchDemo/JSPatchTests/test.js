@@ -212,13 +212,15 @@ var global = this;
     width: 100,
     height: 100
   }) 
-  blk({
+  var blkRet = blk({
     str: "stringFromJS",
     view: view
   }, view)
+  obj.setFuncReturnObjectBlockReturnValuePassed(blkRet == "succ")
 
   obj.callBlockWithStringAndInt(block("NSString *, int", function(str, num) {
     obj.setCallBlockWithStringAndIntPassed(str.toJS() == "stringFromOC" && num == 42)
+    return "succ"
   }))
 
   obj.callBlockWithArrayAndView(block("NSArray *, UIView *", function(arr, view) {
@@ -233,10 +235,11 @@ var global = this;
 
   obj.callBlockWithObjectAndBlock(block("UIView *, NSBlock *", function(view, blk) {
     var viewFrame = view.frame()
-    blk((viewFrame.width == 100 ? {
+    var ret = blk((viewFrame.width == 100 ? {
       "str": "stringFromJS",
       "view": view
     }: {}), view)
+    obj.setCallBlockWithObjectAndBlockReturnValuePassed(ret == "succ")
   }))
 
   //////super

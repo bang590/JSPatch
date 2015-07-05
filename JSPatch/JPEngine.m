@@ -143,7 +143,6 @@ static NSMutableArray *_structExtensions;
     }
     
     JSContext *context = [[JSContext alloc] init];
-    _cacheArguments = [[NSMutableDictionary alloc] init];
     
     context[@"_OC_defineClass"] = ^(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods) {
         return defineClass(classDeclaration, instanceMethods, classMethods);
@@ -154,16 +153,6 @@ static NSMutableArray *_structExtensions;
     };
     context[@"_OC_callC"] = ^id(NSString *className, NSString *selectorName, JSValue *arguments) {
         return callSelector(className, selectorName, arguments, nil, NO);
-    };
-    context[@"_OC_getBlockArguments"] = ^id(NSNumber *idx) {
-        @synchronized(_cacheArguments) {
-            if (_cacheArguments[idx]) {
-                id args = _cacheArguments[idx];
-                [_cacheArguments removeObjectForKey:idx];
-                return args;
-            }
-            return nil;
-        }
     };
     context[@"_OC_formatJSToOC"] = ^id(JSValue *obj) {
         return formatJSToOC(obj);
@@ -706,7 +695,7 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 static id callSelector(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper)
 {
     if (instance) instance = formatJSToOC(instance);
-    arguments = formatJSToOC(arguments);
+    id argumentsObj = formatJSToOC(arguments);
     
     if (instance && [selectorName isEqualToString:@"toJS"]) {
         if ([instance isKindOfClass:[NSString class]] || [instance isKindOfClass:[NSDictionary class]] || [instance isKindOfClass:[NSArray class]]) {
@@ -754,7 +743,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     NSUInteger numberOfArguments = methodSignature.numberOfArguments;
     for (NSUInteger i = 2; i < numberOfArguments; i++) {
         const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];
-        id valObj = arguments[i-2];
+        id valObj = argumentsObj[i-2];
         switch (argumentType[0]) {
                 
                 #define JP_CALL_ARG_CASE(_typeString, _type, _selector) \
@@ -842,7 +831,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 }
                 static const char *blockType = @encode(typeof(^{}));
                 if (!strcmp(argumentType, blockType)) {
-                    __autoreleasing id cb = genCallbackBlock(valObj);
+                    __autoreleasing id cb = genCallbackBlock(arguments[i-2]);
                     [invocation setArgument:&cb atIndex:i];
                 } else {
                     if ([valObj isMemberOfClass:[JPBoxing class]]) {
@@ -943,15 +932,12 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
 
 #pragma mark -
 
-static NSMutableDictionary *_cacheArguments;
-static NSInteger _cacheArgumentsIdx = 0;
-
-static id genCallbackBlock(id valObj)
+static id genCallbackBlock(JSValue *jsVal)
 {
-#define BLK_DEFINE_1 cb = ^(void *p0) {
-#define BLK_DEFINE_2 cb = ^(void *p0, void *p1) {
-#define BLK_DEFINE_3 cb = ^(void *p0, void *p1, void *p2) {
-#define BLK_DEFINE_4 cb = ^(void *p0, void *p1, void *p2, void *p3) {
+#define BLK_DEFINE_1 cb = ^id(void *p0) {
+#define BLK_DEFINE_2 cb = ^id(void *p0, void *p1) {
+#define BLK_DEFINE_3 cb = ^id(void *p0, void *p1, void *p2) {
+#define BLK_DEFINE_4 cb = ^id(void *p0, void *p1, void *p2, void *p3) {
 
 #define BLK_ADD_OBJ(_paramName) [list addObject:formatOCToJS((__bridge id)_paramName)];
 #define BLK_ADD_INT(_paramName) [list addObject:formatOCToJS([NSNumber numberWithLongLong:(long long)_paramName])];
@@ -964,16 +950,11 @@ static id genCallbackBlock(id valObj)
     }   \
 
 #define BLK_END \
-    NSNumber *jsCallbackID = valObj[@"cbID"];   \
-    NSInteger cacheKey = _cacheArgumentsIdx++;  \
-    @synchronized(_cacheArguments) {   \
-        _cacheArguments[@(cacheKey)] = list;    \
-    }   \
-    NSString *script = [NSString stringWithFormat:@"_callCB(%@, %@)", jsCallbackID, @(cacheKey)];   \
-    [JPEngine evaluateScript:script];   \
+    JSValue *ret = [jsVal[@"cb"] callWithArguments:list];    \
+    return formatJSToOC(ret); \
 };
-    
-    NSArray *argTypes = [valObj[@"args"] componentsSeparatedByString:@","];
+
+    NSArray *argTypes = [[jsVal[@"args"] toString] componentsSeparatedByString:@","];
     NSMutableArray *list = [[NSMutableArray alloc] init];
     NSInteger count = argTypes.count;
     id cb;
