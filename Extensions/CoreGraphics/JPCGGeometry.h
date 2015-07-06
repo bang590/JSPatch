@@ -7,7 +7,7 @@
 //
 
 #import "JPEngine.h"
-#import <CoreGraphics/CoreGraphics.h>
+#import "JPCoreGraphicsHeader.h"
 
 @interface JPCGGeometry : JPExtension
 
