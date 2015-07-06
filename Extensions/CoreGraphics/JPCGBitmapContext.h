@@ -7,7 +7,7 @@
 //
 
 #import "JPEngine.h"
-
+#import "JPCoreGraphicsHeader.h"
 @interface JPCGBitmapContext : JPExtension
 
 @end

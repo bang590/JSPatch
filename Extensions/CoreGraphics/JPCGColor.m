@@ -7,7 +7,6 @@
 //
 
 #import "JPCGColor.h"
-#import <CoreGraphics/CGColor.h>
 
 @implementation JPCGColor
 

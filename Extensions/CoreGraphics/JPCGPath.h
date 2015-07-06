@@ -1,14 +1,14 @@
 //
-//  JPCGImage.h
+//  JPCGPath.h
 //  JSPatchDemo
 //
-//  Created by Albert438 on 15/7/3.
+//  Created by Albert438 on 15/7/6.
 //  Copyright (c) 2015年 bang. All rights reserved.
 //
 
 #import "JPEngine.h"
 #import "JPCoreGraphicsHeader.h"
 
-@interface JPCGImage : JPExtension
+@interface JPCGPath : JPExtension
 
 @end

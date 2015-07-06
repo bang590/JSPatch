@@ -7,7 +7,6 @@
 //
 
 #import "JPCoreGraphics.h"
-#import "JPCoreGraphicsHeader.h"
 #import "JPEngine.h"
 
 
@@ -17,7 +16,7 @@
 {
     NSArray *extensionArray = @[[JPCGTransform instance],[JPCGContext instance],
                                             [JPCGGeometry instance],[JPCGBitmapContext instance],
-                                            [JPCGColor instance],[JPCGImage instance]];
+                                            [JPCGColor instance],[JPCGImage instance],[JPCGPath instance]];
     [JPEngine addExtensions:extensionArray];
 }
 

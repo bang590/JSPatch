@@ -7,6 +7,7 @@
 //
 
 #import "JPEngine.h"
+#import "JPCoreGraphicsHeader.h"
 
 @interface JPCGColor : JPExtension
 

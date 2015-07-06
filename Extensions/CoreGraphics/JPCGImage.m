@@ -7,18 +7,16 @@
 //
 
 #import "JPCGImage.h"
-#import "JPCoreGraphicsHeader.h"
-#import <CoreGraphics/CGImage.h>
 
 @implementation JPCGImage
 
 - (void)main:(JSContext *)context
 {
-    context[@"CGImageCreate"] = ^id(size_t width, size_t height,
-                                    size_t bitsPerComponent, size_t bitsPerPixel, size_t bytesPerRow,
-                                    JSValue *space, int bitmapInfo, JSValue *provider,
-                                    NSArray *decodeArray, bool shouldInterpolate,
-                                    int intent) {
+    context[@"CGImageCreate"]                = ^id(size_t width, size_t height,
+                                                   size_t bitsPerComponent, size_t bitsPerPixel, size_t bytesPerRow,
+                                                   JSValue *space, int bitmapInfo, JSValue *provider,
+                                                   NSArray *decodeArray, bool shouldInterpolate,
+                                                   int intent) {
         if (decodeArray == nil) {
             CGImageRef  createdImage = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel,bytesPerRow, [self formatPointerJSToOC:space], bitmapInfo, [self formatPointerJSToOC:provider], NULL, shouldInterpolate, intent);
             return [self formatPointerOCToJS:createdImage];
@@ -53,25 +51,35 @@
         return ret;
     };
     
-    context[@"test"] = ^void(JSValue *val) {
-        id b = [self formatJSToOC:val];
-        if (b == nil) {
-            NSLog(@"nil");
-        }
+    context[@"CGImageGetBitsPerComponent"]   = ^size_t(JSValue *image) {
+        return CGImageGetBitsPerComponent([self formatPointerJSToOC:image]);
+    };
+    
+    context[@"CGImageGetColorSpace"]         = ^id(JSValue *image) {
+        CGColorSpaceRef space = CGImageGetColorSpace([self formatPointerJSToOC:image]);
+        return [self formatPointerOCToJS:space];
+    };
+    
+    context[@"CGImageGetDataProvider"]       = ^id(JSValue *image) {
+        CGDataProviderRef provider = CGImageGetDataProvider([self formatPointerJSToOC:image]);
+        return [self formatPointerOCToJS:provider];
+    };
+    
+    context[@"CGImageGetHeight"]             = ^size_t(JSValue *image) {
+        return CGImageGetHeight([self formatPointerJSToOC:image]);
+    };
+    
+    context[@"CGImageGetWidth"]              = ^size_t(JSValue *image) {
+        return CGImageGetWidth([self formatPointerJSToOC:image]);
+    };
+    
+    context[@"CGImageRelease"]               = ^void(JSValue *image) {
+        CGImageRelease([self formatPointerJSToOC:image]);
     };
 }
 
-//"_CGImageGetAlphaInfo" = 1;
-//"_CGImageGetBitmapInfo" = 2;
-//"_CGImageGetBitsPerComponent" = 2;
-//"_CGImageGetColorSpace" = 3;
-//"_CGImageGetDataProvider" = 1;
-//"_CGImageGetHeight" = 15;
-//"_CGImageGetWidth" = 15;
-//"_CGImageRelease" = 51;
-//"_CGImageSourceCopyPropertiesAtIndex" = 4;
-//"_CGImageSourceCreateThumbnailAtIndex" = 1;
-//"_CGImageSourceCreateWithData" = 3;
-//"_CGImageSourceCreateWithURL" = 2;
+
+
+
 
 @end

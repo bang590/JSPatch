@@ -7,7 +7,6 @@
 //
 
 #import "JPCGBitmapContext.h"
-#import <CoreGraphics/CGBitmapContext.h>
 
 @implementation JPCGBitmapContext
 
@@ -37,7 +36,7 @@
         return CGBitmapContextGetHeight([self formatPointerJSToOC:c]);
     };
     
-    context[@"CGBitmapContextGetWidth"]        = ^size_t(JSValue *c) {
+    context[@"CGBitmapContextGetWidth"]       = ^size_t(JSValue *c) {
         return CGBitmapContextGetWidth([self formatPointerJSToOC:c]);
     };
 }
