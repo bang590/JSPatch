@@ -29,7 +29,7 @@ var global = this
     if (obj instanceof Function) {
       return function() {
         var args = Array.prototype.slice.call(arguments)
-        obj.apply(obj, _OC_formatJSToOC(args))
+        return obj.apply(obj, _OC_formatJSToOC(args))
       }
     }
     if (obj instanceof Object) {
@@ -126,16 +126,13 @@ var global = this
     return require(ret["cls"])
   }
 
-  global._callCB = function(cbID, arg) {
-    if (callbacks[cbID]) callbacks[cbID](arg)
-  }
   global.block = function(args, cb) {
-    var id = callbackID++
-    callbacks[id] = function(cacheIdx) {
-      var args = _OC_getBlockArguments(cacheIdx)
-      cb.apply(this, _formatOCToJS(args))
+    var slf = this
+    var callback = function() {
+      var args = Array.prototype.slice.call(arguments)
+      return cb.apply(slf, _formatOCToJS(args))
     }
-    return {args: args, cbID: id}
+    return {args: args, cb: callback}
   }
   
   global.console = {

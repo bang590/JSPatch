@@ -40,10 +40,13 @@
 
 @property (nonatomic, assign) BOOL funcReturnBlockPassed;
 @property (nonatomic, assign) BOOL funcReturnObjectBlockPassed;
+@property (nonatomic, assign) BOOL funcReturnObjectBlockReturnValuePassed;
 @property (nonatomic, assign) BOOL callBlockWithStringAndIntPassed;
+@property (nonatomic, assign) BOOL callBlockWithStringAndIntReturnValuePassed;
 @property (nonatomic, assign) BOOL callBlockWithArrayAndViewPassed;
 @property (nonatomic, assign) BOOL callBlockWithBoolAndBlockPassed;
 @property (nonatomic, assign) BOOL callBlockWithObjectAndBlockPassed;
+@property (nonatomic, assign) BOOL callBlockWithObjectAndBlockReturnValuePassed;
 
 
 @property (nonatomic, assign) BOOL funcToSwizzleWithStringViewIntPassed;
