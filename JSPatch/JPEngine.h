@@ -8,7 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+<<<<<<< HEAD
+#import <UIKit/UIKit.h>
+=======
 @class JPExtension;
+>>>>>>> bang590/master
 
 @interface JPEngine : NSObject
 + (void)startEngine;
