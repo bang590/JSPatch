@@ -7,30 +7,53 @@
 //
 
 #import "JPCGTransform.h"
-#import <CoreGraphics/CoreGraphics.h>
 
 @implementation JPCGTransform
 - (void)main:(JSContext *)context
 {
-    context[@"CGAffineTransformTranslate"] = ^id(NSDictionary *transformDict, CGFloat tx, CGFloat ty) {
+    context[@"CGAffineTransformMakeTranslation"] = ^id(CGFloat tx, CGFloat ty) {
+    CGAffineTransform trans                      = CGAffineTransformMakeTranslation(tx, ty);
+        return [JPCGTransform transDictOfStruct:&trans];
+    };
+
+    context[@"CGAffineTransformMakeRotation"]    = ^id(CGFloat angle) {
+        CGAffineTransform trans = CGAffineTransformMakeRotation(angle);
+        return [JPCGTransform transDictOfStruct:&trans];
+    };
+
+    context[@"CGAffineTransformMakeScale"]       = ^id(CGFloat sx, CGFloat sy) {
+        CGAffineTransform trans = CGAffineTransformMakeScale(sx, sy);
+        return [JPCGTransform transDictOfStruct:&trans];
+    };
+    
+    context[@"CGAffineTransformTranslate"]       = ^id(NSDictionary *transformDict, CGFloat tx, CGFloat ty) {
         CGAffineTransform trans;
         [JPCGTransform transStruct:&trans ofDict:transformDict];
         CGAffineTransform translatedTransform = CGAffineTransformTranslate(trans, tx, ty);
         return [JPCGTransform transDictOfStruct:&translatedTransform];
     };
-    
-    context[@"CGAffineTransformScale"] = ^id(NSDictionary *transformDict, CGFloat sx, CGFloat sy) {
+
+    context[@"CGAffineTransformScale"]           = ^id(NSDictionary *transformDict, CGFloat sx, CGFloat sy) {
         CGAffineTransform trans;
         [JPCGTransform transStruct:&trans ofDict:transformDict];
         CGAffineTransform translatedTransform = CGAffineTransformScale(trans, sx, sy);
         return [JPCGTransform transDictOfStruct:&translatedTransform];
     };
-    
-    context[@"CGAffineTransformRotate"] = ^id(NSDictionary *transformDict, CGFloat angle) {
+
+    context[@"CGAffineTransformRotate"]          = ^id(NSDictionary *transformDict, CGFloat angle) {
         CGAffineTransform trans;
         [JPCGTransform transStruct:&trans ofDict:transformDict];
         CGAffineTransform translatedTransform = CGAffineTransformRotate(trans, angle);
         return [JPCGTransform transDictOfStruct:&translatedTransform];
+    };
+    
+    context[@"CGRectApplyAffineTransform"]       = ^NSDictionary *(NSDictionary *rectDict, NSDictionary *tDict) {
+        CGRect rect;
+        CGAffineTransform transform;
+        [JPCGTransform transStruct:&transform ofDict:tDict];
+        [JPCGGeometry rectStruct:&rect ofDict:rectDict];
+        CGRect retRect = CGRectApplyAffineTransform(rect, transform);
+        return [JPCGGeometry rectDictOfStruct:&retRect];
     };
 }
 
@@ -52,7 +75,7 @@
 
 - (size_t)sizeOfStructWithTypeEncoding:(NSString *)typeEncoding
 {
-    if ([typeEncoding rangeOfString:@"CGAffineTransform"].location == 1) {
+    if ([typeEncoding rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
         return sizeof(CGAffineTransform);
     }
     return 0;
@@ -60,7 +83,7 @@
 
 - (NSDictionary *)dictOfStruct:(void *)structData typeEncoding:(NSString *)typeEncoding
 {
-    if ([typeEncoding rangeOfString:@"CGAffineTransform"].location == 1) {
+    if ([typeEncoding rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
         CGAffineTransform *trans = (CGAffineTransform *)structData;
         return [JPCGTransform transDictOfStruct:trans];
     }
@@ -69,7 +92,7 @@
 
 - (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeEncoding:(NSString *)typeEncoding
 {
-    if ([typeEncoding rangeOfString:@"CGAffineTransform"].location == 1) {
+    if ([typeEncoding rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
         [JPCGTransform transStruct:structData ofDict:dict];
     }
 }

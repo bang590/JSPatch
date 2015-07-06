@@ -172,6 +172,18 @@ static NSMutableArray *_structExtensions;
             weakCtx[@"self"] = prevSelf;
         });
     };
+    
+    context[@"sizeof"] = ^size_t(JSValue *jsVal) {
+        NSString *typeString = [jsVal toString];
+        for (JPExtension *ext in _structExtensions) {
+            size_t size = [ext sizeOfStructWithTypeEncoding:typeString];
+            if (size) {
+                return size;
+            }
+        }
+        return 0;
+    };
+    
     context[@"dispatch_async_main"] = ^(JSValue *func) {
         JSValue *currSelf = weakCtx[@"self"];
         dispatch_async(dispatch_get_main_queue(), ^{
