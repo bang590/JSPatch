@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "JPEngine.h"
+#import "JPUIKitStruct.h"
 #import "JPViewController.h"
 
 @implementation AppDelegate
@@ -15,6 +16,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     [JPEngine startEngine];
+    
+    [JPEngine addExtensions:@[[JPUIKitStruct instance]]];
+    
     NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"js"];
     NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8StringEncoding error:nil];
     [JPEngine evaluateScript:script];
@@ -24,6 +28,9 @@
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
     self.window.rootViewController = navigationController;
     [self.window makeKeyAndVisible];
+    
+//    UITableView *t;
+//    [t setContentInset:<#(UIEdgeInsets)#>]
     
     return YES;
 }

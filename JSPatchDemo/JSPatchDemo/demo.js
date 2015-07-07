@@ -6,6 +6,12 @@ defineClass('JPViewController', {
 })
 
 defineClass('JPTableViewController : UITableViewController <UIAlertViewDelegate>', {
+            
+  viewDidLoad: function() {
+    self.super().viewDidLoad();
+    self.tableView().setContentInset({top:100, left:0, bottom:0, right:0})
+  },
+            
   dataSource: function() {
     var data = self.getProp('data')
     if (data) return data;
