@@ -73,26 +73,26 @@
 }
 
 
-- (size_t)sizeOfStructWithTypeEncoding:(NSString *)typeEncoding
+- (size_t)sizeOfStructWithTypeName:(NSString *)typeName
 {
-    if ([typeEncoding rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
+    if ([typeName rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
         return sizeof(CGAffineTransform);
     }
     return 0;
 }
 
-- (NSDictionary *)dictOfStruct:(void *)structData typeEncoding:(NSString *)typeEncoding
+- (NSDictionary *)dictOfStruct:(void *)structData typeName:(NSString *)typeName
 {
-    if ([typeEncoding rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
+    if ([typeName rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
         CGAffineTransform *trans = (CGAffineTransform *)structData;
         return [JPCGTransform transDictOfStruct:trans];
     }
     return nil;
 }
 
-- (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeEncoding:(NSString *)typeEncoding
+- (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeName:(NSString *)typeName
 {
-    if ([typeEncoding rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
+    if ([typeName rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
         [JPCGTransform transStruct:structData ofDict:dict];
     }
 }

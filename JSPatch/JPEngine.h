@@ -22,9 +22,9 @@
 @optional
 - (void)main:(JSContext *)context;
 
-- (size_t)sizeOfStructWithTypeEncoding:(NSString *)typeEncoding;
-- (NSDictionary *)dictOfStruct:(void *)structData typeEncoding:(NSString *)typeEncoding;
-- (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeEncoding:(NSString *)typeEncoding;
+- (size_t)sizeOfStructWithTypeName:(NSString *)typeName;
+- (NSDictionary *)dictOfStruct:(void *)structData typeName:(NSString *)typeName;
+- (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeName:(NSString *)typeName;
 @end
 
 @interface JPExtension : NSObject <JPExtensionProtocol>

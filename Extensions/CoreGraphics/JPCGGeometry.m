@@ -154,26 +154,39 @@
 }
 
 
-- (size_t)sizeOfStructWithTypeEncoding:(NSString *)typeEncoding
+- (size_t)sizeOfStructWithTypeName:(NSString *)typeName
 {
-    if ([typeEncoding rangeOfString:@"CGVector"].location != NSNotFound) {
+    if ([typeName rangeOfString:@"CGVector"].location != NSNotFound) {
         return sizeof(CGVector);
     }
+    
+    if ([typeName rangeOfString:@"CGRect"].location != NSNotFound) {
+        return sizeof(CGRect);
+    }
+    
+    if ([typeName rangeOfString:@"CGPoint"].location != NSNotFound) {
+        return sizeof(CGPoint);
+    }
+    
+    if ([typeName rangeOfString:@"CGSize"].location != NSNotFound) {
+        return sizeof(CGSize);
+    }
+    
     return 0;
 }
 
-- (NSDictionary *)dictOfStruct:(void *)structData typeEncoding:(NSString *)typeEncoding
+- (NSDictionary *)dictOfStruct:(void *)structData typeName:(NSString *)typeName
 {
-    if ([typeEncoding rangeOfString:@"CGVector"].location != NSNotFound) {
+    if ([typeName rangeOfString:@"CGVector"].location != NSNotFound) {
         CGVector *vector = (CGVector *)structData;
         return [JPCGGeometry vectorDictOfStruct:vector];
     }
     return nil;
 }
 
-- (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeEncoding:(NSString *)typeEncoding
+- (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeName:(NSString *)typeName
 {
-    if ([typeEncoding rangeOfString:@"CGVector"].location != NSNotFound) {
+    if ([typeName rangeOfString:@"CGVector"].location != NSNotFound) {
         [JPCGGeometry vectorStruct:structData ofDict:dict];
     }
 }

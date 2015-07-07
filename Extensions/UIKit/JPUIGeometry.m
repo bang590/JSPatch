@@ -49,26 +49,26 @@
 }
 
 
-- (size_t)sizeOfStructWithTypeEncoding:(NSString *)typeEncoding
+- (size_t)sizeOfStructWithTypeName:(NSString *)typeName
 {
-    if ([typeEncoding rangeOfString:@"UIEdgeInsets"].location != NSNotFound) {
+    if ([typeName rangeOfString:@"UIEdgeInsets"].location != NSNotFound) {
         return sizeof(UIEdgeInsets);
     }
     return 0;
 }
 
-- (NSDictionary *)dictOfStruct:(void *)structData typeEncoding:(NSString *)typeEncoding
+- (NSDictionary *)dictOfStruct:(void *)structData typeName:(NSString *)typeName
 {
-    if ([typeEncoding rangeOfString:@"UIEdgeInsets"].location != NSNotFound) {
+    if ([typeName rangeOfString:@"UIEdgeInsets"].location != NSNotFound) {
         UIEdgeInsets *edgeInsets = (UIEdgeInsets *)structData;
         return [JPUIGeometry edgeInsetOfStruct:edgeInsets];
     }
     return nil;
 }
 
-- (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeEncoding:(NSString *)typeEncoding
+- (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeName:(NSString *)typeName
 {
-    if ([typeEncoding rangeOfString:@"UIEdgeInsets"].location != NSNotFound) {
+    if ([typeName rangeOfString:@"UIEdgeInsets"].location != NSNotFound) {
         [JPUIGeometry edgeInsetsStruct:structData ofDict:dict];
     }
 }
