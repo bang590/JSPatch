@@ -16,11 +16,6 @@
 
 - (void)main:(JSContext *)context
 {
-    context[@"UIGraphicsGetCurrentContext"]    = ^id() {
-        CGContextRef c = UIGraphicsGetCurrentContext();
-        return [self formatPointerOCToJS:c];
-    };
-    
     context[@"CGContextSetLineCap"]            = ^void(JSValue *c, int cap) {
         CGContextSetLineCap([self formatPointerJSToOC:c], cap);
     };

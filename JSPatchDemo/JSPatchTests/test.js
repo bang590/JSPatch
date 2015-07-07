@@ -301,5 +301,13 @@ var global = this;
   obj.setFuncWithTransformPassed(transform.tx == 100 && transform.ty == 100 && transform.a == 1)
   var translated = CGAffineTransformTranslate(transform, 10, 10);
   obj.setTransformTranslatePassed(translated.tx == 110 && translated.ty == 110)
-  
+ 
+  //sizeof
+  var rectSize       = sizeof("CGRect")
+  var pointSize      = sizeof("CGPoint")
+  var sizeSize       = sizeof("CGSize")
+  var vectorSize     = sizeof("CGVector")
+  var edgeInsetsSize = sizeof("UIEdgeInsets")
+  var transformSize  = sizeof("CGAffineTransform")
+  obj.setFuncTestSizeofPassed(rectSize > 0 && pointSize > 0 && sizeSize > 0 && vectorSize > 0 && edgeInsetsSize > 0 && transformSize > 0)
 })();

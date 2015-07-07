@@ -1,16 +1,14 @@
 //
-//  JPCGContext.h
-//  
+//  JPCoreGraphics.h
+//  JSPatchDemo
 //
-//  Created by Albert438 on 15/7/2.
+//  Created by Albert438 on 15/7/3.
 //  Copyright © 2015年 bang. All rights reserved.
 //
 
 #import "JPEngine.h"
 #import "JPCoreGraphicsHeader.h"
 
-@interface JPCGContext : JPExtension
-
-
+@interface JPCoreGraphics : JPExtension
 
 @end
