@@ -367,7 +367,6 @@ JPMETHOD_IMPLEMENTATION_RET(CGRect, rect, JPMETHOD_RET_STRUCT(dictToRect))
 JPMETHOD_IMPLEMENTATION_RET(CGSize, size, JPMETHOD_RET_STRUCT(dictToSize))
 JPMETHOD_IMPLEMENTATION_RET(CGPoint, point, JPMETHOD_RET_STRUCT(dictToPoint))
 JPMETHOD_IMPLEMENTATION_RET(NSRange, range, JPMETHOD_RET_STRUCT(dictToRange))
-JPMETHOD_IMPLEMENTATION_RET(UIEdgeInsets, inset, JPMETHOD_RET_STRUCT(dictToEdgeInsets))
 JPMETHOD_IMPLEMENTATION(char, c, charValue)
 JPMETHOD_IMPLEMENTATION(unsigned char, C, unsignedCharValue)
 JPMETHOD_IMPLEMENTATION(short, s, shortValue)
@@ -484,8 +483,6 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                 JP_FWD_ARG_STRUCT(CGPoint, pointToDictionary)
                 JP_FWD_ARG_STRUCT(CGSize, sizeToDictionary)
                 JP_FWD_ARG_STRUCT(NSRange, rangeToDictionary)
-                JP_FWD_ARG_STRUCT(UIEdgeInsets, edgeInsetsToDictionary)
-                
                 break;
             }
             case ':': {
@@ -627,7 +624,6 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
                 JP_OVERRIDE_RET_STRUCT(CGPoint, point)
                 JP_OVERRIDE_RET_STRUCT(CGSize, size)
                 JP_OVERRIDE_RET_STRUCT(NSRange, range)
-                JP_OVERRIDE_RET_STRUCT(UIEdgeInsets, inset)
                 
                 break;
             }
@@ -765,7 +761,6 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 JP_CALL_ARG_STRUCT(CGPoint, dictToPoint)
                 JP_CALL_ARG_STRUCT(CGSize, dictToSize)
                 JP_CALL_ARG_STRUCT(NSRange, dictToRange)
-                JP_CALL_ARG_STRUCT(UIEdgeInsets, dictToEdgeInsets)
                 
                 break;
             }
@@ -854,8 +849,6 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     JP_CALL_RET_STRUCT(CGPoint, pointToDictionary)
                     JP_CALL_RET_STRUCT(CGSize, sizeToDictionary)
                     JP_CALL_RET_STRUCT(NSRange, rangeToDictionary)
-                    JP_CALL_RET_STRUCT(UIEdgeInsets, edgeInsetsToDictionary)
-                    
                     break;
                 }
                 case '*':
@@ -965,11 +958,6 @@ static NSDictionary *rangeToDictionary(NSRange range)
     return @{@"location": @(range.location), @"length": @(range.length)};
 }
 
-static NSDictionary *edgeInsetsToDictionary(UIEdgeInsets inset)
-{
-    return @{@"top": @(inset.top), @"left": @(inset.left), @"bottom": @(inset.bottom), @"right": @(inset.right)};
-}
-
 static CGRect dictToRect(NSDictionary *dict)
 {
     return CGRectMake([dict[@"x"] intValue], [dict[@"y"] intValue], [dict[@"width"] intValue], [dict[@"height"] intValue]);
@@ -988,11 +976,6 @@ static CGSize dictToSize(NSDictionary *dict)
 static NSRange dictToRange(NSDictionary *dict)
 {
     return NSMakeRange([dict[@"location"] intValue], [dict[@"length"] intValue]);
-}
-
-static UIEdgeInsets dictToEdgeInsets(NSDictionary *dict)
-{
-    return UIEdgeInsetsMake([dict[@"top"] intValue], [dict[@"left"] intValue], [dict[@"bottom"] intValue], [dict[@"right"] intValue]);
 }
 
 static NSString *trim(NSString *string)
