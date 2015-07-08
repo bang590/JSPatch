@@ -51,7 +51,7 @@
 
 - (size_t)sizeOfStructWithTypeName:(NSString *)typeName
 {
-    if ([typeName rangeOfString:@"UIEdgeInsets"].location != NSNotFound) {
+    if ([typeName isEqualToString:@"UIEdgeInsets"]) {
         return sizeof(UIEdgeInsets);
     }
     return 0;
@@ -59,7 +59,7 @@
 
 - (NSDictionary *)dictOfStruct:(void *)structData typeName:(NSString *)typeName
 {
-    if ([typeName rangeOfString:@"UIEdgeInsets"].location != NSNotFound) {
+    if ([typeName isEqualToString:@"UIEdgeInsets"]) {
         UIEdgeInsets *edgeInsets = (UIEdgeInsets *)structData;
         return [JPUIGeometry edgeInsetOfStruct:edgeInsets];
     }
@@ -68,13 +68,9 @@
 
 - (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeName:(NSString *)typeName
 {
-    if ([typeName rangeOfString:@"UIEdgeInsets"].location != NSNotFound) {
+    if ([typeName isEqualToString:@"UIEdgeInsets"]) {
         [JPUIGeometry edgeInsetsStruct:structData ofDict:dict];
     }
 }
-
-
-
-
 
 @end

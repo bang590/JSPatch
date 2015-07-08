@@ -20,8 +20,4 @@
     [JPEngine addExtensions:extensionArray];
 }
 
-
-
-
-
 @end

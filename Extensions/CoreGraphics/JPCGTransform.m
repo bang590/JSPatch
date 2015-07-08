@@ -75,7 +75,7 @@
 
 - (size_t)sizeOfStructWithTypeName:(NSString *)typeName
 {
-    if ([typeName rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
+    if ([typeName isEqualToString:@"CGAffineTransform"]) {
         return sizeof(CGAffineTransform);
     }
     return 0;
@@ -83,7 +83,7 @@
 
 - (NSDictionary *)dictOfStruct:(void *)structData typeName:(NSString *)typeName
 {
-    if ([typeName rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
+    if ([typeName isEqualToString:@"CGAffineTransform"]) {
         CGAffineTransform *trans = (CGAffineTransform *)structData;
         return [JPCGTransform transDictOfStruct:trans];
     }
@@ -92,7 +92,7 @@
 
 - (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeName:(NSString *)typeName
 {
-    if ([typeName rangeOfString:@"CGAffineTransform"].location != NSNotFound) {
+    if ([typeName isEqualToString:@"CGAffineTransform"]) {
         [JPCGTransform transStruct:structData ofDict:dict];
     }
 }

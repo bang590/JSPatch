@@ -174,11 +174,13 @@ static NSMutableArray *_structExtensions;
     };
     
     context[@"sizeof"] = ^size_t(JSValue *jsVal) {
-        NSString *typeString = [jsVal toString];
-        for (JPExtension *ext in _structExtensions) {
-            size_t size = [ext sizeOfStructWithTypeName:typeString];
-            if (size) {
-                return size;
+        NSString *typeName = [jsVal toString];
+        @synchronized (_context) {
+            for (JPExtension *ext in _structExtensions) {
+                size_t size = [ext sizeOfStructWithTypeName:typeName];
+                if (size) {
+                    return size;
+                }
             }
         }
         return 0;
@@ -216,13 +218,6 @@ static NSMutableArray *_structExtensions;
         NSArray *args = [JSContext currentArguments];
         for (JSValue *jsVal in args) {
             NSLog(@"JSPatch.log: %@", formatJSToOC(jsVal));
-        }
-    };
-    
-    context[@"_OC_free"] = ^(JSValue *jsVal) {
-        JPBoxing *obj = formatJSToOC(jsVal);
-        if ([obj isKindOfClass:[JPBoxing class]] && obj.pointer) {
-            free(obj.pointer);
         }
     };
     
@@ -863,7 +858,10 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         if (strncmp(returnType, "@", 1) == 0) {
             void *result;
             [invocation getReturnValue:&result];
-            if ([selectorName isEqualToString:@"alloc"] || [selectorName isEqualToString:@"new"]) {
+            
+            //For performance, ignore the other methods prefix with alloc/new/copy/mutableCopy
+            if ([selectorName isEqualToString:@"alloc"] || [selectorName isEqualToString:@"new"] ||
+                [selectorName isEqualToString:@"copy"] || [selectorName isEqualToString:@"mutableCopy"]) {
                 returnValue = (__bridge_transfer id)result;
             } else {
                 returnValue = (__bridge id)result;

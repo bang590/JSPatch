@@ -177,7 +177,7 @@
 
 - (NSDictionary *)dictOfStruct:(void *)structData typeName:(NSString *)typeName
 {
-    if ([typeName rangeOfString:@"CGVector"].location != NSNotFound) {
+    if ([typeName isEqualToString:@"CGVector"]) {
         CGVector *vector = (CGVector *)structData;
         return [JPCGGeometry vectorDictOfStruct:vector];
     }
@@ -186,7 +186,7 @@
 
 - (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeName:(NSString *)typeName
 {
-    if ([typeName rangeOfString:@"CGVector"].location != NSNotFound) {
+    if ([typeName isEqualToString:@"CGVector"]) {
         [JPCGGeometry vectorStruct:structData ofDict:dict];
     }
 }
