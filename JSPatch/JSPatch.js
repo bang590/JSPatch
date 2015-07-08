@@ -128,6 +128,10 @@ var global = this
 
   global.block = function(args, cb) {
     var slf = this
+    if (args instanceof Function) {
+      cb = args
+      args = ''
+    }
     var callback = function() {
       var args = Array.prototype.slice.call(arguments)
       return cb.apply(slf, _formatOCToJS(args))
