@@ -34,9 +34,6 @@
     
     context[@"UIGraphicsGetImageFromCurrentImageContext"] = ^id() {
         UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-        if (image == nil) {
-            NSLog(@"nil");
-        }
         return [self formatOCToJS:image];
     };
     
