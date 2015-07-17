@@ -312,4 +312,47 @@ var global = this;
   var edgeInsetsSize = sizeof("UIEdgeInsets")
   var transformSize  = sizeof("CGAffineTransform")
   obj.setFuncTestSizeofPassed(rectSize > 0 && pointSize > 0 && sizeSize > 0 && vectorSize > 0 && edgeInsetsSize > 0 && transformSize > 0)
+ 
+//getPointerTest1 - Test Object in JPBoxing
+  var sig = require('JPTestObject').instanceMethodSignatureForSelector("funcTestGetPointer1:");
+  var invocation = require('NSInvocation').invocationWithMethodSignature(sig)
+  var str = require('NSString').stringWithString('JSPatch')
+  invocation.setTarget(obj)
+  invocation.setSelector("funcTestGetPointer1:")
+  invocation.setArgument_atIndex(getpointer(str), 2)
+  invocation.invoke()
+  var ret1 = malloc(1)
+  invocation.getReturnValue(ret1)
+  var bool1 =  pvalWithBool(ret1)
+ 
+//getPointerTest2 -  Test Normal Object
+  var sig = require('JPTestObject').instanceMethodSignatureForSelector("funcTestGetPointer2:");
+  var invocation = require('NSInvocation').invocationWithMethodSignature(sig)
+  var err = require('NSError').errorWithDomain_code_userInfo("com.albert43",45,{msg:"test"});
+  invocation.setTarget(obj)
+  invocation.setSelector("funcTestGetPointer2:")
+  invocation.setArgument_atIndex(getpointer(err), 2)
+  invocation.invoke()
+  var ret2 = malloc(1)
+  invocation.getReturnValue(ret2);
+  var bool2 =  pvalWithBool(ret2)
+
+//getPointerTest3 -  Test Pointer
+  var ptr = malloc(10)
+  memset(ptr, 65, 10)
+  var sig = require('JPTestObject').instanceMethodSignatureForSelector("funcTestGetPointer3:");
+  var invocation = require('NSInvocation').invocationWithMethodSignature(sig)
+  invocation.setTarget(obj)
+  invocation.setSelector("funcTestGetPointer3:")
+  invocation.setArgument_atIndex(getpointer(ptr), 2)
+  invocation.invoke()
+  var ret3 = malloc(1)
+  invocation.getReturnValue(ret3);
+  var bool3 =  pvalWithBool(ret3)
+  obj.setFuncTestGetPointerPassed(bool1 && bool2 && bool3)
+  free(ret1)
+  free(ret2)
+  free(ret3)
+  free(ptr)
+ 
 })();

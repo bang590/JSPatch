@@ -63,6 +63,7 @@
         CGAffineTransform transform;
         [JPCGTransform transStruct:&transform ofDict:m];
         CGPathAddLines([self formatPointerJSToOC:path], &transform, points, count);
+        free(points);
     };
 
     context[@"CGPathAddRect"]                 = ^void(JSValue *path, NSDictionary *m,

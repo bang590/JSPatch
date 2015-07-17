@@ -15,7 +15,7 @@
 #import "JPInclude.h"
 #import "JPCoreGraphics.h"
 #import "JPUIKit.h"
-
+#import "JPMemory.h"
 @interface JSPatchTests : XCTestCase
 
 @end
@@ -31,7 +31,7 @@
 - (void)setUp {
     [super setUp];
     [JPEngine startEngine];
-    [JPEngine addExtensions:@[[JPInclude instance], [JPCoreGraphics instance],[JPUIKit instance]]];
+    [JPEngine addExtensions:@[[JPInclude instance], [JPCoreGraphics instance],[JPUIKit instance],[JPMemory instance]]];
 }
 
 - (void)tearDown {
@@ -106,7 +106,7 @@
     XCTAssert(obj.funcToSwizzleTestPointerPassed, @"funcToSwizzleTestPointerPassed");
     XCTAssert(obj.funcTestPointerPassed, @"funcTestPointerPassed");
     XCTAssert(obj.funcTestSizeofPassed,@"funcSizeofPassed");
-
+    XCTAssert(obj.funcTestGetPointerPassed, @"funcGetPointerPassed");
     NSDictionary *originalDict = @{@"k": @"v"};
     NSDictionary *dict = [obj funcToSwizzleReturnDictionary:originalDict];
     XCTAssert(originalDict == dict, @"funcToSwizzleReturnDictionary");

@@ -363,6 +363,32 @@ typedef struct {
     self.funcTestPointerPassed = testStruct->idx == 42 && strcmp(testStruct->name, "JSPatch") == 0;
 }
 
+- (BOOL)funcTestGetPointer1:(NSString *)str
+{
+    if ([str isEqualToString:@"JSPatch"]) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)funcTestGetPointer2:(NSError *)error
+{
+    if ([[[error userInfo] description] isEqualToString:[@{@"msg":@"test"} description]]) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)funcTestGetPointer3:(void *)arr
+{
+    char *p = arr;
+    for (int i = 0; i < 10; i++) {
+        if (p[i] != 'A') {
+            return false;
+        }
+    }
+    return true;
+}
 
 + (void)classFuncToSwizzle:(JPTestObject *)testObject int:(NSInteger)i
 {
