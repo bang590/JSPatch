@@ -19,6 +19,7 @@
             components[i] = [componentsArray[i] doubleValue];
         }
         CGColorRef color =  CGColorCreate([self formatPointerJSToOC:space], components);
+        free(components);
         return [self formatPointerOCToJS:color];
     };
     

@@ -39,6 +39,10 @@
     context[@"CGBitmapContextGetWidth"]       = ^size_t(JSValue *c) {
         return CGBitmapContextGetWidth([self formatPointerJSToOC:c]);
     };
+    
+    context[@"CGImageRelease"]                = ^void(JSValue *image) {
+        CGImageRelease([self formatPointerJSToOC:image]);
+    };
 }
 
 @end

@@ -26,6 +26,7 @@
                 decode[i] = [decodeArray[i] doubleValue];
             }
             CGImageRef  createdImage = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel,bytesPerRow, [self formatPointerJSToOC:space], bitmapInfo, [self formatPointerJSToOC:provider], decode, shouldInterpolate, intent);
+            free(decode);
             return [self formatPointerOCToJS:createdImage];
         }
     };

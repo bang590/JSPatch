@@ -88,6 +88,29 @@ id formatOCToJS(id obj);
     return formatOCToJS(obj);
 }
 
+- (void *)getPointerFromJS:(JSValue *)val
+{
+    void **p = malloc(sizeof(void *));
+    if ([[val toObject] isKindOfClass:[NSDictionary class]]) {
+        if ([[val toObject][@"__obj"] isKindOfClass:[JPBoxing class]]) {
+            void *pointer = [(JPBoxing *)[val toObject][@"__obj"] unboxPointer];
+            if (pointer != NULL) {
+                *p = pointer;
+            }else {
+                id jpobj = [(JPBoxing *)[val toObject][@"__obj"] unbox];
+                *p = (__bridge void *)jpobj;
+            }
+        }else {
+            id obj = [val toObject][@"__obj"];
+            *p     = (__bridge void *)obj;
+        }
+        return p;
+    }else {
+        NSAssert(NO, @"getpointer only support pointer and id type!");
+        return NULL;
+    }
+}
+
 @end
 
 

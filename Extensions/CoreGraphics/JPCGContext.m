@@ -89,6 +89,7 @@
             pointsArray[i]   = point;
         }
         CGContextAddLines([self formatPointerJSToOC:c], pointsArray, count);
+        free(pointsArray);
     };
     
     context[@"CGContextAddEllipseInRect"]      = ^void(JSValue *c, NSDictionary *rectDict){
@@ -221,6 +222,7 @@
             lengthsArray[i] = [lengths[i] doubleValue];
         }
         CGContextSetLineDash([self formatPointerJSToOC:c], phase, lengthsArray, count);
+        free(lengthsArray);
     };
     
     context[@"CGContextRotateCTM"]               = ^void(JSValue *c, CGFloat angle) {
