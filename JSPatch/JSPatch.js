@@ -145,6 +145,7 @@ var global = this
   
   global.YES = 1
   global.NO = 0
+  global._formatOCToJS = _formatOCToJS
   
   global.__defineGetter__("nsnull", function() {
     return _formatOCToJS(_OC_null)
