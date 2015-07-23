@@ -349,6 +349,12 @@ typedef struct {
     return NULL;
 }
 
+- (void)funcTestNSErrorPointer:(NSError **)error
+{
+    NSError *tmp = [[NSError alloc]initWithDomain:@"com.albert43" code:43 userInfo:@{@"msg":@"test error"}];
+    *error = tmp;
+}
+
 - (void *)funcReturnPointer
 {
     JPTestStruct *testStruct = (JPTestStruct*)malloc(sizeof(JPTestStruct));
