@@ -70,6 +70,7 @@
 @property (nonatomic, assign) BOOL funcTestPointerPassed;
 @property (nonatomic, assign) BOOL funcTestSizeofPassed;
 @property (nonatomic, assign) BOOL funcTestGetPointerPassed;
+@property (nonatomic, assign) BOOL funcTestNSErrorPointerPassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzlePassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnObjPassed;
 @property (nonatomic, assign) BOOL classFuncToSwizzleReturnObjCalledOriginalPassed;

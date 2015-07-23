@@ -85,7 +85,7 @@ id formatOCToJS(id obj);
 
 - (id)formatOCToJS:(id)obj
 {
-    return formatOCToJS(obj);
+    return [[JSContext currentContext][@"_formatOCToJS"] callWithArguments:@[formatOCToJS(obj)]];
 }
 
 - (void *)getPointerFromJS:(JSValue *)val
@@ -196,6 +196,36 @@ static NSMutableArray *_structExtensions;
         });
     };
     
+    context[@"dispatch_async_main"] = ^(JSValue *func) {
+        JSValue *currSelf = weakCtx[@"self"];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            JSValue *prevSelf = weakCtx[@"self"];
+            weakCtx[@"self"] = currSelf;
+            [func callWithArguments:nil];
+            weakCtx[@"self"] = prevSelf;
+        });
+    };
+    
+    context[@"dispatch_sync_main"] = ^(JSValue *func) {
+        if ([NSThread currentThread].isMainThread) {
+            [func callWithArguments:nil];
+        } else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [func callWithArguments:nil];
+            });
+        }
+    };
+    
+    context[@"dispatch_async_global_queue"] = ^(JSValue *func) {
+        JSValue *currSelf = weakCtx[@"self"];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            JSValue *prevSelf = weakCtx[@"self"];
+            weakCtx[@"self"] = currSelf;
+            [func callWithArguments:nil];
+            weakCtx[@"self"] = prevSelf;
+        });
+    };
+    
     context[@"sizeof"] = ^size_t(JSValue *jsVal) {
         NSString *typeName = [jsVal toString];
         @synchronized (_context) {
@@ -209,32 +239,14 @@ static NSMutableArray *_structExtensions;
         return 0;
     };
     
-    context[@"dispatch_async_main"] = ^(JSValue *func) {
-        JSValue *currSelf = weakCtx[@"self"];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            JSValue *prevSelf = weakCtx[@"self"];
-            weakCtx[@"self"] = currSelf;
-            [func callWithArguments:nil];
-            weakCtx[@"self"] = prevSelf;
-        });
-    };
-    context[@"dispatch_sync_main"] = ^(JSValue *func) {
-        if ([NSThread currentThread].isMainThread) {
-            [func callWithArguments:nil];
-        } else {
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                [func callWithArguments:nil];
-            });
+    context[@"releaseTmpObj"] = ^void(JSValue *jsVal) {
+        if ([[jsVal toObject] isKindOfClass:[NSDictionary class]]) {
+            void *pointer =  [(JPBoxing *)([jsVal toObject][@"__obj"]) unboxPointer];
+            id obj = *((__unsafe_unretained id *)pointer);
+            @synchronized(_TMPMemoryPool) {
+                [_TMPMemoryPool removeObjectForKey:[NSNumber numberWithInteger:[obj hash]]];
+            }
         }
-    };
-    context[@"dispatch_async_global_queue"] = ^(JSValue *func) {
-        JSValue *currSelf = weakCtx[@"self"];
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            JSValue *prevSelf = weakCtx[@"self"];
-            weakCtx[@"self"] = currSelf;
-            [func callWithArguments:nil];
-            weakCtx[@"self"] = prevSelf;
-        });
     };
 
     context[@"_OC_log"] = ^() {
@@ -269,7 +281,8 @@ static NSMutableArray *_structExtensions;
 #pragma mark - Implements
 
 static NSMutableDictionary *_JSOverideMethods;
-static NSArray *_TMPInvocationArguments;
+static NSArray             *_TMPInvocationArguments;
+static NSMutableDictionary *_TMPMemoryPool;
 static NSRegularExpression *countArgRegex;
 static NSMutableDictionary *_propKeys;
 
@@ -723,6 +736,10 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 
 static id callSelector(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper)
 {
+    if (!_TMPMemoryPool) {
+        _TMPMemoryPool = [[NSMutableDictionary alloc]init];
+    }
+    
     if (instance) instance = formatJSToOC(instance);
     id argumentsObj = formatJSToOC(arguments);
     
@@ -753,6 +770,8 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         
         selector = superSelector;
     }
+    
+    NSMutableArray *_markArray = [[NSMutableArray alloc]init];
     
     NSInvocation *invocation;
     NSMethodSignature *methodSignature;
@@ -836,6 +855,9 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 if ([valObj isKindOfClass:[JPBoxing class]]) {
                     void *value = [((JPBoxing *)valObj) unboxPointer];
                     [invocation setArgument:&value atIndex:i];
+                    if (argumentType[1] == '@') {
+                        [_markArray addObject:valObj];
+                    }
                     break;
                 }
             }
@@ -875,6 +897,17 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     }
     
     [invocation invoke];
+    if ([_markArray count] > 0) {
+        for (JPBoxing *box in _markArray) {
+            void *pointer = [box unboxPointer];
+            id obj = *((__unsafe_unretained id *)pointer);
+            if (obj) {
+                @synchronized(_TMPMemoryPool) {
+                    [_TMPMemoryPool setObject:obj forKey:[NSNumber numberWithInteger:[obj hash]]];
+                }
+            }
+        }
+    }
     const char *returnType = [methodSignature methodReturnType];
     id returnValue;
     if (strncmp(returnType, "v", 1) != 0) {
