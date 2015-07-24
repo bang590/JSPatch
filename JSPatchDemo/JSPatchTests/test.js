@@ -355,4 +355,17 @@ var global = this;
   free(ret3)
   free(ptr)
  
+//funcTestNSErrorPointer
+  var p_error = malloc(8)
+  obj.funcTestNSErrorPointer(p_error)
+  var error = pval(p_error)
+  if (!error) {
+     obj.setFuncTestNSErrorPointerPassed(false)
+  } else {
+    var code = error.code()
+    obj.setFuncTestNSErrorPointerPassed(code==43)
+  }
+  releaseTmpObj(p_error)
+  free(p_error)
+
 })();
