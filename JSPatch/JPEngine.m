@@ -234,6 +234,7 @@ static NSMutableArray *_structExtensions;
     
     context[@"sizeof"] = ^size_t(JSValue *jsVal) {
         NSString *typeName = [jsVal toString];
+        if ([typeName isEqualToString:@"id"]) return sizeof(id);
         @synchronized (_context) {
             for (JPExtension *ext in _structExtensions) {
                 size_t size = [ext sizeOfStructWithTypeName:typeName];
