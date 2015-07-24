@@ -138,7 +138,13 @@ static NSMutableArray *_structExtensions;
         _regex = [NSRegularExpression regularExpressionWithPattern:_regexStr options:0 error:nil];
     }
     NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [_regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:_replaceStr]];
-    return [_context evaluateScript:formatedScript];
+    @try {
+        return [_context evaluateScript:formatedScript];
+    }
+    @catch (NSException *exception) {
+        NSAssert(NO, @"%@", exception);
+    }
+    return nil;
 }
 
 + (void)addExtensions:(NSArray *)extensions
