@@ -357,7 +357,6 @@ var global = this;
  
 //funcTestNSErrorPointer
   var p_error = malloc(8)
-  memset(p_error, 0, 8)
   obj.funcTestNSErrorPointer(p_error)
   var error = pval(p_error)
   if (!error) {

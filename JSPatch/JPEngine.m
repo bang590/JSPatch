@@ -854,10 +854,11 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
             case '^': {
                 if ([valObj isKindOfClass:[JPBoxing class]]) {
                     void *value = [((JPBoxing *)valObj) unboxPointer];
-                    [invocation setArgument:&value atIndex:i];
                     if (argumentType[1] == '@') {
+                        memset(value, 0, sizeof(id));
                         [_markArray addObject:valObj];
                     }
+                    [invocation setArgument:&value atIndex:i];
                     break;
                 }
             }
