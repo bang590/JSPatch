@@ -736,10 +736,6 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 
 static id callSelector(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper)
 {
-    if (!_TMPMemoryPool) {
-        _TMPMemoryPool = [[NSMutableDictionary alloc]init];
-    }
-    
     if (instance) instance = formatJSToOC(instance);
     id argumentsObj = formatJSToOC(arguments);
     
@@ -771,7 +767,8 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         selector = superSelector;
     }
     
-    NSMutableArray *_markArray = [[NSMutableArray alloc]init];
+    
+    NSMutableArray *_markArray;
     
     NSInvocation *invocation;
     NSMethodSignature *methodSignature;
@@ -854,10 +851,18 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
             case '^': {
                 if ([valObj isKindOfClass:[JPBoxing class]]) {
                     void *value = [((JPBoxing *)valObj) unboxPointer];
+                    
                     if (argumentType[1] == '@') {
+                        if (!_TMPMemoryPool) {
+                            _TMPMemoryPool = [[NSMutableDictionary alloc] init];
+                        }
+                        if (!_markArray) {
+                            _markArray = [[NSMutableArray alloc] init];
+                        }
                         memset(value, 0, sizeof(id));
                         [_markArray addObject:valObj];
                     }
+                    
                     [invocation setArgument:&value atIndex:i];
                     break;
                 }
