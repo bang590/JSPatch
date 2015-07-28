@@ -37,7 +37,7 @@ var global = this
                 formatedArgs.splice(i, 1, null)
             }
         }
-        return obj.apply(obj, formatedArgs)
+        return _OC_formatOCToJS(obj.apply(obj, formatedArgs))
       }
     }
     if (obj instanceof Object) {
