@@ -396,6 +396,25 @@ typedef struct {
     return true;
 }
 
+typedef NSString * (^JSBlock)(NSError *);
+- (JSBlock)funcGenerateBlock {
+    JSBlock block = ^(NSError *err) {
+        if (err) {
+            return [err description];
+        }else {
+            return @"no error";
+        }
+    };
+    return block;
+}
+
+- (NSString *)excuteBlockWithNilParameters:(JSBlock)blk {
+    if (blk) {
+        return blk(nil);
+    }
+    return nil;
+}
+
 + (void)classFuncToSwizzle:(JPTestObject *)testObject int:(NSInteger)i
 {
     

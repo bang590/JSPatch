@@ -368,4 +368,13 @@ var global = this;
   releaseTmpObj(p_error)
   free(p_error)
 
+//funcTestNilParametersInBlock
+  var blk  = obj.funcGenerateBlock()
+  var str1 = blk(obj.funcReturnNil())
+  var str2 = blk(null)
+  var str3 = obj.excuteBlockWithNilParameters(block("NSError *", blk))
+  if (str1 == "no error" && str2 == "no error" && str3.toJS() == "no error") {
+    obj.setFuncTestNilParametersInBlockPassed(true)
+  }
+
 })();

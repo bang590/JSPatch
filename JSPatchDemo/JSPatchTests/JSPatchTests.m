@@ -108,6 +108,7 @@
     XCTAssert(obj.funcTestSizeofPassed,@"funcSizeofPassed");
     XCTAssert(obj.funcTestGetPointerPassed, @"funcGetPointerPassed");
     XCTAssert(obj.funcTestNSErrorPointerPassed, @"funcTestNSErrorPointerPassed");
+    XCTAssert(obj.funcTestNilParametersInBlockPassed, @"funcTestNilParametersInBlockPassed");
     NSDictionary *originalDict = @{@"k": @"v"};
     NSDictionary *dict = [obj funcToSwizzleReturnDictionary:originalDict];
     XCTAssert(originalDict == dict, @"funcToSwizzleReturnDictionary");
