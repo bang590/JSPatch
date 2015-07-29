@@ -36,15 +36,19 @@ var global = this;
       return "overrided";
     },
     funcToSwizzleReturnRect: function(rect) {
+      self.setFuncToSwizzleReturnRectJSPassed(rect.width == 100)
       return rect;
     },
     funcToSwizzleReturnSize: function(size) {
+      self.setFuncToSwizzleReturnSizeJSPassed(size.width == 42)
       return size;
     },
     funcToSwizzleReturnPoint: function(point) {
+      self.setFuncToSwizzleReturnPointJSPassed(point.x == 42)
       return point;
     },
     funcToSwizzleReturnRange: function(range) {
+      self.setFuncToSwizzleReturnRangeJSPassed(range.length == 42)
       return range;
     },
     funcToSwizzleTestGCD: function(completeBlock) {
@@ -373,7 +377,6 @@ var global = this;
   var str1 = blk(obj.funcReturnNil())
   var str2 = blk(null)
   var str3 = obj.excuteBlockWithNilParameters(block("NSError *", blk))
-  console.log(str1.toJS())
   if (str1.toJS() == "no error" && str2.toJS() == "no error" && str3.toJS() == "no error") {
     obj.setFuncTestNilParametersInBlockPassed(true)
   }

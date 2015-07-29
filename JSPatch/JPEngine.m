@@ -451,10 +451,6 @@ static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) { 
         ([obj isKindOfClass:[NSNumber class]] && strcmp([obj objCType], "c") == 0 && ![obj boolValue])) return nil;  \
     return obj;
 
-#define JPMETHOD_RET_STRUCT(_methodName)    \
-    id dict = formatJSToOC(ret);   \
-    return _methodName(dict);
-
 #define JPMETHOD_RET_POINTER    \
     id obj = formatJSToOC(ret); \
     if ([obj isKindOfClass:[JPBoxing class]]) { \
@@ -481,10 +477,10 @@ JPMETHOD_IMPLEMENTATION_RET(id, id, JPMETHOD_RET_ID)
 JPMETHOD_IMPLEMENTATION_RET(void *, pointer, JPMETHOD_RET_POINTER)
 JPMETHOD_IMPLEMENTATION_RET(Class, cls, JPMETHOD_RET_CLASS)
 JPMETHOD_IMPLEMENTATION_RET(SEL, sel, JPMETHOD_RET_SEL)
-JPMETHOD_IMPLEMENTATION_RET(CGRect, rect, JPMETHOD_RET_STRUCT(dictToRect))
-JPMETHOD_IMPLEMENTATION_RET(CGSize, size, JPMETHOD_RET_STRUCT(dictToSize))
-JPMETHOD_IMPLEMENTATION_RET(CGPoint, point, JPMETHOD_RET_STRUCT(dictToPoint))
-JPMETHOD_IMPLEMENTATION_RET(NSRange, range, JPMETHOD_RET_STRUCT(dictToRange))
+JPMETHOD_IMPLEMENTATION_RET(CGRect, rect, return [ret toRect])
+JPMETHOD_IMPLEMENTATION_RET(CGSize, size, return [ret toSize])
+JPMETHOD_IMPLEMENTATION_RET(CGPoint, point, return [ret toPoint])
+JPMETHOD_IMPLEMENTATION_RET(NSRange, range, return [ret toRange])
 JPMETHOD_IMPLEMENTATION(char, c, charValue)
 JPMETHOD_IMPLEMENTATION(unsigned char, C, unsignedCharValue)
 JPMETHOD_IMPLEMENTATION(short, s, shortValue)
@@ -568,13 +564,13 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                 if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
                     _type arg; \
                     [invocation getArgument:&arg atIndex:i];    \
-                    [argList addObject:_transFunc(arg)];  \
+                    [argList addObject:[JSValue _transFunc:arg inContext:[JSContext currentContext]]];  \
                     break; \
                 }
-                JP_FWD_ARG_STRUCT(CGRect, rectToDictionary)
-                JP_FWD_ARG_STRUCT(CGPoint, pointToDictionary)
-                JP_FWD_ARG_STRUCT(CGSize, sizeToDictionary)
-                JP_FWD_ARG_STRUCT(NSRange, rangeToDictionary)
+                JP_FWD_ARG_STRUCT(CGRect, valueWithRect)
+                JP_FWD_ARG_STRUCT(CGPoint, valueWithPoint)
+                JP_FWD_ARG_STRUCT(CGSize, valueWithSize)
+                JP_FWD_ARG_STRUCT(NSRange, valueWithRange)
                 
                 @synchronized (_context) {
                     for (JPExtension *ext in _structExtensions) {
@@ -833,16 +829,17 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
             }
             case '{': {
                 NSString *typeString = extractTypeName([NSString stringWithUTF8String:argumentType]);
-                #define JP_CALL_ARG_STRUCT(_type, _transFunc) \
+                JSValue *val = arguments[i-2];
+                #define JP_CALL_ARG_STRUCT(_type, _methodName) \
                 if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
-                    _type value = _transFunc(valObj);  \
+                    _type value = [val _methodName];  \
                     [invocation setArgument:&value atIndex:i];  \
                     break; \
                 }
-                JP_CALL_ARG_STRUCT(CGRect, dictToRect)
-                JP_CALL_ARG_STRUCT(CGPoint, dictToPoint)
-                JP_CALL_ARG_STRUCT(CGSize, dictToSize)
-                JP_CALL_ARG_STRUCT(NSRange, dictToRange)
+                JP_CALL_ARG_STRUCT(CGRect, toRect)
+                JP_CALL_ARG_STRUCT(CGPoint, toPoint)
+                JP_CALL_ARG_STRUCT(CGSize, toSize)
+                JP_CALL_ARG_STRUCT(NSRange, toRange)
                 @synchronized (_context) {
                     for (JPExtension *ext in _structExtensions) {
                         size_t size = [ext sizeOfStructWithTypeName:typeString];
@@ -968,16 +965,16 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
 
                 case '{': {
                     NSString *typeString = extractTypeName([NSString stringWithUTF8String:returnType]);
-                    #define JP_CALL_RET_STRUCT(_type, _transFunc) \
+                    #define JP_CALL_RET_STRUCT(_type, _methodName) \
                     if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
                         _type result;   \
                         [invocation getReturnValue:&result];    \
-                        return _transFunc(result);    \
+                        return [JSValue _methodName:result inContext:[JSContext currentContext]];    \
                     }
-                    JP_CALL_RET_STRUCT(CGRect, rectToDictionary)
-                    JP_CALL_RET_STRUCT(CGPoint, pointToDictionary)
-                    JP_CALL_RET_STRUCT(CGSize, sizeToDictionary)
-                    JP_CALL_RET_STRUCT(NSRange, rangeToDictionary)
+                    JP_CALL_RET_STRUCT(CGRect, valueWithRect)
+                    JP_CALL_RET_STRUCT(CGPoint, valueWithPoint)
+                    JP_CALL_RET_STRUCT(CGSize, valueWithSize)
+                    JP_CALL_RET_STRUCT(NSRange, valueWithRange)
                     @synchronized (_context) {
                         for (JPExtension *ext in _structExtensions) {
                             size_t size = [ext sizeOfStructWithTypeName:typeString];
@@ -1087,46 +1084,6 @@ static NSString *extractTypeName(NSString *typeEncodeString)
     return [typeString substringFromIndex:firstValidIndex];
 }
 
-static NSDictionary *rectToDictionary(CGRect rect)
-{
-    return @{@"x": @(rect.origin.x), @"y": @(rect.origin.y), @"width": @(rect.size.width), @"height": @(rect.size.height)};
-}
-
-static NSDictionary *pointToDictionary(CGPoint point)
-{
-    return @{@"x": @(point.x), @"y": @(point.y)};
-}
-
-static NSDictionary *sizeToDictionary(CGSize size)
-{
-    return @{@"width": @(size.width), @"height": @(size.height)};
-}
-
-static NSDictionary *rangeToDictionary(NSRange range)
-{
-    return @{@"location": @(range.location), @"length": @(range.length)};
-}
-
-static CGRect dictToRect(NSDictionary *dict)
-{
-    return CGRectMake([dict[@"x"] intValue], [dict[@"y"] intValue], [dict[@"width"] intValue], [dict[@"height"] intValue]);
-}
-
-static CGPoint dictToPoint(NSDictionary *dict)
-{
-    return CGPointMake([dict[@"x"] intValue], [dict[@"y"] intValue]);
-}
-
-static CGSize dictToSize(NSDictionary *dict)
-{
-    return CGSizeMake([dict[@"width"] intValue], [dict[@"height"] intValue]);
-}
-
-static NSRange dictToRange(NSDictionary *dict)
-{
-    return NSMakeRange([dict[@"location"] intValue], [dict[@"length"] intValue]);
-}
-
 static NSString *trim(NSString *string)
 {
     return [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -1144,7 +1101,7 @@ id formatOCToJS(id obj)
     if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSDictionary class]] || [obj isKindOfClass:[NSArray class]]) {
         return _wrapObj([JPBoxing boxObj:obj]);
     }
-    if ([obj isKindOfClass:[NSNumber class]] || [obj isKindOfClass:NSClassFromString(@"NSBlock")]) {
+    if ([obj isKindOfClass:[NSNumber class]] || [obj isKindOfClass:NSClassFromString(@"NSBlock")] || [obj isKindOfClass:[JSValue class]]) {
         return obj;
     }
     return _wrapObj(obj);

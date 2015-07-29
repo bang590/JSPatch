@@ -61,6 +61,10 @@
 @property (nonatomic, assign) BOOL funcToSwizzleReturnPointPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleReturnSizePassed;
 @property (nonatomic, assign) BOOL funcToSwizzleReturnRangePassed;
+@property (nonatomic, assign) BOOL funcToSwizzleReturnRectJSPassed;
+@property (nonatomic, assign) BOOL funcToSwizzleReturnPointJSPassed;
+@property (nonatomic, assign) BOOL funcToSwizzleReturnSizeJSPassed;
+@property (nonatomic, assign) BOOL funcToSwizzleReturnRangeJSPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleTestGCDPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleTestClassPassed;
 @property (nonatomic, assign) BOOL funcToSwizzleTestSelectorPassed;
