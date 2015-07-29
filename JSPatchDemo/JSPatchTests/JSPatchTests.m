@@ -149,6 +149,8 @@
     
     XCTAssert(obj.funcWithTransformPassed, @"funcWithTransformPassed");
     XCTAssert(obj.transformTranslatePassed, @"funcWithTransformPassed");
+    XCTAssert(obj.funcWithRectPointerPassed, @"funcWithRectPointerPassed");
+    XCTAssert(obj.funcWithTransformPointerPassed, @"funcWithTransformPointerPassed");
     
     XCTAssertEqualObjects(@"overrided",[subObj funcOverrideParentMethod]);
     

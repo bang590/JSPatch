@@ -504,6 +504,17 @@ typedef NSString * (^JSBlock)(NSError *);
     return transform;
 }
 
+#pragma mark structPointer
+- (void)funcWithRectPointer:(CGRect *)rect
+{
+    self.funcWithRectPointerPassed = rect->size.width == 100;
+    rect->origin.x = 42;
+}
+- (void)funcWithTransformPointer:(CGAffineTransform *)transform
+{
+    self.funcWithTransformPointerPassed = transform->a == 100;
+    transform->tx = 42;
+}
 @end
 
 

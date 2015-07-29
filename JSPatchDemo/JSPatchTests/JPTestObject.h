@@ -99,6 +99,8 @@
 
 @property (nonatomic, assign) BOOL funcWithTransformPassed;
 @property (nonatomic, assign) BOOL transformTranslatePassed;
+@property (nonatomic, assign) BOOL funcWithRectPointerPassed;
+@property (nonatomic, assign) BOOL funcWithTransformPointerPassed;
 
 @property (nonatomic, assign) BOOL consoleLogPassed;
 @property (nonatomic, assign) BOOL overrideParentMethodPassed;

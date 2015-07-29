@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 @class JPExtension;
+extern NSMutableArray *registeredStructExtensions;
 
 @interface JPEngine : NSObject
 + (void)startEngine;

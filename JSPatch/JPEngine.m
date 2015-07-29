@@ -125,7 +125,7 @@ static NSString *_replaceStr = @".__c(\"$1\")(";
 static NSRegularExpression* _regex;
 static NSObject *_nullObj;
 static NSObject *_nilObj;
-static NSMutableArray *_structExtensions;
+NSMutableArray *registeredStructExtensions;
 
 + (JSValue *)evaluateScript:(NSString *)script
 {
@@ -151,15 +151,15 @@ static NSMutableArray *_structExtensions;
 {
     NSAssert(_context, @"please call [JPEngine startEngine]");
     @synchronized (_context) {
-        if (!_structExtensions) {
-            _structExtensions = [[NSMutableArray alloc] init];
+        if (!registeredStructExtensions) {
+            registeredStructExtensions = [[NSMutableArray alloc] init];
         }
         for (JPExtension *ext in extensions) {
             if ([ext respondsToSelector:@selector(main:)]) {
                 [ext main:_context];
             }
             if ([ext respondsToSelector:@selector(sizeOfStructWithTypeName:)]) {
-                [_structExtensions addObject:ext];
+                [registeredStructExtensions addObject:ext];
             }
         }
     }
@@ -234,20 +234,6 @@ static NSMutableArray *_structExtensions;
             [func callWithArguments:nil];
             weakCtx[@"self"] = prevSelf;
         });
-    };
-    
-    context[@"sizeof"] = ^size_t(JSValue *jsVal) {
-        NSString *typeName = [jsVal toString];
-        if ([typeName isEqualToString:@"id"]) return sizeof(id);
-        @synchronized (_context) {
-            for (JPExtension *ext in _structExtensions) {
-                size_t size = [ext sizeOfStructWithTypeName:typeName];
-                if (size) {
-                    return size;
-                }
-            }
-        }
-        return 0;
     };
     
     context[@"releaseTmpObj"] = ^void(JSValue *jsVal) {
@@ -573,7 +559,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                 JP_FWD_ARG_STRUCT(NSRange, valueWithRange)
                 
                 @synchronized (_context) {
-                    for (JPExtension *ext in _structExtensions) {
+                    for (JPExtension *ext in registeredStructExtensions) {
                         size_t size = [ext sizeOfStructWithTypeName:typeString];
                         if (size) {
                             void *ret = malloc(size);
@@ -841,7 +827,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 JP_CALL_ARG_STRUCT(CGSize, toSize)
                 JP_CALL_ARG_STRUCT(NSRange, toRange)
                 @synchronized (_context) {
-                    for (JPExtension *ext in _structExtensions) {
+                    for (JPExtension *ext in registeredStructExtensions) {
                         size_t size = [ext sizeOfStructWithTypeName:typeString];
                         if (size) {
                             void *ret = malloc(size);
@@ -976,7 +962,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     JP_CALL_RET_STRUCT(CGSize, valueWithSize)
                     JP_CALL_RET_STRUCT(NSRange, valueWithRange)
                     @synchronized (_context) {
-                        for (JPExtension *ext in _structExtensions) {
+                        for (JPExtension *ext in registeredStructExtensions) {
                             size_t size = [ext sizeOfStructWithTypeName:typeString];
                             if (size) {
                                 void *ret = malloc(size);
