@@ -214,7 +214,7 @@ var global = this;
     str: "stringFromJS",
     view: view
   }, view)
-  obj.setFuncReturnObjectBlockReturnValuePassed(blkRet == "succ")
+  obj.setFuncReturnObjectBlockReturnValuePassed(blkRet.toJS() == "succ")
 
   obj.callBlockWithStringAndInt(block("NSString *, int", function(str, num) {
     obj.setCallBlockWithStringAndIntPassed(str.toJS() == "stringFromOC" && num == 42)
@@ -237,7 +237,7 @@ var global = this;
       "str": "stringFromJS",
       "view": view
     }: {}), view)
-    obj.setCallBlockWithObjectAndBlockReturnValuePassed(ret == "succ")
+    obj.setCallBlockWithObjectAndBlockReturnValuePassed(ret.toJS() == "succ")
   }))
 
   //////super
@@ -367,5 +367,15 @@ var global = this;
   }
   releaseTmpObj(p_error)
   free(p_error)
+
+//funcTestNilParametersInBlock
+  var blk  = obj.funcGenerateBlock()
+  var str1 = blk(obj.funcReturnNil())
+  var str2 = blk(null)
+  var str3 = obj.excuteBlockWithNilParameters(block("NSError *", blk))
+  console.log(str1.toJS())
+  if (str1.toJS() == "no error" && str2.toJS() == "no error" && str3.toJS() == "no error") {
+    obj.setFuncTestNilParametersInBlockPassed(true)
+  }
 
 })();

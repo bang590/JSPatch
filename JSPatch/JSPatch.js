@@ -27,9 +27,17 @@ var global = this
       return ret
     }
     if (obj instanceof Function) {
-      return function() {
-        var args = Array.prototype.slice.call(arguments)
-        return obj.apply(obj, _OC_formatJSToOC(args))
+        return function() {
+            var args = Array.prototype.slice.call(arguments)
+            var formatedArgs = _OC_formatJSToOC(args)
+            for (var i = 0; i < args.length; i++) {
+                if (args[i] === null || args[i] === undefined || args[i] === false) {
+                formatedArgs.splice(i, 1, undefined)
+            } else if (args[i] == nsnull) {
+                formatedArgs.splice(i, 1, null)
+            }
+        }
+        return _OC_formatOCToJS(obj.apply(obj, formatedArgs))
       }
     }
     if (obj instanceof Object) {
@@ -145,10 +153,7 @@ var global = this
   
   global.YES = 1
   global.NO = 0
+  global.nsnull = _OC_null
   global._formatOCToJS = _formatOCToJS
-  
-  global.__defineGetter__("nsnull", function() {
-    return _formatOCToJS(_OC_null)
-  });
   
 })()

@@ -187,6 +187,10 @@ static NSMutableArray *_structExtensions;
         return formatJSToOC(obj);
     };
     
+    context[@"_OC_formatOCToJS"] = ^id(JSValue *obj) {
+        return formatOCToJS([obj toObject]);
+    };
+    
     _nullObj = [[NSObject alloc] init];
     _nilObj = [[NSObject alloc] init];
     context[@"_OC_null"] = formatOCToJS(_nullObj);
