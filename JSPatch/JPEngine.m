@@ -674,7 +674,7 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
         _initJPOverideMethods(clsName);
         _JSOverideMethods[clsName][JPSelectorName] = function;
         const char *returnType = [methodSignature methodReturnType];
-        IMP JPImplementation;
+        IMP JPImplementation = NULL;
         
         switch (returnType[0]) {
             #define JP_OVERRIDE_RET_CASE(_type, _typeChar)   \
