@@ -42,12 +42,19 @@
         return [self formatOCToJS:obj];
     };
     
-    context[@"getpointer"] = ^id(JSValue *jsVal) {
-        void *pointer = [self getPointerFromJS:jsVal];
-        return [self formatPointerOCToJS:pointer];
+    context[@"getPointer"] = ^id(JSValue *jsVal) {
+        void **p = malloc(sizeof(void *));
+        void *pointer = [self formatPointerJSToOC:jsVal];
+        if (pointer != NULL) {
+            *p = pointer;
+        } else {
+            id obj = [self formatJSToOC:jsVal];
+            *p = (__bridge void*)obj;
+        }
+        return [self formatPointerOCToJS:p];
     };
     
-    context[@"pvalWithBool"] = ^id(JSValue *jsVal) {
+    context[@"pvalBool"] = ^id(JSValue *jsVal) {
         void *m = [self formatPointerJSToOC:jsVal];
         BOOL b = *((BOOL *)m);
         return [self formatOCToJS:[NSNumber numberWithBool:b]];
@@ -100,7 +107,7 @@
         return nil;
     };
     
-    context[@"pValStruct"] = ^id(NSString *structName, JSValue *structPointer) {
+    context[@"pvalStruct"] = ^id(NSString *structName, JSValue *structPointer) {
         if ([structName isEqualToString:@"CGRect"]) {
             CGRect *rect = [self formatPointerJSToOC:structPointer];
             return @{@"x": @(rect->origin.x), @"y": @(rect->origin.y), @"width": @(rect->size.width), @"height": @(rect->size.height)};

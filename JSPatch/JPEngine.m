@@ -60,12 +60,16 @@ id formatOCToJS(id obj);
 
 - (void *)formatPointerJSToOC:(JSValue *)val
 {
-    if ([[val toObject] isKindOfClass:[NSDictionary class]]) {
-        return [(JPBoxing *)([val toObject][@"__obj"]) unboxPointer];
-    }else if(![val toBool]) {
+    id obj = [val toObject];
+    if ([obj isKindOfClass:[NSDictionary class]]) {
+        if (obj[@"__obj"] && [obj[@"__obj"] isKindOfClass:[JPBoxing class]]) {
+            return [(JPBoxing *)(obj[@"__obj"]) unboxPointer];
+        } else {
+            return NULL;
+        }
+    } else if (![val toBool]) {
         return NULL;
-    }
-    else{
+    } else{
         return [((JPBoxing *)[val toObject]) unboxPointer];
     }
 }
@@ -86,29 +90,6 @@ id formatOCToJS(id obj);
 - (id)formatOCToJS:(id)obj
 {
     return [[JSContext currentContext][@"_formatOCToJS"] callWithArguments:@[formatOCToJS(obj)]];
-}
-
-- (void *)getPointerFromJS:(JSValue *)val
-{
-    void **p = malloc(sizeof(void *));
-    if ([[val toObject] isKindOfClass:[NSDictionary class]]) {
-        if ([[val toObject][@"__obj"] isKindOfClass:[JPBoxing class]]) {
-            void *pointer = [(JPBoxing *)[val toObject][@"__obj"] unboxPointer];
-            if (pointer != NULL) {
-                *p = pointer;
-            }else {
-                id jpobj = [(JPBoxing *)[val toObject][@"__obj"] unbox];
-                *p = (__bridge void *)jpobj;
-            }
-        }else {
-            id obj = [val toObject][@"__obj"];
-            *p     = (__bridge void *)obj;
-        }
-        return p;
-    }else {
-        NSAssert(NO, @"getpointer only support pointer and id type!");
-        return NULL;
-    }
 }
 
 @end

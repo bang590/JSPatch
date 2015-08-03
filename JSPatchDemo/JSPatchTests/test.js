@@ -324,11 +324,11 @@ var global = this;
   var str = require('NSString').stringWithString('JSPatch')
   invocation.setTarget(obj)
   invocation.setSelector("funcTestGetPointer1:")
-  invocation.setArgument_atIndex(getpointer(str), 2)
+  invocation.setArgument_atIndex(getPointer(str), 2)
   invocation.invoke()
   var ret1 = malloc(1)
   invocation.getReturnValue(ret1)
-  var bool1 =  pvalWithBool(ret1)
+  var bool1 =  pvalBool(ret1)
  
 //getPointerTest2 -  Test Normal Object
   var sig = require('JPTestObject').instanceMethodSignatureForSelector("funcTestGetPointer2:");
@@ -336,11 +336,11 @@ var global = this;
   var err = require('NSError').errorWithDomain_code_userInfo("com.albert43",45,{msg:"test"});
   invocation.setTarget(obj)
   invocation.setSelector("funcTestGetPointer2:")
-  invocation.setArgument_atIndex(getpointer(err), 2)
+  invocation.setArgument_atIndex(getPointer(err), 2)
   invocation.invoke()
   var ret2 = malloc(1)
   invocation.getReturnValue(ret2);
-  var bool2 =  pvalWithBool(ret2)
+  var bool2 =  pvalBool(ret2)
 
 //getPointerTest3 -  Test Pointer
   var ptr = malloc(10)
@@ -349,11 +349,11 @@ var global = this;
   var invocation = require('NSInvocation').invocationWithMethodSignature(sig)
   invocation.setTarget(obj)
   invocation.setSelector("funcTestGetPointer3:")
-  invocation.setArgument_atIndex(getpointer(ptr), 2)
+  invocation.setArgument_atIndex(getPointer(ptr), 2)
   invocation.invoke()
   var ret3 = malloc(1)
   invocation.getReturnValue(ret3);
-  var bool3 =  pvalWithBool(ret3)
+  var bool3 =  pvalBool(ret3)
   obj.setFuncTestGetPointerPassed(bool1 && bool2 && bool3)
   free(ret1)
   free(ret2)
@@ -385,13 +385,13 @@ var global = this;
 //newStruct
   var pRect = newStruct('CGRect', {x:0, y:0, width:100, height:100});
   obj.funcWithRectPointer(pRect);
-  var rect = pValStruct('CGRect', pRect);
+  var rect = pvalStruct('CGRect', pRect);
   obj.setFuncWithRectPointerPassed(obj.funcWithRectPointerPassed() && rect.x == 42)
   free(pRect);
  
   var pTransform = newStruct('CGAffineTransform', {tx:0, ty:0, a:100, b:100, c:0, d:0});
   obj.funcWithTransformPointer(pTransform);
-  var transform = pValStruct('CGAffineTransform', pTransform);
+  var transform = pvalStruct('CGAffineTransform', pTransform);
   obj.setFuncWithTransformPointerPassed(obj.funcWithTransformPointerPassed() && transform.tx == 42)
   free(pTransform);
 
