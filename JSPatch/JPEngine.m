@@ -259,7 +259,6 @@ NSMutableArray *registeredStructExtensions;
 #pragma mark - Implements
 
 static NSMutableDictionary *_JSOverideMethods;
-static NSArray             *_TMPInvocationArguments;
 static NSMutableDictionary *_TMPMemoryPool;
 static NSRegularExpression *countArgRegex;
 static NSMutableDictionary *_propKeys;
@@ -397,71 +396,6 @@ static JSValue* getJSFunctionInObjectHierachy(id slf, SEL selector)
     return func;
 }
 
-#define JPMETHOD_IMPLEMENTATION(_type, _typeString, _typeSelector) \
-    JPMETHOD_IMPLEMENTATION_RET(_type, _typeString, return [[ret toObject] _typeSelector]) \
-
-#define JPMETHOD_IMPLEMENTATION_RET(_type, _typeString, _ret) \
-static _type JPMETHOD_IMPLEMENTATION_NAME(_typeString) (id slf, SEL selector) {    \
-    JSValue *fun = getJSFunctionInObjectHierachy(slf, selector);    \
-    JSValue *ret = [fun callWithArguments:_TMPInvocationArguments];  \
-    _ret;    \
-}   \
-
-#define JPMETHOD_IMPLEMENTATION_NAME(_typeString) JPMethodImplement_##_typeString
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-variable"
-
-#define JPMETHOD_RET_ID \
-    id obj = formatJSToOC(ret); \
-    if (obj == _nilObj ||   \
-        ([obj isKindOfClass:[NSNumber class]] && strcmp([obj objCType], "c") == 0 && ![obj boolValue])) return nil;  \
-    return obj;
-
-#define JPMETHOD_RET_POINTER    \
-    id obj = formatJSToOC(ret); \
-    if ([obj isKindOfClass:[JPBoxing class]]) { \
-        return [((JPBoxing *)obj) unboxPointer]; \
-    }   \
-    return NULL;
-
-#define JPMETHOD_RET_CLASS    \
-    id obj = formatJSToOC(ret); \
-    if ([obj isKindOfClass:[JPBoxing class]]) { \
-        return [((JPBoxing *)obj) unboxClass]; \
-    }   \
-    return nil;
-
-#define JPMETHOD_RET_SEL    \
-    id obj = formatJSToOC(ret); \
-    if ([obj isKindOfClass:[NSString class]]) { \
-        return NSSelectorFromString(obj); \
-    }   \
-    return nil;
-
-JPMETHOD_IMPLEMENTATION_RET(void, v, nil)
-JPMETHOD_IMPLEMENTATION_RET(id, id, JPMETHOD_RET_ID)
-JPMETHOD_IMPLEMENTATION_RET(void *, pointer, JPMETHOD_RET_POINTER)
-JPMETHOD_IMPLEMENTATION_RET(Class, cls, JPMETHOD_RET_CLASS)
-JPMETHOD_IMPLEMENTATION_RET(SEL, sel, JPMETHOD_RET_SEL)
-JPMETHOD_IMPLEMENTATION_RET(CGRect, rect, return [ret toRect])
-JPMETHOD_IMPLEMENTATION_RET(CGSize, size, return [ret toSize])
-JPMETHOD_IMPLEMENTATION_RET(CGPoint, point, return [ret toPoint])
-JPMETHOD_IMPLEMENTATION_RET(NSRange, range, return [ret toRange])
-JPMETHOD_IMPLEMENTATION(char, c, charValue)
-JPMETHOD_IMPLEMENTATION(unsigned char, C, unsignedCharValue)
-JPMETHOD_IMPLEMENTATION(short, s, shortValue)
-JPMETHOD_IMPLEMENTATION(unsigned short, S, unsignedShortValue)
-JPMETHOD_IMPLEMENTATION(int, i, intValue)
-JPMETHOD_IMPLEMENTATION(unsigned int, I, unsignedIntValue)
-JPMETHOD_IMPLEMENTATION(long, l, longValue)
-JPMETHOD_IMPLEMENTATION(unsigned long, L, unsignedLongValue)
-JPMETHOD_IMPLEMENTATION(long long, q, longLongValue)
-JPMETHOD_IMPLEMENTATION(unsigned long long, Q, unsignedLongLongValue)
-JPMETHOD_IMPLEMENTATION(float, f, floatValue)
-JPMETHOD_IMPLEMENTATION(double, d, doubleValue)
-JPMETHOD_IMPLEMENTATION(BOOL, B, boolValue)
-
 #pragma clang diagnostic pop
 
 static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
@@ -582,13 +516,98 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
         }
     }
     
-    @synchronized(_context) {
-        _TMPInvocationArguments = _formatOCToJSList(argList);
+    NSArray *params = _formatOCToJSList(argList);
+    const char *returnType = [methodSignature methodReturnType];
 
-        [invocation setSelector:JPSelector];
-        [invocation invoke];
+    switch (returnType[0]) {
+        #define JP_FWD_RET_CALL_JS \
+            JSValue *fun = getJSFunctionInObjectHierachy(slf, JPSelector); \
+            JSValue *jsval; \
+            @synchronized(_context) {   \
+                jsval = [fun callWithArguments:params];\
+            }
+
+        #define JP_FWD_RET_CASE_RET(_typeChar, _type, _retCode)   \
+            case _typeChar : { \
+                JP_FWD_RET_CALL_JS \
+                _retCode \
+                [invocation setReturnValue:&ret];\
+                break;  \
+            }
+
+        #define JP_FWD_RET_CASE(_typeChar, _type, _typeSelector)   \
+            JP_FWD_RET_CASE_RET(_typeChar, _type, _type ret = [[jsval toObject] _typeSelector];)   \
+
+        #define JP_FWD_RET_CODE_ID \
+            id ret = formatJSToOC(jsval); \
+            if (ret == _nilObj ||   \
+                ([ret isKindOfClass:[NSNumber class]] && strcmp([ret objCType], "c") == 0 && ![ret boolValue])) ret = nil;  \
+
+        #define JP_FWD_RET_CODE_POINTER    \
+            void *ret; \
+            id obj = formatJSToOC(jsval); \
+            if ([obj isKindOfClass:[JPBoxing class]]) { \
+                ret = [((JPBoxing *)obj) unboxPointer]; \
+            }
+
+        #define JP_FWD_RET_CODE_CLASS    \
+            Class ret;   \
+            id obj = formatJSToOC(jsval); \
+            if ([obj isKindOfClass:[JPBoxing class]]) { \
+                ret = [((JPBoxing *)obj) unboxClass]; \
+            }
+
+        #define JP_FWD_RET_CODE_SEL    \
+            SEL ret;   \
+            id obj = formatJSToOC(jsval); \
+            if ([obj isKindOfClass:[NSString class]]) { \
+                ret = NSSelectorFromString(obj); \
+            }
+
+        JP_FWD_RET_CASE_RET('@', id, JP_FWD_RET_CODE_ID)
+
+        JP_FWD_RET_CASE_RET('^', void*, JP_FWD_RET_CODE_POINTER)
+        JP_FWD_RET_CASE_RET('*', void*, JP_FWD_RET_CODE_POINTER)
+        JP_FWD_RET_CASE_RET('#', Class, JP_FWD_RET_CODE_CLASS)
+        JP_FWD_RET_CASE_RET(':', SEL, JP_FWD_RET_CODE_SEL)
+
+        JP_FWD_RET_CASE('c', char, charValue)
+        JP_FWD_RET_CASE('C', unsigned char, unsignedCharValue)
+        JP_FWD_RET_CASE('s', short, shortValue)
+        JP_FWD_RET_CASE('S', unsigned short, unsignedShortValue)
+        JP_FWD_RET_CASE('i', int, intValue)
+        JP_FWD_RET_CASE('I', unsigned int, unsignedIntValue)
+        JP_FWD_RET_CASE('l', long, longValue)
+        JP_FWD_RET_CASE('L', unsigned long, unsignedLongValue)
+        JP_FWD_RET_CASE('q', long long, longLongValue)
+        JP_FWD_RET_CASE('Q', unsigned long long, unsignedLongLongValue)
+        JP_FWD_RET_CASE('f', float, floatValue)
+        JP_FWD_RET_CASE('d', double, doubleValue)
+        JP_FWD_RET_CASE('B', BOOL, boolValue)
+
+        case 'v': {
+            JP_FWD_RET_CALL_JS
+            break;
+        }
         
-        _TMPInvocationArguments = nil;
+        case '{': {
+            NSString *typeString = extractTypeName([NSString stringWithUTF8String:returnType]);
+            #define JP_FWD_RET_STRUCT(_type, _funcSuffix) \
+            if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
+                JP_FWD_RET_CALL_JS \
+                _type ret = [jsval _funcSuffix]; \
+                [invocation setReturnValue:&ret];\
+                break;  \
+            }
+            JP_FWD_RET_STRUCT(CGRect, toRect)
+            JP_FWD_RET_STRUCT(CGPoint, toPoint)
+            JP_FWD_RET_STRUCT(CGSize, toSize)
+            JP_FWD_RET_STRUCT(NSRange, toRange)
+            break;
+        }
+        default: {
+            break;
+        }
     }
 }
 
@@ -654,55 +673,8 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     if (!_JSOverideMethods[clsName][JPSelectorName]) {
         _initJPOverideMethods(clsName);
         _JSOverideMethods[clsName][JPSelectorName] = function;
-        const char *returnType = [methodSignature methodReturnType];
-        IMP JPImplementation = NULL;
         
-        switch (returnType[0]) {
-            #define JP_OVERRIDE_RET_CASE(_type, _typeChar)   \
-            case _typeChar : { \
-                JPImplementation = (IMP)JPMETHOD_IMPLEMENTATION_NAME(_type); \
-                break;  \
-            }
-            JP_OVERRIDE_RET_CASE(v, 'v')
-            JP_OVERRIDE_RET_CASE(id, '@')
-            JP_OVERRIDE_RET_CASE(c, 'c')
-            JP_OVERRIDE_RET_CASE(C, 'C')
-            JP_OVERRIDE_RET_CASE(s, 's')
-            JP_OVERRIDE_RET_CASE(S, 'S')
-            JP_OVERRIDE_RET_CASE(i, 'i')
-            JP_OVERRIDE_RET_CASE(I, 'I')
-            JP_OVERRIDE_RET_CASE(l, 'l')
-            JP_OVERRIDE_RET_CASE(L, 'L')
-            JP_OVERRIDE_RET_CASE(q, 'q')
-            JP_OVERRIDE_RET_CASE(Q, 'Q')
-            JP_OVERRIDE_RET_CASE(f, 'f')
-            JP_OVERRIDE_RET_CASE(d, 'd')
-            JP_OVERRIDE_RET_CASE(B, 'B')
-            JP_OVERRIDE_RET_CASE(pointer, '^')
-            JP_OVERRIDE_RET_CASE(pointer, '*')
-            JP_OVERRIDE_RET_CASE(cls, '#')
-            JP_OVERRIDE_RET_CASE(sel, ':')
-            
-            case '{': {
-                NSString *typeString = extractTypeName([NSString stringWithUTF8String:returnType]);
-                #define JP_OVERRIDE_RET_STRUCT(_type, _funcSuffix) \
-                if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
-                    JPImplementation = (IMP)JPMETHOD_IMPLEMENTATION_NAME(_funcSuffix); \
-                    break;  \
-                }
-                JP_OVERRIDE_RET_STRUCT(CGRect, rect)
-                JP_OVERRIDE_RET_STRUCT(CGPoint, point)
-                JP_OVERRIDE_RET_STRUCT(CGSize, size)
-                JP_OVERRIDE_RET_STRUCT(NSRange, range)
-                
-                break;
-            }
-            default: {
-                JPImplementation = (IMP)JPMETHOD_IMPLEMENTATION_NAME(v);
-                break;
-            }
-        }
-        class_addMethod(cls, JPSelector, JPImplementation, typeDescription);
+        class_addMethod(cls, JPSelector, msgForwardIMP, typeDescription);
     }
 }
 
