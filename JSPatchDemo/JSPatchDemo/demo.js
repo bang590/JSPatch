@@ -5,7 +5,7 @@ defineClass('JPViewController', {
   }
 })
 
-defineClass('JPTableViewController : UITableViewController', {
+defineClass('JPTableViewController : UITableViewController <UIAlertViewDelegate>', {
   dataSource: function() {
     var data = self.getProp('data')
     if (data) return data;
@@ -34,7 +34,10 @@ defineClass('JPTableViewController : UITableViewController', {
     return 60
   },
   tableView_didSelectRowAtIndexPath: function(tableView, indexPath) {
-     var alertView = require('UIAlertView').alloc().initWithTitle_message_delegate_cancelButtonTitle_otherButtonTitles("Alert",self.dataSource().objectAtIndex(indexPath.row()),undefined,"OK",undefined);
+     var alertView = require('UIAlertView').alloc().initWithTitle_message_delegate_cancelButtonTitle_otherButtonTitles("Alert",self.dataSource().objectAtIndex(indexPath.row()), self, "OK", null);
      alertView.show()
+  },
+  alertView_willDismissWithButtonIndex: function(alertView, idx) {
+    console.log('click btn ' + alertView.buttonTitleAtIndex(idx).toJS())
   }
 })

@@ -1,3 +1,4 @@
+include('protocolTest.js')
 var global = this;
 
 (function() {
@@ -25,9 +26,6 @@ var global = this;
     funcToSwizzleReturnString: function(str) {
       return str
     },
-    funcCustom: function(num) {
-      self.setCallCustomFuncPassed(num == 10)
-    },
     funcToSwizzleWithBlock: function(blk) {
       blk(UIView.alloc().init(), 42)
     },
@@ -38,15 +36,19 @@ var global = this;
       return "overrided";
     },
     funcToSwizzleReturnRect: function(rect) {
+      self.setFuncToSwizzleReturnRectJSPassed(rect.width == 100)
       return rect;
     },
     funcToSwizzleReturnSize: function(size) {
+      self.setFuncToSwizzleReturnSizeJSPassed(size.width == 42)
       return size;
     },
     funcToSwizzleReturnPoint: function(point) {
+      self.setFuncToSwizzleReturnPointJSPassed(point.x == 42)
       return point;
     },
     funcToSwizzleReturnRange: function(range) {
+      self.setFuncToSwizzleReturnRangeJSPassed(range.length == 42)
       return range;
     },
     funcToSwizzleTestGCD: function(completeBlock) {
@@ -61,6 +63,18 @@ var global = this;
       dispatch_async_global_queue(dispatchExecBlock);
       dispatch_sync_main(dispatchExecBlock);
       dispatch_after(1, dispatchExecBlock);
+    },
+    funcToSwizzleTestClass: function(cls) {
+      return cls
+    },
+    funcToSwizzleTestSelector: function(sel) {
+      return sel
+    },
+    funcToSwizzleTestChar: function(cStr) {
+      return cStr
+    },
+    funcToSwizzleTestPointer: function(pointer) {
+      return pointer
     }
   },
   {
@@ -82,8 +96,13 @@ var global = this;
   global.ocObj = obj.__obj;
 
   ////////Swizzle
-  obj.callSwizzleMethod() 
-  obj.funcCustom(10)
+  obj.callSwizzleMethod()
+
+  var cls = obj.funcToSwizzleTestClass(JPTestObject.class())
+  obj.setFuncToSwizzleTestClassPassed(obj.isKindOfClass(cls))
+
+  obj.funcTestChar(obj.funcReturnChar())
+  var pointer = obj.funcReturnPointer()
 
   ////////Base
   obj.funcReturnVoid();
@@ -92,8 +111,23 @@ var global = this;
 
   obj.funcWithInt(42);
   obj.funcWithDict_andDouble({test: "test"}, 4.2)
-  obj.funcWithNil(null)
+ 
+  //////nil / NSNull
+  obj.funcWithNil_dict_str_num(null, {k: "JSPatch"}, "JSPatch", 4.2)
   obj.funcWithNull(nsnull)
+  var o = obj.funcReturnNil()
+  obj.funcWithNil(o)
+  obj.setFuncReturnNilPassed(!o)
+  o.callAnyMethod().willNotCrash()
+  
+  var bTrue = obj.funcTestBool(true)
+  var bFalse = obj.funcTestBool(false)
+  var bFalseNum = obj.funcTestBool(0)
+  obj.setFuncTestBoolPassed(bTrue && !bFalse && !bFalseNum)
+ 
+  var num0 = obj.funcTestNSNumber(0)
+  var num1 = obj.funcTestNSNumber(1)
+  obj.setFuncTestNSNumberPassed(num0 === 0 && num1 === 1)
 
   ///////UIView/NSObject
   var view = obj.funcReturnViewWithFrame({
@@ -180,13 +214,15 @@ var global = this;
     width: 100,
     height: 100
   }) 
-  blk({
+  var blkRet = blk({
     str: "stringFromJS",
     view: view
   }, view)
+  obj.setFuncReturnObjectBlockReturnValuePassed(blkRet.toJS() == "succ")
 
   obj.callBlockWithStringAndInt(block("NSString *, int", function(str, num) {
     obj.setCallBlockWithStringAndIntPassed(str.toJS() == "stringFromOC" && num == 42)
+    return "succ"
   }))
 
   obj.callBlockWithArrayAndView(block("NSArray *, UIView *", function(arr, view) {
@@ -201,11 +237,11 @@ var global = this;
 
   obj.callBlockWithObjectAndBlock(block("UIView *, NSBlock *", function(view, blk) {
     var viewFrame = view.frame()
-                                        console.log(blk)
-    blk((viewFrame.width == 100 ? {
+    var ret = blk((viewFrame.width == 100 ? {
       "str": "stringFromJS",
       "view": view
     }: {}), view)
+    obj.setCallBlockWithObjectAndBlockReturnValuePassed(ret.toJS() == "succ")
   }))
 
   //////super
@@ -232,12 +268,6 @@ var global = this;
     funcReturnBool: function(view, num) {
       return view && num == 42
     }
-  },
-  {
-    customFunc: function(num) {
-      var view = self.funcReturnView(num)
-      obj.setNewTestObjectCustomFuncPassed(view.frame().x == num)
-    }
   })
 
   var newTestObj = JPNewTestObject.alloc().init()
@@ -245,7 +275,6 @@ var global = this;
   var view = newTestObj.funcReturnView(42) 
   obj.setNewTestObjectReturnViewPassed(view.frame().x == 42) 
   obj.setNewTestObjectReturnBoolPassed(JPNewTestObject.funcReturnBool(view, 42))
-  newTestObj.customFunc(42)
  
   //mutable
   var arr = require('NSMutableArray').alloc().init()
@@ -260,7 +289,110 @@ var global = this;
   str.appendString("JS")
   str.appendString("Patch")
   obj.setMutableStringPassed(str.toJS() == "JSPatch")
+ 
+  var arr = []
+  arr.push(obj.getString(), obj.getDictionary(), obj.getArray())
+  obj.funcTestBoxingObj(arr)
 
   obj.setConsoleLogPassed(console.log != undefined)
+
+
+
+  //extension
+  var transform = obj.funcWithTransform({tx: 100, ty: 100, a: 1, b: 0, c: 0, d: 1})
+  obj.setFuncWithTransformPassed(transform.tx == 100 && transform.ty == 100 && transform.a == 1)
+  var translated = CGAffineTransformTranslate(transform, 10, 10);
+  obj.setTransformTranslatePassed(translated.tx == 110 && translated.ty == 110)
+ 
+  require('JPEngine').addExtensions([require('JPMemory').instance()])
+  obj.funcTestPointer(pointer)
+  free(pointer)
+ 
+  //sizeof
+  var rectSize       = sizeof("CGRect")
+  var pointSize      = sizeof("CGPoint")
+  var sizeSize       = sizeof("CGSize")
+  var vectorSize     = sizeof("CGVector")
+  var edgeInsetsSize = sizeof("UIEdgeInsets")
+  var transformSize  = sizeof("CGAffineTransform")
+  var rangeSize      = sizeof("NSRange")
+  obj.setFuncTestSizeofPassed(rectSize > 0 && pointSize > 0 && sizeSize > 0 && vectorSize > 0 && edgeInsetsSize > 0 && transformSize > 0 && rangeSize > 0)
+ 
+//getPointerTest1 - Test Object in JPBoxing
+  var sig = require('JPTestObject').instanceMethodSignatureForSelector("funcTestGetPointer1:");
+  var invocation = require('NSInvocation').invocationWithMethodSignature(sig)
+  var str = require('NSString').stringWithString('JSPatch')
+  invocation.setTarget(obj)
+  invocation.setSelector("funcTestGetPointer1:")
+  invocation.setArgument_atIndex(getPointer(str), 2)
+  invocation.invoke()
+  var ret1 = malloc(1)
+  invocation.getReturnValue(ret1)
+  var bool1 =  pvalBool(ret1)
+ 
+//getPointerTest2 -  Test Normal Object
+  var sig = require('JPTestObject').instanceMethodSignatureForSelector("funcTestGetPointer2:");
+  var invocation = require('NSInvocation').invocationWithMethodSignature(sig)
+  var err = require('NSError').errorWithDomain_code_userInfo("com.albert43",45,{msg:"test"});
+  invocation.setTarget(obj)
+  invocation.setSelector("funcTestGetPointer2:")
+  invocation.setArgument_atIndex(getPointer(err), 2)
+  invocation.invoke()
+  var ret2 = malloc(1)
+  invocation.getReturnValue(ret2);
+  var bool2 =  pvalBool(ret2)
+
+//getPointerTest3 -  Test Pointer
+  var ptr = malloc(10)
+  memset(ptr, 65, 10)
+  var sig = require('JPTestObject').instanceMethodSignatureForSelector("funcTestGetPointer3:");
+  var invocation = require('NSInvocation').invocationWithMethodSignature(sig)
+  invocation.setTarget(obj)
+  invocation.setSelector("funcTestGetPointer3:")
+  invocation.setArgument_atIndex(getPointer(ptr), 2)
+  invocation.invoke()
+  var ret3 = malloc(1)
+  invocation.getReturnValue(ret3);
+  var bool3 =  pvalBool(ret3)
+  obj.setFuncTestGetPointerPassed(bool1 && bool2 && bool3)
+  free(ret1)
+  free(ret2)
+  free(ret3)
+  free(ptr)
+ 
+//funcTestNSErrorPointer
+  var p_error = malloc(8)
+  obj.funcTestNSErrorPointer(p_error)
+  var error = pval(p_error)
+  if (!error) {
+     obj.setFuncTestNSErrorPointerPassed(false)
+  } else {
+    var code = error.code()
+    obj.setFuncTestNSErrorPointerPassed(code==43)
+  }
+  releaseTmpObj(p_error)
+  free(p_error)
+
+//funcTestNilParametersInBlock
+  var blk  = obj.funcGenerateBlock()
+  var str1 = blk(obj.funcReturnNil())
+  var str2 = blk(null)
+  var str3 = obj.excuteBlockWithNilParameters(block("NSError *", blk))
+  if (str1.toJS() == "no error" && str2.toJS() == "no error" && str3.toJS() == "no error") {
+    obj.setFuncTestNilParametersInBlockPassed(true)
+  }
+
+//newStruct
+  var pRect = newStruct('CGRect', {x:0, y:0, width:100, height:100});
+  obj.funcWithRectPointer(pRect);
+  var rect = pvalStruct('CGRect', pRect);
+  obj.setFuncWithRectPointerPassed(obj.funcWithRectPointerPassed() && rect.x == 42)
+  free(pRect);
+ 
+  var pTransform = newStruct('CGAffineTransform', {tx:0, ty:0, a:100, b:100, c:0, d:0});
+  obj.funcWithTransformPointer(pTransform);
+  var transform = pvalStruct('CGAffineTransform', pTransform);
+  obj.setFuncWithTransformPointerPassed(obj.funcWithTransformPointerPassed() && transform.tx == 42)
+  free(pTransform);
 
 })();

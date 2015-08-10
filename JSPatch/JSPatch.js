@@ -1,8 +1,8 @@
 var global = this
 
-;(function(){
+;(function() {
+
   var callbacks = {}
-  var localMethods = {}
   var callbackID = 0
   
   var _methodNameOCToJS = function(name) {
@@ -14,32 +14,40 @@ var global = this
   }
 
   var _formatOCToJS = function(obj) {
-     if (obj === undefined || obj === null) return null
-     if (typeof obj == "object") {
-       if (obj.__obj) return obj
-       if (obj.__isNull) return null
-     }
-     if (obj instanceof Array) {
-        var ret = []
-        obj.forEach(function(o){
-          ret.push(_formatOCToJS(o))
-        })
-        return ret
-     }
-     if (obj instanceof Function) {
+    if (obj === undefined || obj === null) return false
+    if (typeof obj == "object") {
+      if (obj.__obj) return obj
+      if (obj.__isNull) return false
+    }
+    if (obj instanceof Array) {
+      var ret = []
+      obj.forEach(function(o) {
+        ret.push(_formatOCToJS(o))
+      })
+      return ret
+    }
+    if (obj instanceof Function) {
         return function() {
-          var args = Array.prototype.slice.call(arguments)
-          obj.apply(obj, _OC_formatJSToOC(args))
+            var args = Array.prototype.slice.call(arguments)
+            var formatedArgs = _OC_formatJSToOC(args)
+            for (var i = 0; i < args.length; i++) {
+                if (args[i] === null || args[i] === undefined || args[i] === false) {
+                formatedArgs.splice(i, 1, undefined)
+            } else if (args[i] == nsnull) {
+                formatedArgs.splice(i, 1, null)
+            }
         }
-     }
-     if (obj instanceof Object) {
-        var ret = {}
-        for (var key in obj) {
-          ret[key] = _formatOCToJS(obj[key])
-        }
-        return ret
-     }
-     return obj
+        return _OC_formatOCToJS(obj.apply(obj, formatedArgs))
+      }
+    }
+    if (obj instanceof Object) {
+      var ret = {}
+      for (var key in obj) {
+        ret[key] = _formatOCToJS(obj[key])
+      }
+      return ret
+    }
+    return obj
   }
   
   var _methodFunc = function(instance, clsName, methodName, args, isSuper) {
@@ -56,23 +64,17 @@ var global = this
     return _formatOCToJS(ret)
   }
 
-  var _getCustomMethod = function(clsName, methodName, isInstance) {
-    var obj = localMethods[clsName]
-    if (!obj) return undefined
-
-    if (isInstance) {
-      return obj.instMethods && obj.instMethods[methodName]
-    } else {
-      return obj.clsMethods && obj.clsMethods[methodName]
-    }
-  }
-
   Object.prototype.__c = function(methodName) {
-    if (!this.__obj && !this.__clsName) return this[methodName].bind(this);
-    var customMethod = _getCustomMethod(this.__clsName, methodName, !!this.__obj)
-    if (customMethod) {
-      return customMethod.bind(this)
+    if (this instanceof Boolean) {
+      return function() {
+        return false
+      }
     }
+    
+    if (!this.__obj && !this.__clsName) {
+      return this[methodName].bind(this);
+    }
+
     var self = this
     if (methodName == 'super') {
       return function() {
@@ -103,7 +105,7 @@ var global = this
     return lastRequire
   }
 
-  var _formatDefineMethod = function(methods, newMethods) {
+  var _formatDefineMethods = function(methods, newMethods) {
     for (var methodName in methods) {
       (function(){
        var originMethod = methods[methodName]
@@ -122,49 +124,27 @@ var global = this
     }
   }
 
-  var _formatLocalMethods = function(methods) {
-    for (var methodName in methods) {
-      (function(){
-        var originMethod = methods[methodName]
-        methods[methodName] = function() {
-          var args = Array.prototype.slice.call(arguments)
-          var lastSelf = global.self
-          global.self = this
-          var ret = originMethod.apply(this, args)
-          global.self = lastSelf
-          return ret
-        }
-      })()  
-    }
-  }
-
-  global.defineClass = function(declaration, instMethods, clsMethods, customMethods) {
+  global.defineClass = function(declaration, instMethods, clsMethods) {
     var newInstMethods = {}, newClsMethods = {}
-    _formatDefineMethod(instMethods, newInstMethods)
-    _formatDefineMethod(clsMethods, newClsMethods)
+    _formatDefineMethods(instMethods, newInstMethods)
+    _formatDefineMethods(clsMethods, newClsMethods)
 
     var ret = _OC_defineClass(declaration, newInstMethods, newClsMethods)
-
-    if (customMethods) {
-      _formatLocalMethods(customMethods)
-      localMethods[ret["cls"]] = {
-        instMethods: customMethods
-      }
-    }
 
     return require(ret["cls"])
   }
 
-  global._callCB = function(cbID, arg) {
-    if (callbacks[cbID]) callbacks[cbID](arg)
-  }
-  global.block = function(args, cb){
-    var id = callbackID++
-    callbacks[id] = function(cacheIdx) {
-      var args = _OC_getBlockArguments(cacheIdx)
-      cb.apply(this, _formatOCToJS(args))
+  global.block = function(args, cb) {
+    var slf = this
+    if (args instanceof Function) {
+      cb = args
+      args = ''
     }
-    return {args: args, cbID: id}
+    var callback = function() {
+      var args = Array.prototype.slice.call(arguments)
+      return cb.apply(slf, _formatOCToJS(args))
+    }
+    return {args: args, cb: callback}
   }
   
   global.console = {
@@ -173,9 +153,7 @@ var global = this
   
   global.YES = 1
   global.NO = 0
-  
-  global.__defineGetter__("nsnull", function() {
-    return _formatOCToJS(_OC_null)
-  });
+  global.nsnull = _OC_null
+  global._formatOCToJS = _formatOCToJS
   
 })()

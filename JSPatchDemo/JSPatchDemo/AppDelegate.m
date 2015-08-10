@@ -9,7 +9,6 @@
 #import "AppDelegate.h"
 #import "JPEngine.h"
 #import "JPViewController.h"
-#import <objc/runtime.h>
 
 @implementation AppDelegate
 

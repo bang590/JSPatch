@@ -3,7 +3,7 @@
 //  InstaScriptTests
 //
 //  Created by bang on 15/4/30.
-//  Copyright (c) 2015年 bang. All rights reserved.
+//  Copyright (c) 2015 bang. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -12,7 +12,10 @@
 #import "JPTestObject.h"
 #import "JPInheritanceTestObjects.h"
 #import "JPMultithreadTestObject.h"
-
+#import "JPInclude.h"
+#import "JPCoreGraphics.h"
+#import "JPUIKit.h"
+#import "JPMemory.h"
 @interface JSPatchTests : XCTestCase
 
 @end
@@ -28,6 +31,7 @@
 - (void)setUp {
     [super setUp];
     [JPEngine startEngine];
+    [JPEngine addExtensions:@[[JPInclude instance], [JPCoreGraphics instance],[JPUIKit instance],[JPMemory instance]]];
 }
 
 - (void)tearDown {
@@ -36,7 +40,7 @@
 
 - (void)testEngine {
     
-    NSString *testPath = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"js"];
+    NSString *testPath = [[NSBundle bundleForClass:[self class]] pathForResource:@"test" ofType:@"js"];
     NSString *jsTest = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:testPath] encoding:NSUTF8StringEncoding];
     [JPEngine evaluateScript:jsTest];
     
@@ -51,7 +55,11 @@
     
     XCTAssert(obj.funcWithIntPassed, @"funcWithIntPassed");
     XCTAssert(obj.funcWithNilPassed, @"funcWithNilPassed");
+    XCTAssert(obj.funcReturnNilPassed, @"funcReturnNilPassed");
+    XCTAssert(obj.funcWithNilAndOthersPassed, @"funcWithNilAndOthersPassed");
     XCTAssert(obj.funcWithNullPassed, @"funcWithNullPassed");
+    XCTAssert(obj.funcTestBoolPassed, @"funcTestBoolPassed");
+    XCTAssert(obj.funcTestNSNumberPassed, @"funcTestNSNumberPassed");
     
     XCTAssert(obj.funcWithDictAndDoublePassed, @"funcWithDictAndDoublePassed");
     
@@ -67,13 +75,17 @@
     XCTAssert(obj.funcReturnDictStringIntPassed, @"funcReturnDictStringIntPassed");
     XCTAssert(obj.funcReturnArrayControllerViewStringPassed, @"funcReturnArrayControllerViewStringPassed");
     XCTAssert(obj.funcReturnDictPassed, @"funcReturnDictPassed");
+    XCTAssert(obj.funcReturnDictPassed, @"testBoxingObjPassed");
     
     XCTAssert(obj.funcReturnBlockPassed, @"funcReturnBlockPassed");
     XCTAssert(obj.funcReturnObjectBlockPassed, @"funcReturnObjectBlockPassed");
+    XCTAssert(obj.funcReturnObjectBlockReturnValuePassed, @"funcReturnObjectBlockReturnValuePassed");
     XCTAssert(obj.callBlockWithStringAndIntPassed, @"callBlockWithStringAndIntPassed");
+    XCTAssert(obj.callBlockWithStringAndIntReturnValuePassed, @"callBlockWithStringAndIntReturnValuePassed");
     XCTAssert(obj.callBlockWithArrayAndViewPassed, @"callBlockWithArrayAndViewPassed");
     XCTAssert(obj.callBlockWithBoolAndBlockPassed, @"callBlockWithBoolAndBlockPassed");
     XCTAssert(obj.callBlockWithObjectAndBlockPassed, @"callBlockWithObjectAndBlockPassed");
+    XCTAssert(obj.callBlockWithObjectAndBlockReturnValuePassed, @"callBlockWithObjectAndBlockReturnValuePassed");
     
     XCTAssert(obj.funcToSwizzleWithStringViewIntPassed, @"funcToSwizzleWithStringViewIntPassed");
     XCTAssert(obj.funcToSwizzleViewPassed, @"funcToSwizzleViewPassed");
@@ -88,6 +100,21 @@
     XCTAssert(obj.funcToSwizzleReturnSizePassed, @"funcToSwizzleReturnSizePassed");
     XCTAssert(obj.funcToSwizzleReturnRangePassed, @"funcToSwizzleReturnRangePassed");
     
+    XCTAssert(obj.funcToSwizzleReturnRectJSPassed, @"funcToSwizzleReturnRectJSPassed");
+    XCTAssert(obj.funcToSwizzleReturnPointJSPassed, @"funcToSwizzleReturnPointJSPassed");
+    XCTAssert(obj.funcToSwizzleReturnSizeJSPassed, @"funcToSwizzleReturnSizeJSPassed");
+    XCTAssert(obj.funcToSwizzleReturnRangeJSPassed, @"funcToSwizzleReturnRangeJSPassed");
+    
+    XCTAssert(obj.funcToSwizzleTestClassPassed, @"funcToSwizzleTestClassPassed");
+    XCTAssert(obj.funcToSwizzleTestSelectorPassed, @"funcToSwizzleTestSelectorPassed");
+    XCTAssert(obj.funcToSwizzleTestCharPassed, @"funcToSwizzleTestCharPassed");
+    XCTAssert(obj.funcTestCharPassed, @"funcTestCharPassed");
+    XCTAssert(obj.funcToSwizzleTestPointerPassed, @"funcToSwizzleTestPointerPassed");
+    XCTAssert(obj.funcTestPointerPassed, @"funcTestPointerPassed");
+    XCTAssert(obj.funcTestSizeofPassed,@"funcSizeofPassed");
+    XCTAssert(obj.funcTestGetPointerPassed, @"funcGetPointerPassed");
+    XCTAssert(obj.funcTestNSErrorPointerPassed, @"funcTestNSErrorPointerPassed");
+    XCTAssert(obj.funcTestNilParametersInBlockPassed, @"funcTestNilParametersInBlockPassed");
     NSDictionary *originalDict = @{@"k": @"v"};
     NSDictionary *dict = [obj funcToSwizzleReturnDictionary:originalDict];
     XCTAssert(originalDict == dict, @"funcToSwizzleReturnDictionary");
@@ -105,7 +132,6 @@
     XCTAssert(obj.classFuncToSwizzleReturnObjPassed, @"classFuncToSwizzleReturnObjPassed");
     XCTAssert(obj.classFuncToSwizzleReturnObjCalledOriginalPassed, @"classFuncToSwizzleReturnObjCalledOriginalPassed");
     XCTAssert(obj.classFuncToSwizzleReturnIntPassed, @"classFuncToSwizzleReturnIntPassed");
-    XCTAssert(obj.callCustomFuncPassed, @"callCustomFuncPassed");
     
     XCTAssert(subObj.funcCallSuperSubObjectPassed, @"funcCallSuperSubObjectPassed");
     XCTAssert(subObj.funcCallSuperPassed, @"funcCallSuperPassed");
@@ -116,14 +142,20 @@
     
     XCTAssert(obj.newTestObjectReturnViewPassed, @"newTestObjectReturnViewPassed");
     XCTAssert(obj.newTestObjectReturnBoolPassed, @"newTestObjectReturnBoolPassed");
-    XCTAssert(obj.newTestObjectCustomFuncPassed, @"newTestObjectCustomFuncPassed");
 
     XCTAssert(obj.mutableArrayPassed, @"mutableArrayPassed");
     XCTAssert(obj.mutableDictionaryPassed, @"mutableDictionaryPassed");
     XCTAssert(obj.mutableStringPassed, @"mutableStringPassed");
     
+    XCTAssert(obj.funcWithTransformPassed, @"funcWithTransformPassed");
+    XCTAssert(obj.transformTranslatePassed, @"funcWithTransformPassed");
+    XCTAssert(obj.funcWithRectPointerPassed, @"funcWithRectPointerPassed");
+    XCTAssert(obj.funcWithTransformPointerPassed, @"funcWithTransformPointerPassed");
+    
     XCTAssertEqualObjects(@"overrided",[subObj funcOverrideParentMethod]);
     
+    JPTestProtocolObject *testProtocolObj = [[JPTestProtocolObject alloc] init];
+    XCTAssert([testProtocolObj testProtocolMethods], @"testProtocolMethodsPassed");
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     [obj funcToSwizzleTestGCD:^{
@@ -184,6 +216,8 @@
     
     XCTAssertNotEqualObjects(t2Cm2Return,[t2objC m2]);
     XCTAssertEqualObjects(@"JP_02ObjC_m2",[t2objC m2]);
+    
+    XCTAssertEqualObjects(@"JP_02ObjC_m3", [t2objC m3]);
     
     /*Test 3*/
     XCTAssertEqualObjects(t3m1Return,[t3objA m1]);
