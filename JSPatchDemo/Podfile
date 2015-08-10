@@ -1,0 +1,9 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+target 'JSPatchDemo', :exclusive => true do
+  pod "JSPatch", :path => "../"
+end
+
+target :JSPatchTests, :exclusive => true do
+  pod "JSPatch", :path => "../"
+end
