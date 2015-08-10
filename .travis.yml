@@ -3,5 +3,6 @@ before_script:
     - brew update && brew upgrade xctool
     - gem update cocoapods
 script:
+    - cd JSPatchDemo
     - pod install
-    - xctool test -workspace JSPatchDemo/JSPatchDemo.xcworkspace -scheme JSPatchDemo -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
+    - xctool test -workspace JSPatchDemo.xcworkspace -scheme JSPatchDemo -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
