@@ -1,5 +1,7 @@
 language: objective-c
 before_script:
     - brew update && brew upgrade xctool
+    - gem update cocoapods
 script:
-    - xctool test -project JSPatchDemo/JSPatchDemo.xcodeproj -scheme JSPatchDemo -sdk iphonesimulator
+    - pod install
+    - xctool test -workspace JSPatchDemo/JSPatchDemo.xcworkspace -scheme JSPatchDemo -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
