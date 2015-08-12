@@ -17,7 +17,7 @@ var global = this
     if (obj === undefined || obj === null) return false
     if (typeof obj == "object") {
       if (obj.__obj) return obj
-      if (obj.__isNull) return false
+      if (obj.__isNil) return false
     }
     if (obj instanceof Array) {
       var ret = []

@@ -13,6 +13,7 @@
 @property (nonatomic) id obj;
 @property (nonatomic) void *pointer;
 @property (nonatomic) Class cls;
+@property (nonatomic, weak) id weakObj;
 - (id)unbox;
 - (void *)unboxPointer;
 - (Class)unboxClass;
@@ -31,10 +32,12 @@
 JPBOXING_GEN(boxObj, obj, id)
 JPBOXING_GEN(boxPointer, pointer, void *)
 JPBOXING_GEN(boxClass, cls, Class)
+JPBOXING_GEN(boxWeakObj, weakObj, id)
 
 - (id)unbox
 {
     if (self.obj) return self.obj;
+    if (self.weakObj) return self.weakObj;
     return self;
 }
 - (void *)unboxPointer
@@ -176,6 +179,16 @@ NSMutableArray *registeredStructExtensions;
     _nilObj = [[NSObject alloc] init];
     context[@"_OC_null"] = formatOCToJS(_nullObj);
     
+    context[@"__weak"] = ^id(JSValue *jsval) {
+        id obj = formatJSToOC(jsval);
+        return [[JSContext currentContext][@"_formatOCToJS"] callWithArguments:@[formatOCToJS([JPBoxing boxWeakObj:obj])]];
+    };
+
+    context[@"__strong"] = ^id(JSValue *jsval) {
+        id obj = formatJSToOC(jsval);
+        return [[JSContext currentContext][@"_formatOCToJS"] callWithArguments:@[formatOCToJS(obj)]];
+    };
+
     __weak JSContext *weakCtx = context;
     context[@"dispatch_after"] = ^(double time, JSValue *func) {
         JSValue *currSelf = weakCtx[@"self"];
@@ -682,7 +695,10 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 
 static id callSelector(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper)
 {
-    if (instance) instance = formatJSToOC(instance);
+    if (instance) {
+        instance = formatJSToOC(instance);
+        if (!instance || instance == _nilObj) return @{@"__isNil": @(YES)};
+    }
     id argumentsObj = formatJSToOC(arguments);
     
     if (instance && [selectorName isEqualToString:@"toJS"]) {
@@ -1087,7 +1103,7 @@ static id _formatOCToJSList(NSArray *list)
 static NSDictionary *_wrapObj(id obj)
 {
     if (!obj || obj == _nilObj) {
-        return @{@"__isNull": @(YES)};
+        return @{@"__isNil": @(YES)};
     }
     return @{@"__clsName": NSStringFromClass([obj class]), @"__obj": obj};
 }
