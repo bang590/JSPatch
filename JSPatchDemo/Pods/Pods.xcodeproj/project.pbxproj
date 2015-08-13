@@ -1,0 +1,722 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0F7E452A1AF26D49BF2DBD01C83828FD /* JPCGContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 22920E01D04CBE922F0A2DE10BD17ED0 /* JPCGContext.m */; };
+		1277B797F6D9ED85830B2B412670D745 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 672521AAB811B2194BDAA3E99731779C /* Foundation.framework */; };
+		1D93C279B51121E117986286BE5300C7 /* JPUIImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C8B7A19DA3F7B9EA8B07991399B01D /* JPUIImage.h */; };
+		1E8BE8673020B42D83D2181ED0908F2E /* JPCGPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DB37BBAB664874B948EE452C4606E04 /* JPCGPath.m */; };
+		26682D1BCEFCC4A536C6369448597209 /* JPCGImage.h in Headers */ = {isa = PBXBuildFile; fileRef = B6F49EE4D34D73D89A523A5092AC25F0 /* JPCGImage.h */; };
+		2719F371FD3696AF1BD3E2E6CC7A14F7 /* JPCGColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 71451C29B18B7CFF430D6D1562978214 /* JPCGColor.m */; };
+		30231E3010ECC645E016AABDCC270F05 /* JPInclude.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C770557F44C7404D5CA371A29DC9770 /* JPInclude.h */; };
+		31751479CE947D66E9E2DD68D3E94BC3 /* JPMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DBF5B3FCD85C152821F77060F7A5F41 /* JPMemory.m */; };
+		34735A1D8D1DAEE7E3C5C1B9EFFC488C /* JPCGPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 070EA15727ABA1C20B3DCDC3B698ED77 /* JPCGPath.h */; };
+		4A811F44991A38E6B49B5D15D0CF3CD2 /* JPCGContext.h in Headers */ = {isa = PBXBuildFile; fileRef = E546B0911D04D471DCF9E833C6DD9F19 /* JPCGContext.h */; };
+		54DC28D22E9D8563FCD37184DFFEA5DB /* JPCoreGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = 015F6C73EF8118574656EEE10F1B2C90 /* JPCoreGraphics.m */; };
+		5A5806A63B8A30CAA668861FC380443E /* JPUIGraphics.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E52A9DF3ACD81E52BA97CF953FD522D /* JPUIGraphics.h */; };
+		6181870015F05FA4017D14A8AC12292E /* JSPatch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E62DC44FBA7350144D0DAF323E95D12D /* JSPatch-dummy.m */; };
+		6F5F2EAD3B3B587597E03A7CE5573401 /* JPCGImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 48F98646ADA3AEA446912A34F524AF26 /* JPCGImage.m */; };
+		76D2D27AE7FBFA9ACDCE75C894F84B4E /* JPCGBitmapContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A5A0D6ED252BC916D571832AAC590C9 /* JPCGBitmapContext.m */; };
+		840149164E452BDF2DFF4EFFD86924B6 /* JPEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AA72824F0241212AF3AA95E6CBD3EB6 /* JPEngine.m */; };
+		8D38E2754F3BB32B632783C77DF2C91D /* JPEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C2B48B503CA0D4A198DE3B287EB2A30 /* JPEngine.h */; };
+		9468E6082F5385A681EF7B97E6D1827D /* JPUIKitHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = F3D58998A8D392C08487148D75AB8937 /* JPUIKitHeader.h */; };
+		9BBAB8A9BDAB6C1904EB7AF3642B1B71 /* JPUIGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F7DE57FC251DCEB4A8E8A4330BFC051 /* JPUIGeometry.h */; };
+		9F7845865C470E22CA3E3069999DD31B /* JPCGGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AD4A7221B57C46589E9603AE6078C41 /* JPCGGeometry.m */; };
+		B0D6971850EE30F070EB5E94383320A6 /* JPUIKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 81D3BB5D82819AAEB55CCDCFBAB8A90D /* JPUIKit.h */; };
+		B22DC6D12BAB382E1FFE1453B33B8086 /* JPCoreGraphicsHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = AD0CBEA4C0B44101A008668CBAAF10B8 /* JPCoreGraphicsHeader.h */; };
+		B26F6F6C5FF999A485D76B2E9E75CD30 /* JPCGBitmapContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F341C1B5F696CB155D2B8F63827CA09 /* JPCGBitmapContext.h */; };
+		BA7D31670AD68682B22509286CA79D78 /* JPUIGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = 67BE4D196ECE2E209BA8E9500FC9CD1D /* JPUIGraphics.m */; };
+		BCF3D7A943E116D211462F3271098819 /* JPMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = C7D5743D9D877704C79DAEE6EC86E1AB /* JPMemory.h */; };
+		BF021B383DE71E89A518331A4D45D308 /* JPCGTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = 127DB4EA22D0C0A21F5D27B64DFCCB3D /* JPCGTransform.m */; };
+		C05A97E72AA89A530F1B1DDC450E2707 /* Pods-JSPatchDemo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BA38BE1DA7085BBA4408F40387D9A798 /* Pods-JSPatchDemo-dummy.m */; };
+		C48885196C0B4122F0FA1412DF412F9D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 672521AAB811B2194BDAA3E99731779C /* Foundation.framework */; };
+		CE38A17E1B40B34EFF961F80D5D7F29F /* JPCGTransform.h in Headers */ = {isa = PBXBuildFile; fileRef = F0BD9CECBE356EFD4198B2CDB95463D2 /* JPCGTransform.h */; };
+		E2378EB8D70D7F30B7EB483ED0A3BD38 /* JPUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 9067789BACAE187A7491B70A8A941341 /* JPUIImage.m */; };
+		E66D797AACAE6881C2648F707FDF84E9 /* JPUIKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 4679382306A3EBDA6F65C7B4CB034FE1 /* JPUIKit.m */; };
+		E6DF1906789B3BC628E178090F3BC8FE /* JPCoreGraphics.h in Headers */ = {isa = PBXBuildFile; fileRef = 571C9BB6392DC77E04F085361CDC6432 /* JPCoreGraphics.h */; };
+		EBF49AC0FB4871FE6181689EE79A5F78 /* Pods-JSPatchTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BF99B35109FD11FC2050BA794B14CD98 /* Pods-JSPatchTests-dummy.m */; };
+		ED5BD5331C304419F46DC495E71F9AD3 /* JPUIGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = D688AA1CA2C792E5B285FF146E86CED4 /* JPUIGeometry.m */; };
+		F2BDE356CE08DBAEB3B57945876C35FA /* JPCGGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C74E8DAF05C85D2A8BDE6F89418FD2B /* JPCGGeometry.h */; };
+		F2F212C9DD87B92D7DFED97F5670AAA1 /* JPCGColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 7677635B57CF601333BA1869FD37F1D1 /* JPCGColor.h */; };
+		F36F4AA59EC839E2EB5BC62F83E058B9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 672521AAB811B2194BDAA3E99731779C /* Foundation.framework */; };
+		F8F704DDE7F298EE72B99707EB2BE496 /* JPInclude.m in Sources */ = {isa = PBXBuildFile; fileRef = CFC4D637B51084B32FC32D0D258A1290 /* JPInclude.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7BE5B1A534C5B112D0482E2A15437FC9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 61D4A137EEEE3CEDDBDDD5435E5E9057;
+			remoteInfo = JSPatch;
+		};
+		9052ED1AD53DBCC5C1BA0AE75ECA1EA1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 61D4A137EEEE3CEDDBDDD5435E5E9057;
+			remoteInfo = JSPatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		015F6C73EF8118574656EEE10F1B2C90 /* JPCoreGraphics.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPCoreGraphics.m; sourceTree = "<group>"; };
+		058C3FE393058D9638072737F5D6B992 /* JSPatch-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "JSPatch-prefix.pch"; sourceTree = "<group>"; };
+		070EA15727ABA1C20B3DCDC3B698ED77 /* JPCGPath.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPCGPath.h; sourceTree = "<group>"; };
+		0C74E8DAF05C85D2A8BDE6F89418FD2B /* JPCGGeometry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPCGGeometry.h; sourceTree = "<group>"; };
+		10BEAC14C3638C3372A0AB725FE8B9DE /* Pods-JSPatchTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-JSPatchTests.debug.xcconfig"; sourceTree = "<group>"; };
+		127DB4EA22D0C0A21F5D27B64DFCCB3D /* JPCGTransform.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPCGTransform.m; sourceTree = "<group>"; };
+		1C2B48B503CA0D4A198DE3B287EB2A30 /* JPEngine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPEngine.h; sourceTree = "<group>"; };
+		1C770557F44C7404D5CA371A29DC9770 /* JPInclude.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPInclude.h; sourceTree = "<group>"; };
+		22920E01D04CBE922F0A2DE10BD17ED0 /* JPCGContext.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPCGContext.m; sourceTree = "<group>"; };
+		289A31530AA8FA4D71F3862E90D13FA4 /* libJSPatch.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libJSPatch.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		28DDBCEC729E1849B5B85D9A7B2BF8BE /* Pods-JSPatchTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-JSPatchTests-acknowledgements.plist"; sourceTree = "<group>"; };
+		2A5A0D6ED252BC916D571832AAC590C9 /* JPCGBitmapContext.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPCGBitmapContext.m; sourceTree = "<group>"; };
+		2DB37BBAB664874B948EE452C4606E04 /* JPCGPath.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPCGPath.m; sourceTree = "<group>"; };
+		3B2C7E33576C4B02123CA4BB5E727F4F /* libPods-JSPatchDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-JSPatchDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4679382306A3EBDA6F65C7B4CB034FE1 /* JPUIKit.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPUIKit.m; sourceTree = "<group>"; };
+		48F98646ADA3AEA446912A34F524AF26 /* JPCGImage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPCGImage.m; sourceTree = "<group>"; };
+		50256F5E37707C1DB73BB54E3FB87BB9 /* JSPatch-Private.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "JSPatch-Private.xcconfig"; sourceTree = "<group>"; };
+		571C9BB6392DC77E04F085361CDC6432 /* JPCoreGraphics.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPCoreGraphics.h; sourceTree = "<group>"; };
+		5E52A9DF3ACD81E52BA97CF953FD522D /* JPUIGraphics.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPUIGraphics.h; sourceTree = "<group>"; };
+		672521AAB811B2194BDAA3E99731779C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		67BE4D196ECE2E209BA8E9500FC9CD1D /* JPUIGraphics.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPUIGraphics.m; sourceTree = "<group>"; };
+		6A30B4E8A813B882B10197B1EAACFC42 /* JSPatch.js */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.javascript; path = JSPatch.js; sourceTree = "<group>"; };
+		6AD4A7221B57C46589E9603AE6078C41 /* JPCGGeometry.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPCGGeometry.m; sourceTree = "<group>"; };
+		71451C29B18B7CFF430D6D1562978214 /* JPCGColor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPCGColor.m; sourceTree = "<group>"; };
+		71C8B7A19DA3F7B9EA8B07991399B01D /* JPUIImage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPUIImage.h; sourceTree = "<group>"; };
+		73640D30614A3DC6E41943B26478B3B4 /* libPods-JSPatchTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-JSPatchTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7677635B57CF601333BA1869FD37F1D1 /* JPCGColor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPCGColor.h; sourceTree = "<group>"; };
+		7DBF5B3FCD85C152821F77060F7A5F41 /* JPMemory.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPMemory.m; sourceTree = "<group>"; };
+		7E8CFECC126B53CD1D3126CA8A9BC711 /* JSPatch.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = JSPatch.xcconfig; sourceTree = "<group>"; };
+		7F341C1B5F696CB155D2B8F63827CA09 /* JPCGBitmapContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPCGBitmapContext.h; sourceTree = "<group>"; };
+		81D3BB5D82819AAEB55CCDCFBAB8A90D /* JPUIKit.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPUIKit.h; sourceTree = "<group>"; };
+		9067789BACAE187A7491B70A8A941341 /* JPUIImage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPUIImage.m; sourceTree = "<group>"; };
+		952DF178826375AEC64ADA96F0A7102A /* Pods-JSPatchTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-JSPatchTests.release.xcconfig"; sourceTree = "<group>"; };
+		96E076319E93C5F0552B5341E20D187B /* Pods-JSPatchTests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-JSPatchTests-resources.sh"; sourceTree = "<group>"; };
+		9AA72824F0241212AF3AA95E6CBD3EB6 /* JPEngine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPEngine.m; sourceTree = "<group>"; };
+		9E97DAECFECEF4375EE570E79C45F958 /* Pods-JSPatchDemo-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-JSPatchDemo-acknowledgements.markdown"; sourceTree = "<group>"; };
+		9F7DE57FC251DCEB4A8E8A4330BFC051 /* JPUIGeometry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPUIGeometry.h; sourceTree = "<group>"; };
+		AD0CBEA4C0B44101A008668CBAAF10B8 /* JPCoreGraphicsHeader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPCoreGraphicsHeader.h; sourceTree = "<group>"; };
+		B6F49EE4D34D73D89A523A5092AC25F0 /* JPCGImage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPCGImage.h; sourceTree = "<group>"; };
+		BA38BE1DA7085BBA4408F40387D9A798 /* Pods-JSPatchDemo-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-JSPatchDemo-dummy.m"; sourceTree = "<group>"; };
+		BF99B35109FD11FC2050BA794B14CD98 /* Pods-JSPatchTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-JSPatchTests-dummy.m"; sourceTree = "<group>"; };
+		C4E46B0FC53AD4F98ECF64E624025118 /* Pods-JSPatchTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-JSPatchTests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		C7D5743D9D877704C79DAEE6EC86E1AB /* JPMemory.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPMemory.h; sourceTree = "<group>"; };
+		C88113A79685B4EFEE7BAD12896829F7 /* Podfile */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		CFC4D637B51084B32FC32D0D258A1290 /* JPInclude.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPInclude.m; sourceTree = "<group>"; };
+		D688AA1CA2C792E5B285FF146E86CED4 /* JPUIGeometry.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = JPUIGeometry.m; sourceTree = "<group>"; };
+		D79231EF7CF1A1C8F58FAE5629FC1345 /* Pods-JSPatchDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-JSPatchDemo.release.xcconfig"; sourceTree = "<group>"; };
+		E546B0911D04D471DCF9E833C6DD9F19 /* JPCGContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPCGContext.h; sourceTree = "<group>"; };
+		E62DC44FBA7350144D0DAF323E95D12D /* JSPatch-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "JSPatch-dummy.m"; sourceTree = "<group>"; };
+		EC6C64ACD5A49F819AB35F101E4761E1 /* Pods-JSPatchDemo-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-JSPatchDemo-resources.sh"; sourceTree = "<group>"; };
+		F0BD9CECBE356EFD4198B2CDB95463D2 /* JPCGTransform.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPCGTransform.h; sourceTree = "<group>"; };
+		F3D58998A8D392C08487148D75AB8937 /* JPUIKitHeader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JPUIKitHeader.h; sourceTree = "<group>"; };
+		FCA5A392CCD60E3325B8381901B8AC5E /* Pods-JSPatchDemo-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-JSPatchDemo-acknowledgements.plist"; sourceTree = "<group>"; };
+		FF723F0DE52435D3B9C06EAB875EBE89 /* Pods-JSPatchDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-JSPatchDemo.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		25AEC1720990ACDD218C73073193D985 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F36F4AA59EC839E2EB5BC62F83E058B9 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8E48C9FA9CA87C31B64B855496BAFA04 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C48885196C0B4122F0FA1412DF412F9D /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		909CCA247E6AA1066986A58CEF5B6883 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1277B797F6D9ED85830B2B412670D745 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0720760E6FAA87218C034E98CCD3509B /* Development Pods */ = {
+			isa = PBXGroup;
+			children = (
+				CF8EE2928D411961312AE0B712CCD7A1 /* JSPatch */,
+			);
+			name = "Development Pods";
+			sourceTree = "<group>";
+		};
+		0E860D70ED2DBC3EDDFDEFFFE899E737 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E61003A0FACB4BAD898EAD55A9D4650A /* JSPatch */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		33A2DFA941E11F4B5B7E005D2FE0A3E5 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				672521AAB811B2194BDAA3E99731779C /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		37F1F24D70D5DB632B89FA10B9CEF625 /* JSPatch */ = {
+			isa = PBXGroup;
+			children = (
+				1C2B48B503CA0D4A198DE3B287EB2A30 /* JPEngine.h */,
+				9AA72824F0241212AF3AA95E6CBD3EB6 /* JPEngine.m */,
+			);
+			path = JSPatch;
+			sourceTree = "<group>";
+		};
+		5E1F3384B1B39575144FEBFCF3210CCC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				33A2DFA941E11F4B5B7E005D2FE0A3E5 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		600408055B92CF7AE33C0E7D886C4C54 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				1C770557F44C7404D5CA371A29DC9770 /* JPInclude.h */,
+				CFC4D637B51084B32FC32D0D258A1290 /* JPInclude.m */,
+				C7D5743D9D877704C79DAEE6EC86E1AB /* JPMemory.h */,
+				7DBF5B3FCD85C152821F77060F7A5F41 /* JPMemory.m */,
+				95E2891B0BCCEA291654560339C4D477 /* CoreGraphics */,
+				958935D58E5122DE4A362BC82D19603F /* UIKit */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		7504233FC5C7CDE568C830E75D320E5B /* Pods-JSPatchDemo */ = {
+			isa = PBXGroup;
+			children = (
+				9E97DAECFECEF4375EE570E79C45F958 /* Pods-JSPatchDemo-acknowledgements.markdown */,
+				FCA5A392CCD60E3325B8381901B8AC5E /* Pods-JSPatchDemo-acknowledgements.plist */,
+				BA38BE1DA7085BBA4408F40387D9A798 /* Pods-JSPatchDemo-dummy.m */,
+				EC6C64ACD5A49F819AB35F101E4761E1 /* Pods-JSPatchDemo-resources.sh */,
+				FF723F0DE52435D3B9C06EAB875EBE89 /* Pods-JSPatchDemo.debug.xcconfig */,
+				D79231EF7CF1A1C8F58FAE5629FC1345 /* Pods-JSPatchDemo.release.xcconfig */,
+			);
+			name = "Pods-JSPatchDemo";
+			path = "Target Support Files/Pods-JSPatchDemo";
+			sourceTree = "<group>";
+		};
+		789D77D868CFA0A74DC48C7A012F6995 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				600408055B92CF7AE33C0E7D886C4C54 /* Extensions */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
+		7C472CC479E33F86862EE28355648110 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7E8CFECC126B53CD1D3126CA8A9BC711 /* JSPatch.xcconfig */,
+				50256F5E37707C1DB73BB54E3FB87BB9 /* JSPatch-Private.xcconfig */,
+				E62DC44FBA7350144D0DAF323E95D12D /* JSPatch-dummy.m */,
+				058C3FE393058D9638072737F5D6B992 /* JSPatch-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "JSPatchDemo/Pods/Target Support Files/JSPatch";
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				C88113A79685B4EFEE7BAD12896829F7 /* Podfile */,
+				0720760E6FAA87218C034E98CCD3509B /* Development Pods */,
+				5E1F3384B1B39575144FEBFCF3210CCC /* Frameworks */,
+				CCA510CFBEA2D207524CDA0D73C3B561 /* Products */,
+				D871C749CBB672E76A502DD5E90F9842 /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		958935D58E5122DE4A362BC82D19603F /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				9F7DE57FC251DCEB4A8E8A4330BFC051 /* JPUIGeometry.h */,
+				D688AA1CA2C792E5B285FF146E86CED4 /* JPUIGeometry.m */,
+				5E52A9DF3ACD81E52BA97CF953FD522D /* JPUIGraphics.h */,
+				67BE4D196ECE2E209BA8E9500FC9CD1D /* JPUIGraphics.m */,
+				71C8B7A19DA3F7B9EA8B07991399B01D /* JPUIImage.h */,
+				9067789BACAE187A7491B70A8A941341 /* JPUIImage.m */,
+				81D3BB5D82819AAEB55CCDCFBAB8A90D /* JPUIKit.h */,
+				4679382306A3EBDA6F65C7B4CB034FE1 /* JPUIKit.m */,
+				F3D58998A8D392C08487148D75AB8937 /* JPUIKitHeader.h */,
+			);
+			path = UIKit;
+			sourceTree = "<group>";
+		};
+		95E2891B0BCCEA291654560339C4D477 /* CoreGraphics */ = {
+			isa = PBXGroup;
+			children = (
+				7F341C1B5F696CB155D2B8F63827CA09 /* JPCGBitmapContext.h */,
+				2A5A0D6ED252BC916D571832AAC590C9 /* JPCGBitmapContext.m */,
+				7677635B57CF601333BA1869FD37F1D1 /* JPCGColor.h */,
+				71451C29B18B7CFF430D6D1562978214 /* JPCGColor.m */,
+				E546B0911D04D471DCF9E833C6DD9F19 /* JPCGContext.h */,
+				22920E01D04CBE922F0A2DE10BD17ED0 /* JPCGContext.m */,
+				0C74E8DAF05C85D2A8BDE6F89418FD2B /* JPCGGeometry.h */,
+				6AD4A7221B57C46589E9603AE6078C41 /* JPCGGeometry.m */,
+				B6F49EE4D34D73D89A523A5092AC25F0 /* JPCGImage.h */,
+				48F98646ADA3AEA446912A34F524AF26 /* JPCGImage.m */,
+				070EA15727ABA1C20B3DCDC3B698ED77 /* JPCGPath.h */,
+				2DB37BBAB664874B948EE452C4606E04 /* JPCGPath.m */,
+				F0BD9CECBE356EFD4198B2CDB95463D2 /* JPCGTransform.h */,
+				127DB4EA22D0C0A21F5D27B64DFCCB3D /* JPCGTransform.m */,
+				571C9BB6392DC77E04F085361CDC6432 /* JPCoreGraphics.h */,
+				015F6C73EF8118574656EEE10F1B2C90 /* JPCoreGraphics.m */,
+				AD0CBEA4C0B44101A008668CBAAF10B8 /* JPCoreGraphicsHeader.h */,
+			);
+			path = CoreGraphics;
+			sourceTree = "<group>";
+		};
+		9AC04EC38502BA5F1B20B084FDD91E3D /* Pods-JSPatchTests */ = {
+			isa = PBXGroup;
+			children = (
+				C4E46B0FC53AD4F98ECF64E624025118 /* Pods-JSPatchTests-acknowledgements.markdown */,
+				28DDBCEC729E1849B5B85D9A7B2BF8BE /* Pods-JSPatchTests-acknowledgements.plist */,
+				BF99B35109FD11FC2050BA794B14CD98 /* Pods-JSPatchTests-dummy.m */,
+				96E076319E93C5F0552B5341E20D187B /* Pods-JSPatchTests-resources.sh */,
+				10BEAC14C3638C3372A0AB725FE8B9DE /* Pods-JSPatchTests.debug.xcconfig */,
+				952DF178826375AEC64ADA96F0A7102A /* Pods-JSPatchTests.release.xcconfig */,
+			);
+			name = "Pods-JSPatchTests";
+			path = "Target Support Files/Pods-JSPatchTests";
+			sourceTree = "<group>";
+		};
+		CCA510CFBEA2D207524CDA0D73C3B561 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				289A31530AA8FA4D71F3862E90D13FA4 /* libJSPatch.a */,
+				3B2C7E33576C4B02123CA4BB5E727F4F /* libPods-JSPatchDemo.a */,
+				73640D30614A3DC6E41943B26478B3B4 /* libPods-JSPatchTests.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CF8EE2928D411961312AE0B712CCD7A1 /* JSPatch */ = {
+			isa = PBXGroup;
+			children = (
+				789D77D868CFA0A74DC48C7A012F6995 /* Extensions */,
+				37F1F24D70D5DB632B89FA10B9CEF625 /* JSPatch */,
+				0E860D70ED2DBC3EDDFDEFFFE899E737 /* Resources */,
+				7C472CC479E33F86862EE28355648110 /* Support Files */,
+			);
+			name = JSPatch;
+			path = ../..;
+			sourceTree = "<group>";
+		};
+		D871C749CBB672E76A502DD5E90F9842 /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7504233FC5C7CDE568C830E75D320E5B /* Pods-JSPatchDemo */,
+				9AC04EC38502BA5F1B20B084FDD91E3D /* Pods-JSPatchTests */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		E61003A0FACB4BAD898EAD55A9D4650A /* JSPatch */ = {
+			isa = PBXGroup;
+			children = (
+				6A30B4E8A813B882B10197B1EAACFC42 /* JSPatch.js */,
+			);
+			path = JSPatch;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		C017F04E78A0B4322FC14E6683680999 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B26F6F6C5FF999A485D76B2E9E75CD30 /* JPCGBitmapContext.h in Headers */,
+				F2F212C9DD87B92D7DFED97F5670AAA1 /* JPCGColor.h in Headers */,
+				4A811F44991A38E6B49B5D15D0CF3CD2 /* JPCGContext.h in Headers */,
+				F2BDE356CE08DBAEB3B57945876C35FA /* JPCGGeometry.h in Headers */,
+				26682D1BCEFCC4A536C6369448597209 /* JPCGImage.h in Headers */,
+				34735A1D8D1DAEE7E3C5C1B9EFFC488C /* JPCGPath.h in Headers */,
+				CE38A17E1B40B34EFF961F80D5D7F29F /* JPCGTransform.h in Headers */,
+				E6DF1906789B3BC628E178090F3BC8FE /* JPCoreGraphics.h in Headers */,
+				B22DC6D12BAB382E1FFE1453B33B8086 /* JPCoreGraphicsHeader.h in Headers */,
+				8D38E2754F3BB32B632783C77DF2C91D /* JPEngine.h in Headers */,
+				30231E3010ECC645E016AABDCC270F05 /* JPInclude.h in Headers */,
+				BCF3D7A943E116D211462F3271098819 /* JPMemory.h in Headers */,
+				9BBAB8A9BDAB6C1904EB7AF3642B1B71 /* JPUIGeometry.h in Headers */,
+				5A5806A63B8A30CAA668861FC380443E /* JPUIGraphics.h in Headers */,
+				1D93C279B51121E117986286BE5300C7 /* JPUIImage.h in Headers */,
+				B0D6971850EE30F070EB5E94383320A6 /* JPUIKit.h in Headers */,
+				9468E6082F5385A681EF7B97E6D1827D /* JPUIKitHeader.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		61D4A137EEEE3CEDDBDDD5435E5E9057 /* JSPatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 113008FB7E2725D8C28AE5FBC36D46DD /* Build configuration list for PBXNativeTarget "JSPatch" */;
+			buildPhases = (
+				C28BE136EE84D7431E3C89ACD2F33EBF /* Sources */,
+				25AEC1720990ACDD218C73073193D985 /* Frameworks */,
+				C017F04E78A0B4322FC14E6683680999 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = JSPatch;
+			productName = JSPatch;
+			productReference = 289A31530AA8FA4D71F3862E90D13FA4 /* libJSPatch.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		98263F005521C96801B7EF8C0440A856 /* Pods-JSPatchDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7E715CECD5D7B41CF50B7904965707B2 /* Build configuration list for PBXNativeTarget "Pods-JSPatchDemo" */;
+			buildPhases = (
+				B9CD7BBEA8F70FFE4029965A4B6E3B84 /* Sources */,
+				909CCA247E6AA1066986A58CEF5B6883 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E58328CB4B1A1FC97BC4061E16C80B74 /* PBXTargetDependency */,
+			);
+			name = "Pods-JSPatchDemo";
+			productName = "Pods-JSPatchDemo";
+			productReference = 3B2C7E33576C4B02123CA4BB5E727F4F /* libPods-JSPatchDemo.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		C7A5F1F357F519A641462416DEDA4226 /* Pods-JSPatchTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E08FB7207083FBCEF11E2D376CCE2EC0 /* Build configuration list for PBXNativeTarget "Pods-JSPatchTests" */;
+			buildPhases = (
+				BCD1D17B5B9B12076750E7E4379305B3 /* Sources */,
+				8E48C9FA9CA87C31B64B855496BAFA04 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DAF8CA41A018BACD085F1B7A19333BA4 /* PBXTargetDependency */,
+			);
+			name = "Pods-JSPatchTests";
+			productName = "Pods-JSPatchTests";
+			productReference = 73640D30614A3DC6E41943B26478B3B4 /* libPods-JSPatchTests.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = CCA510CFBEA2D207524CDA0D73C3B561 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				61D4A137EEEE3CEDDBDDD5435E5E9057 /* JSPatch */,
+				98263F005521C96801B7EF8C0440A856 /* Pods-JSPatchDemo */,
+				C7A5F1F357F519A641462416DEDA4226 /* Pods-JSPatchTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B9CD7BBEA8F70FFE4029965A4B6E3B84 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C05A97E72AA89A530F1B1DDC450E2707 /* Pods-JSPatchDemo-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCD1D17B5B9B12076750E7E4379305B3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EBF49AC0FB4871FE6181689EE79A5F78 /* Pods-JSPatchTests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C28BE136EE84D7431E3C89ACD2F33EBF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76D2D27AE7FBFA9ACDCE75C894F84B4E /* JPCGBitmapContext.m in Sources */,
+				2719F371FD3696AF1BD3E2E6CC7A14F7 /* JPCGColor.m in Sources */,
+				0F7E452A1AF26D49BF2DBD01C83828FD /* JPCGContext.m in Sources */,
+				9F7845865C470E22CA3E3069999DD31B /* JPCGGeometry.m in Sources */,
+				6F5F2EAD3B3B587597E03A7CE5573401 /* JPCGImage.m in Sources */,
+				1E8BE8673020B42D83D2181ED0908F2E /* JPCGPath.m in Sources */,
+				BF021B383DE71E89A518331A4D45D308 /* JPCGTransform.m in Sources */,
+				54DC28D22E9D8563FCD37184DFFEA5DB /* JPCoreGraphics.m in Sources */,
+				840149164E452BDF2DFF4EFFD86924B6 /* JPEngine.m in Sources */,
+				F8F704DDE7F298EE72B99707EB2BE496 /* JPInclude.m in Sources */,
+				31751479CE947D66E9E2DD68D3E94BC3 /* JPMemory.m in Sources */,
+				ED5BD5331C304419F46DC495E71F9AD3 /* JPUIGeometry.m in Sources */,
+				BA7D31670AD68682B22509286CA79D78 /* JPUIGraphics.m in Sources */,
+				E2378EB8D70D7F30B7EB483ED0A3BD38 /* JPUIImage.m in Sources */,
+				E66D797AACAE6881C2648F707FDF84E9 /* JPUIKit.m in Sources */,
+				6181870015F05FA4017D14A8AC12292E /* JSPatch-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DAF8CA41A018BACD085F1B7A19333BA4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = JSPatch;
+			target = 61D4A137EEEE3CEDDBDDD5435E5E9057 /* JSPatch */;
+			targetProxy = 7BE5B1A534C5B112D0482E2A15437FC9 /* PBXContainerItemProxy */;
+		};
+		E58328CB4B1A1FC97BC4061E16C80B74 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = JSPatch;
+			target = 61D4A137EEEE3CEDDBDDD5435E5E9057 /* JSPatch */;
+			targetProxy = 9052ED1AD53DBCC5C1BA0AE75ECA1EA1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0BD144ACEDF8BBCEB927733A325D4CBE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 10BEAC14C3638C3372A0AB725FE8B9DE /* Pods-JSPatchTests.debug.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		2B1B828EEEBAC1BDACF757127AE917FE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 50256F5E37707C1DB73BB54E3FB87BB9 /* JSPatch-Private.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/JSPatch/JSPatch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		43D449C02D1C4B493DD0E8D883FE7CF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 952DF178826375AEC64ADA96F0A7102A /* Pods-JSPatchTests.release.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		4FD16E19C327368E0C6C07383BB44239 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D79231EF7CF1A1C8F58FAE5629FC1345 /* Pods-JSPatchDemo.release.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		62CA509F153FFAE50A0E4FC2914B6B28 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FF723F0DE52435D3B9C06EAB875EBE89 /* Pods-JSPatchDemo.debug.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		A12647F0A7B606E6A418A9C76EFB32AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		A78511571521D8C69216D34D463D611F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 50256F5E37707C1DB73BB54E3FB87BB9 /* JSPatch-Private.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/JSPatch/JSPatch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		B1AB816F02BC7AF00166B906B0BCB449 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = "RELEASE=1";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		113008FB7E2725D8C28AE5FBC36D46DD /* Build configuration list for PBXNativeTarget "JSPatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A78511571521D8C69216D34D463D611F /* Debug */,
+				2B1B828EEEBAC1BDACF757127AE917FE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A12647F0A7B606E6A418A9C76EFB32AC /* Debug */,
+				B1AB816F02BC7AF00166B906B0BCB449 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7E715CECD5D7B41CF50B7904965707B2 /* Build configuration list for PBXNativeTarget "Pods-JSPatchDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				62CA509F153FFAE50A0E4FC2914B6B28 /* Debug */,
+				4FD16E19C327368E0C6C07383BB44239 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E08FB7207083FBCEF11E2D376CCE2EC0 /* Build configuration list for PBXNativeTarget "Pods-JSPatchTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0BD144ACEDF8BBCEB927733A325D4CBE /* Debug */,
+				43D449C02D1C4B493DD0E8D883FE7CF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}

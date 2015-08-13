@@ -1,0 +1,16 @@
+PODS:
+  - JSPatch (0.1):
+    - JSPatch/Extensions (= 0.1)
+  - JSPatch/Extensions (0.1)
+
+DEPENDENCIES:
+  - JSPatch (from `../`)
+
+EXTERNAL SOURCES:
+  JSPatch:
+    :path: ../
+
+SPEC CHECKSUMS:
+  JSPatch: c44841a9303098ec424faf6a6bbac69a093770ce
+
+COCOAPODS: 0.38.0
