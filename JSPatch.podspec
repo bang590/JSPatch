@@ -18,13 +18,19 @@ Pod::Spec.new do |s|
   s.author             = { "bang" => "bang590@gmail.com" }
   s.social_media_url   = "http://twitter.com/bang590"
 
-  s.platform     = :ios, "7.0"
+  s.platform     = :ios, "6.0"
   s.source       = { :git => "https://github.com/bang590/JSPatch.git", :tag => s.version }
 
   s.source_files = "JSPatch/*.{h,m}"
   s.public_header_files = "JSPatch/*.h"
 
   s.resources    = "JSPatch/*.js"
-  s.frameworks   = "JavaScriptCore", "Foundation"
+  s.frameworks   = "Foundation"
+  s.weak_framework = "JavaScriptCore"
+
+  s.subspec 'Extensions' do |ext|
+    ext.source_files = "Extensions/**/*.{h,m}"
+    ext.public_header_files = "Extensions/**/*.h"
+  end
 
 end

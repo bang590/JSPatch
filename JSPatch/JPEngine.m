@@ -113,6 +113,11 @@ NSMutableArray *registeredStructExtensions;
 
 + (JSValue *)evaluateScript:(NSString *)script
 {
+    if (![JSContext class]) {
+        return nil;
+    }
+    NSAssert(_context, @"please call [JPEngine startEngine]");
+    
     if (!script) {
         NSAssert(NO, @"script is nil");
         return nil;
@@ -133,7 +138,11 @@ NSMutableArray *registeredStructExtensions;
 
 + (void)addExtensions:(NSArray *)extensions
 {
+    if (![JSContext class]) {
+        return;
+    }
     NSAssert(_context, @"please call [JPEngine startEngine]");
+    
     @synchronized (_context) {
         if (!registeredStructExtensions) {
             registeredStructExtensions = [[NSMutableArray alloc] init];
@@ -151,7 +160,7 @@ NSMutableArray *registeredStructExtensions;
 
 + (void)startEngine
 {
-    if (_context) {
+    if (![JSContext class] || _context) {
         return;
     }
     
