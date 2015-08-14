@@ -202,7 +202,7 @@ defineClass("JPTableViewController", {
     [JPEngine startEngine];
 
     //添加扩展
-    [JPEngine addExtensions:@[[JPInclude instance], [JPCGTransform instance]]];
+    [JPEngine addExtensions:@[@"JPInclude", @"JPCGTransform"]];
 
     NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"js"];
     NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8StringEncoding error:nil];
@@ -221,10 +221,7 @@ view.setTransform({a:1, b:0, c:0, d:1, tx:0, ty:100})
 扩展可以在JS动态加载，更推荐这种加载方式，在需要用到时才加载：
 
 ```js
-require('JPEngine').addExtensions([
-  require('JPInclude').instance(), 
-  require('JPCGTransform').instance(),
-])
+require('JPEngine').addExtensions(['JPInclude', 'JPCGTransform'])
 
 // `include()` and `CGAffineTransform` is avaliable now.
 ```
