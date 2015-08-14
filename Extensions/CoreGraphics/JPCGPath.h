@@ -7,7 +7,6 @@
 //
 
 #import "JPEngine.h"
-#import "JPCoreGraphicsHeader.h"
 
 @interface JPCGPath : JPExtension
 

@@ -7,7 +7,6 @@
 //
 
 #import "JPEngine.h"
-#import "JPCoreGraphicsHeader.h"
 
 @interface JPCGGeometry : JPExtension
 
@@ -26,5 +25,4 @@
 + (NSDictionary *)pointDictOfStruct:(CGPoint *)point;
 
 + (NSDictionary *)vectorDictOfStruct:(CGVector *)vector;
-
 @end

@@ -9,7 +9,7 @@
 #import "JPInclude.h"
 
 @implementation JPInclude
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
     context[@"include"] = ^(NSString *filePath) {
         NSArray *component = [filePath componentsSeparatedByString:@"."];

@@ -12,11 +12,10 @@
 
 @implementation JPCoreGraphics
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
-    NSArray *extensionArray = @[[JPCGTransform instance],[JPCGContext instance],
-                                            [JPCGGeometry instance],[JPCGBitmapContext instance],
-                                            [JPCGColor instance],[JPCGImage instance],[JPCGPath instance]];
+    NSArray *extensionArray = @[@"JPCGTransform", @"JPCGContext", @"JPCGGeometry", @"JPCGBitmapContext",
+                                            @"JPCGColor", @"JPCGImage", @"JPCGPath"];
     [JPEngine addExtensions:extensionArray];
 }
 

@@ -146,6 +146,15 @@ var global = this
     }
     return {args: args, cb: callback}
   }
+
+  global.defineStruct = function() {
+    var args = Array.prototype.slice.call(arguments)
+    require('JPEngine').defineStruct({
+      'name': args[0],
+      'types': args[1],
+      'keys': args.slice(2)
+    })
+  }
   
   global.console = {
     log: global._OC_log

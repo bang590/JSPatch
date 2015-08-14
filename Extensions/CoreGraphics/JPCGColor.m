@@ -7,10 +7,11 @@
 //
 
 #import "JPCGColor.h"
+#import <CoreGraphics/CoreGraphics.h>
 
 @implementation JPCGColor
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
     context[@"CGColorCreate"]                = ^id(JSValue *space,
                                     NSArray *componentsArray) {

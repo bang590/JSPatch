@@ -51,112 +51,18 @@ JPBOXING_GEN(boxWeakObj, weakObj, id)
 @end
 
 
-id formatJSToOC(JSValue *val);
-id formatOCToJS(id obj);
-
-@implementation JPExtension
-
-+ (instancetype)instance
-{
-    return [[self alloc] init];
-}
-
-- (void *)formatPointerJSToOC:(JSValue *)val
-{
-    id obj = [val toObject];
-    if ([obj isKindOfClass:[NSDictionary class]]) {
-        if (obj[@"__obj"] && [obj[@"__obj"] isKindOfClass:[JPBoxing class]]) {
-            return [(JPBoxing *)(obj[@"__obj"]) unboxPointer];
-        } else {
-            return NULL;
-        }
-    } else if (![val toBool]) {
-        return NULL;
-    } else{
-        return [((JPBoxing *)[val toObject]) unboxPointer];
-    }
-}
-
-- (id)formatPointerOCToJS:(void *)pointer
-{
-    return formatOCToJS([JPBoxing boxPointer:pointer]);
-}
-
-- (id)formatJSToOC:(JSValue *)val
-{
-    if (![val toBool]) {
-        return nil;
-    }
-    return formatJSToOC(val);
-}
-
-- (id)formatOCToJS:(id)obj
-{
-    return [[JSContext currentContext][@"_formatOCToJS"] callWithArguments:@[formatOCToJS(obj)]];
-}
-
-@end
-
 
 @implementation JPEngine
 
 static JSContext *_context;
-
-#pragma mark - APIS
-
 static NSString *_regexStr = @"\\.\\s*(\\w+)\\s*\\(";
 static NSString *_replaceStr = @".__c(\"$1\")(";
 static NSRegularExpression* _regex;
 static NSObject *_nullObj;
 static NSObject *_nilObj;
-NSMutableArray *registeredStructExtensions;
+static NSMutableDictionary *registeredStruct;
 
-+ (JSValue *)evaluateScript:(NSString *)script
-{
-    if (![JSContext class]) {
-        return nil;
-    }
-    NSAssert(_context, @"please call [JPEngine startEngine]");
-    
-    if (!script) {
-        NSAssert(NO, @"script is nil");
-        return nil;
-    }
-    
-    if (!_regex) {
-        _regex = [NSRegularExpression regularExpressionWithPattern:_regexStr options:0 error:nil];
-    }
-    NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [_regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:_replaceStr]];
-    @try {
-        return [_context evaluateScript:formatedScript];
-    }
-    @catch (NSException *exception) {
-        NSAssert(NO, @"%@", exception);
-    }
-    return nil;
-}
-
-+ (void)addExtensions:(NSArray *)extensions
-{
-    if (![JSContext class]) {
-        return;
-    }
-    NSAssert(_context, @"please call [JPEngine startEngine]");
-    
-    @synchronized (_context) {
-        if (!registeredStructExtensions) {
-            registeredStructExtensions = [[NSMutableArray alloc] init];
-        }
-        for (JPExtension *ext in extensions) {
-            if ([ext respondsToSelector:@selector(main:)]) {
-                [ext main:_context];
-            }
-            if ([ext respondsToSelector:@selector(sizeOfStructWithTypeName:)]) {
-                [registeredStructExtensions addObject:ext];
-            }
-        }
-    }
-}
+#pragma mark - APIS
 
 + (void)startEngine
 {
@@ -183,10 +89,6 @@ NSMutableArray *registeredStructExtensions;
     context[@"_OC_formatOCToJS"] = ^id(JSValue *obj) {
         return formatOCToJS([obj toObject]);
     };
-    
-    _nullObj = [[NSObject alloc] init];
-    _nilObj = [[NSObject alloc] init];
-    context[@"_OC_null"] = formatOCToJS(_nullObj);
     
     context[@"__weak"] = ^id(JSValue *jsval) {
         id obj = formatJSToOC(jsval);
@@ -265,7 +167,13 @@ NSMutableArray *registeredStructExtensions;
         NSAssert(NO, @"js exception: %@", exception);
     };
     
+    
+    _nullObj = [[NSObject alloc] init];
+    _nilObj = [[NSObject alloc] init];
+    context[@"_OC_null"] = formatOCToJS(_nullObj);
+    
     _context = context;
+    registeredStruct = [[NSMutableDictionary alloc] init];
     
     NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"JSPatch" ofType:@"js"];
     NSAssert(path, @"can't find JSPatch.js");
@@ -273,9 +181,55 @@ NSMutableArray *registeredStructExtensions;
     [_context evaluateScript:jsCore];
 }
 
++ (JSValue *)evaluateScript:(NSString *)script
+{
+    if (!script || ![JSContext class]) {
+        NSAssert(script, @"script is nil");
+        return nil;
+    }
+    
+    if (!_regex) {
+        _regex = [NSRegularExpression regularExpressionWithPattern:_regexStr options:0 error:nil];
+    }
+    NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [_regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:_replaceStr]];
+    @try {
+        return [_context evaluateScript:formatedScript];
+    }
+    @catch (NSException *exception) {
+        NSAssert(NO, @"%@", exception);
+    }
+    return nil;
+}
+
 + (JSContext *)context
 {
     return _context;
+}
+
++ (void)addExtensions:(NSArray *)extensions
+{
+    if (![JSContext class]) {
+        return;
+    }
+    NSAssert(_context, @"please call [JPEngine startEngine]");
+    @synchronized (_context) {
+        for (NSString *className in extensions) {
+            Class extCls = NSClassFromString(className);
+            [extCls main:_context];
+        }
+    }
+}
+
++ (void)defineStruct:(NSDictionary *)defineDict
+{
+    @synchronized (_context) {
+        [registeredStruct setObject:defineDict forKey:defineDict[@"name"]];
+    }
+}
+
++ (NSMutableDictionary *)registeredStruct
+{
+    return registeredStruct;
 }
 
 #pragma mark - Implements
@@ -482,7 +436,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                 break;
             }
             case '{': {
-                NSString *typeString = extractTypeName([NSString stringWithUTF8String:argumentType]);
+                NSString *typeString = extractStructName([NSString stringWithUTF8String:argumentType]);
                 #define JP_FWD_ARG_STRUCT(_type, _transFunc) \
                 if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
                     _type arg; \
@@ -496,12 +450,13 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                 JP_FWD_ARG_STRUCT(NSRange, valueWithRange)
                 
                 @synchronized (_context) {
-                    for (JPExtension *ext in registeredStructExtensions) {
-                        size_t size = [ext sizeOfStructWithTypeName:typeString];
+                    NSDictionary *structDefine = registeredStruct[typeString];
+                    if (structDefine) {
+                        size_t size = sizeOfStructTypes(structDefine[@"types"]);
                         if (size) {
                             void *ret = malloc(size);
-                            [invocation getArgument:&ret atIndex:i];
-                            NSDictionary *dict = [ext dictOfStruct:ret typeName:typeString];
+                            [invocation getArgument:ret atIndex:i];
+                            NSDictionary *dict = getDictOfStruct(ret, structDefine);
                             [argList addObject:dict];
                             free(ret);
                             break;
@@ -613,7 +568,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
         }
         
         case '{': {
-            NSString *typeString = extractTypeName([NSString stringWithUTF8String:returnType]);
+            NSString *typeString = extractStructName([NSString stringWithUTF8String:returnType]);
             #define JP_FWD_RET_STRUCT(_type, _funcSuffix) \
             if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
                 JP_FWD_RET_CALL_JS \
@@ -792,7 +747,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 break;
             }
             case '{': {
-                NSString *typeString = extractTypeName([NSString stringWithUTF8String:argumentType]);
+                NSString *typeString = extractStructName([NSString stringWithUTF8String:argumentType]);
                 JSValue *val = arguments[i-2];
                 #define JP_CALL_ARG_STRUCT(_type, _methodName) \
                 if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
@@ -805,15 +760,14 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 JP_CALL_ARG_STRUCT(CGSize, toSize)
                 JP_CALL_ARG_STRUCT(NSRange, toRange)
                 @synchronized (_context) {
-                    for (JPExtension *ext in registeredStructExtensions) {
-                        size_t size = [ext sizeOfStructWithTypeName:typeString];
-                        if (size) {
-                            void *ret = malloc(size);
-                            [ext structData:ret ofDict:valObj typeName:typeString];
-                            [invocation setArgument:ret atIndex:i];
-                            free(ret);
-                            break;
-                        }
+                    NSDictionary *structDefine = registeredStruct[typeString];
+                    if (structDefine) {
+                        size_t size = sizeOfStructTypes(structDefine[@"types"]);
+                        void *ret = malloc(size);
+                        getStructDataWithDict(ret, valObj, structDefine);
+                        [invocation setArgument:ret atIndex:i];
+                        free(ret);
+                        break;
                     }
                 }
                 
@@ -928,7 +882,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 JP_CALL_RET_CASE('B', BOOL)
 
                 case '{': {
-                    NSString *typeString = extractTypeName([NSString stringWithUTF8String:returnType]);
+                    NSString *typeString = extractStructName([NSString stringWithUTF8String:returnType]);
                     #define JP_CALL_RET_STRUCT(_type, _methodName) \
                     if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
                         _type result;   \
@@ -940,15 +894,15 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     JP_CALL_RET_STRUCT(CGSize, valueWithSize)
                     JP_CALL_RET_STRUCT(NSRange, valueWithRange)
                     @synchronized (_context) {
-                        for (JPExtension *ext in registeredStructExtensions) {
-                            size_t size = [ext sizeOfStructWithTypeName:typeString];
-                            if (size) {
-                                void *ret = malloc(size);
-                                [invocation getReturnValue:ret];
-                                NSDictionary *dict = [ext dictOfStruct:ret typeName:typeString];
-                                free(ret);
-                                return dict;
-                            }
+                        
+                        NSDictionary *structDefine = registeredStruct[typeString];
+                        if (structDefine) {
+                            size_t size = sizeOfStructTypes(structDefine[@"types"]);
+                            void *ret = malloc(size);
+                            [invocation getReturnValue:ret];
+                            NSDictionary *dict = getDictOfStruct(ret, structDefine);
+                            free(ret);
+                            return dict;
                         }
                     }
                     break;
@@ -1030,9 +984,155 @@ static id genCallbackBlock(JSValue *jsVal)
     return cb;
 }
 
-#pragma mark - Utils
+#pragma mark - Struct
 
-static NSString *extractTypeName(NSString *typeEncodeString)
+static int sizeOfStructTypes(NSString *structTypes)
+{
+    const char *types = [structTypes cStringUsingEncoding:NSUTF8StringEncoding];
+    int index = 0;
+    int size = 0;
+    while (types[index]) {
+        switch (types[index]) {
+            #define JP_STRUCT_SIZE_CASE(_typeChar, _type)   \
+            case _typeChar: \
+                size += sizeof(_type);  \
+                break;
+                
+            JP_STRUCT_SIZE_CASE('c', char)
+            JP_STRUCT_SIZE_CASE('C', unsigned char)
+            JP_STRUCT_SIZE_CASE('s', short)
+            JP_STRUCT_SIZE_CASE('S', unsigned short)
+            JP_STRUCT_SIZE_CASE('i', int)
+            JP_STRUCT_SIZE_CASE('I', unsigned int)
+            JP_STRUCT_SIZE_CASE('l', long)
+            JP_STRUCT_SIZE_CASE('L', unsigned long)
+            JP_STRUCT_SIZE_CASE('q', long long)
+            JP_STRUCT_SIZE_CASE('Q', unsigned long long)
+            JP_STRUCT_SIZE_CASE('f', float)
+            JP_STRUCT_SIZE_CASE('F', CGFloat)
+            JP_STRUCT_SIZE_CASE('N', NSInteger)
+            JP_STRUCT_SIZE_CASE('U', NSUInteger)
+            JP_STRUCT_SIZE_CASE('d', double)
+            JP_STRUCT_SIZE_CASE('B', BOOL)
+            JP_STRUCT_SIZE_CASE('*', void *)
+            JP_STRUCT_SIZE_CASE('^', void *)
+            
+            default:
+                break;
+        }
+        index ++;
+    }
+    return size;
+}
+
+static void getStructDataWithDict(void *structData, NSDictionary *dict, NSDictionary *structDefine)
+{
+    NSArray *itemKeys = structDefine[@"keys"];
+    const char *structTypes = [structDefine[@"types"] cStringUsingEncoding:NSUTF8StringEncoding];
+    int position = 0;
+    for (int i = 0; i < itemKeys.count; i ++) {
+        switch(structTypes[i]) {
+            #define JP_STRUCT_DATA_CASE(_typeStr, _type, _transMethod) \
+            case _typeStr: { \
+                int size = sizeof(_type);    \
+                _type val = [dict[itemKeys[i]] _transMethod];   \
+                memcpy(structData + position, &val, size);  \
+                position += size;    \
+                break;  \
+            }
+                
+            JP_STRUCT_DATA_CASE('c', char, charValue)
+            JP_STRUCT_DATA_CASE('C', unsigned char, unsignedCharValue)
+            JP_STRUCT_DATA_CASE('s', short, shortValue)
+            JP_STRUCT_DATA_CASE('S', unsigned short, unsignedShortValue)
+            JP_STRUCT_DATA_CASE('i', int, intValue)
+            JP_STRUCT_DATA_CASE('I', unsigned int, unsignedIntValue)
+            JP_STRUCT_DATA_CASE('l', long, longValue)
+            JP_STRUCT_DATA_CASE('L', unsigned long, unsignedLongValue)
+            JP_STRUCT_DATA_CASE('q', long long, longLongValue)
+            JP_STRUCT_DATA_CASE('Q', unsigned long long, unsignedLongLongValue)
+            JP_STRUCT_DATA_CASE('f', float, floatValue)
+            JP_STRUCT_DATA_CASE('d', double, doubleValue)
+            JP_STRUCT_DATA_CASE('B', BOOL, boolValue)
+            JP_STRUCT_DATA_CASE('N', NSInteger, integerValue)
+            JP_STRUCT_DATA_CASE('U', NSUInteger, unsignedIntegerValue)
+            
+            case 'F': {
+                int size = sizeof(CGFloat);
+                CGFloat val;
+                if (size == sizeof(double)) {
+                    val = [dict[itemKeys[i]] doubleValue];
+                } else {
+                    val = [dict[itemKeys[i]] floatValue];
+                }
+                memcpy(structData + position, &val, size);
+                position += size;
+                break;
+            }
+            
+            case '*':
+            case '^': {
+                int size = sizeof(void *);
+                void *val = [(JPBoxing *)dict[itemKeys[i]] unboxPointer];
+                memcpy(structData + position, &val, size);
+                break;
+            }
+            
+        }
+    }
+}
+
+static NSDictionary *getDictOfStruct(void *structData, NSDictionary *structDefine)
+{
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    NSArray *itemKeys = structDefine[@"keys"];
+    const char *structTypes = [structDefine[@"types"] cStringUsingEncoding:NSUTF8StringEncoding];
+    int position = 0;
+    
+    for (int i = 0; i < itemKeys.count; i ++) {
+        switch(structTypes[i]) {
+            #define JP_STRUCT_DICT_CASE(_typeName, _type)   \
+            case _typeName: { \
+                size_t size = sizeof(_type); \
+                _type *val = malloc(size);   \
+                memcpy(val, structData + position, size);   \
+                [dict setObject:@(*val) forKey:itemKeys[i]];    \
+                position += size;   \
+                break;  \
+            }
+            JP_STRUCT_DICT_CASE('c', char)
+            JP_STRUCT_DICT_CASE('C', unsigned char)
+            JP_STRUCT_DICT_CASE('s', short)
+            JP_STRUCT_DICT_CASE('S', unsigned short)
+            JP_STRUCT_DICT_CASE('i', int)
+            JP_STRUCT_DICT_CASE('I', unsigned int)
+            JP_STRUCT_DICT_CASE('l', long)
+            JP_STRUCT_DICT_CASE('L', unsigned long)
+            JP_STRUCT_DICT_CASE('q', long long)
+            JP_STRUCT_DICT_CASE('Q', unsigned long long)
+            JP_STRUCT_DICT_CASE('f', float)
+            JP_STRUCT_DICT_CASE('F', CGFloat)
+            JP_STRUCT_DICT_CASE('N', NSInteger)
+            JP_STRUCT_DICT_CASE('U', NSUInteger)
+            JP_STRUCT_DICT_CASE('d', double)
+            JP_STRUCT_DICT_CASE('B', BOOL)
+            
+            case '*':
+            case '^': {
+                size_t size = sizeof(void *);
+                void *val = malloc(size);
+                memcpy(val, structData + position, size);
+                [dict setObject:[JPBoxing boxPointer:val] forKey:itemKeys[i]];
+                position += size;
+                break;
+            }
+            
+        }
+    }
+    return dict;
+}
+
+static NSString *extractStructName(NSString *typeEncodeString)
 {
     NSArray *array = [typeEncodeString componentsSeparatedByString:@"="];
     NSString *typeString = array[0];
@@ -1048,6 +1148,8 @@ static NSString *extractTypeName(NSString *typeEncodeString)
     return [typeString substringFromIndex:firstValidIndex];
 }
 
+#pragma mark - Utils
+
 static NSString *trim(NSString *string)
 {
     return [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -1060,7 +1162,7 @@ static BOOL blockTypeIsObject(NSString *typeString)
 
 #pragma mark - Object format
 
-id formatOCToJS(id obj)
+static id formatOCToJS(id obj)
 {
     if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSDictionary class]] || [obj isKindOfClass:[NSArray class]]) {
         return _wrapObj([JPBoxing boxObj:obj]);
@@ -1071,7 +1173,7 @@ id formatOCToJS(id obj)
     return _wrapObj(obj);
 }
 
-id formatJSToOC(JSValue *jsval)
+static id formatJSToOC(JSValue *jsval)
 {
     id obj = [jsval toObject];
     if (!obj || [obj isKindOfClass:[NSNull class]]) return _nilObj;
@@ -1138,5 +1240,60 @@ static id _unboxOCObjectToJS(id obj)
         return obj;
     }
     return _wrapObj(obj);
+}
+@end
+
+
+@implementation JPExtension
+
++ (void)main:(JSContext *)context{}
+
++ (void *)formatPointerJSToOC:(JSValue *)val
+{
+    id obj = [val toObject];
+    if ([obj isKindOfClass:[NSDictionary class]]) {
+        if (obj[@"__obj"] && [obj[@"__obj"] isKindOfClass:[JPBoxing class]]) {
+            return [(JPBoxing *)(obj[@"__obj"]) unboxPointer];
+        } else {
+            return NULL;
+        }
+    } else if (![val toBool]) {
+        return NULL;
+    } else{
+        return [((JPBoxing *)[val toObject]) unboxPointer];
+    }
+}
+
++ (id)formatPointerOCToJS:(void *)pointer
+{
+    return formatOCToJS([JPBoxing boxPointer:pointer]);
+}
+
++ (id)formatJSToOC:(JSValue *)val
+{
+    if (![val toBool]) {
+        return nil;
+    }
+    return formatJSToOC(val);
+}
+
++ (id)formatOCToJS:(id)obj
+{
+    return [[JSContext currentContext][@"_formatOCToJS"] callWithArguments:@[formatOCToJS(obj)]];
+}
+
++ (int)sizeOfStructTypes:(NSString *)structTypes
+{
+    return sizeOfStructTypes(structTypes);
+}
+
++ (void)getStructDataWidthDict:(void *)structData dict:(NSDictionary *)dict structDefine:(NSDictionary *)structDefine
+{
+    return getStructDataWithDict(structData, dict, structDefine);
+}
+
++ (NSDictionary *)getDictOfStruct:(void *)structData structDefine:(NSDictionary *)structDefine
+{
+    return getDictOfStruct(structData, structDefine);
 }
 @end

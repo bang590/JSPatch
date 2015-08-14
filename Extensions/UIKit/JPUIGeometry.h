@@ -7,12 +7,7 @@
 //
 
 #import "JPEngine.h"
-#import "JPUIKitHeader.h"
 
 @interface JPUIGeometry : JPExtension
-
-+ (void)edgeInsetsStruct:(UIEdgeInsets *)edgeInsets ofDict:(NSDictionary *)dict;
-
-+ (NSDictionary *)edgeInsetOfStruct:(UIEdgeInsets *)edgeInsets;
 
 @end

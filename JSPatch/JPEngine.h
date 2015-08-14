@@ -8,31 +8,29 @@
 
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
-@class JPExtension;
-extern NSMutableArray *registeredStructExtensions;
+
 
 @interface JPEngine : NSObject
 + (void)startEngine;
-+ (void)addExtensions:(NSArray *)extensions;
 + (JSValue *)evaluateScript:(NSString *)script;
 + (JSContext *)context;
+
++ (void)addExtensions:(NSArray *)extensions;
++ (void)defineStruct:(NSDictionary *)defineDict;
++ (NSMutableDictionary *)registeredStruct;
 @end
 
 
-@protocol JPExtensionProtocol <NSObject>
-@optional
-- (void)main:(JSContext *)context;
+@interface JPExtension : NSObject
++ (void)main:(JSContext *)context;
 
-- (size_t)sizeOfStructWithTypeName:(NSString *)typeName;
-- (NSDictionary *)dictOfStruct:(void *)structData typeName:(NSString *)typeName;
-- (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeName:(NSString *)typeName;
-@end
++ (void *)formatPointerJSToOC:(JSValue *)val;
++ (id)formatPointerOCToJS:(void *)pointer;
++ (id)formatJSToOC:(JSValue *)val;
++ (id)formatOCToJS:(id)obj;
 
-@interface JPExtension : NSObject <JPExtensionProtocol>
-+ (instancetype)instance;
-- (void *)formatPointerJSToOC:(JSValue *)val;
-- (id)formatPointerOCToJS:(void *)pointer;
-- (id)formatJSToOC:(JSValue *)val;
-- (id)formatOCToJS:(id)obj;
++ (int)sizeOfStructTypes:(NSString *)structTypes;
++ (void)getStructDataWidthDict:(void *)structData dict:(NSDictionary *)dict structDefine:(NSDictionary *)structDefine;
++ (NSDictionary *)getDictOfStruct:(void *)structData structDefine:(NSDictionary *)structDefine;
 @end
 

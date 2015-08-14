@@ -7,10 +7,13 @@
 //
 
 #import "JPCGPath.h"
+#import "JPCGTransform.h"
+#import "JPCGGeometry.h"
+#import <CoreGraphics/CoreGraphics.h>
 
 @implementation JPCGPath
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
     context[@"CGPathAddArc"]                  = ^void(JSValue *path, NSDictionary *m,
                                        CGFloat x, CGFloat y, CGFloat radius, CGFloat startAngle, CGFloat endAngle,

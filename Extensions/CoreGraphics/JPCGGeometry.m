@@ -11,8 +11,14 @@
 
 @implementation JPCGGeometry
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
+    [JPEngine defineStruct:@{
+                             @"name": @"CGVector",
+                             @"types": @"ff",
+                             @"keys": @[@"dx", @"dy"]
+                             }];
+    
     context[@"CGRectContainsPoint"]  = ^BOOL(NSDictionary *rectDict, NSDictionary *pointDict) {
         CGRect rect;
         CGPoint point;
@@ -152,43 +158,4 @@
 {
     return @{@"dx": @(vector->dx), @"dy": @(vector->dy)};
 }
-
-
-- (size_t)sizeOfStructWithTypeName:(NSString *)typeName
-{
-    if ([typeName rangeOfString:@"CGVector"].location != NSNotFound) {
-        return sizeof(CGVector);
-    }
-    
-    if ([typeName rangeOfString:@"CGRect"].location != NSNotFound) {
-        return sizeof(CGRect);
-    }
-    
-    if ([typeName rangeOfString:@"CGPoint"].location != NSNotFound) {
-        return sizeof(CGPoint);
-    }
-    
-    if ([typeName rangeOfString:@"CGSize"].location != NSNotFound) {
-        return sizeof(CGSize);
-    }
-    
-    return 0;
-}
-
-- (NSDictionary *)dictOfStruct:(void *)structData typeName:(NSString *)typeName
-{
-    if ([typeName isEqualToString:@"CGVector"]) {
-        CGVector *vector = (CGVector *)structData;
-        return [JPCGGeometry vectorDictOfStruct:vector];
-    }
-    return nil;
-}
-
-- (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeName:(NSString *)typeName
-{
-    if ([typeName isEqualToString:@"CGVector"]) {
-        [JPCGGeometry vectorStruct:structData ofDict:dict];
-    }
-}
-
 @end

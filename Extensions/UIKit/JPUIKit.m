@@ -7,13 +7,12 @@
 //
 
 #import "JPUIKit.h"
-#import "JPUIKitHeader.h"
 
 @implementation JPUIKit
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
-    NSArray *extensionArray = @[[JPUIGraphics instance],[JPUIGeometry instance],[JPUIImage instance]];
+    NSArray *extensionArray = @[@"JPUIGraphics", @"JPUIGeometry", @"JPUIImage"];
     [JPEngine addExtensions:extensionArray];
 }
 

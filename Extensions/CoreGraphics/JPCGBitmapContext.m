@@ -7,10 +7,11 @@
 //
 
 #import "JPCGBitmapContext.h"
+#import <CoreGraphics/CoreGraphics.h>
 
 @implementation JPCGBitmapContext
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
     context[@"CGBitmapContextCreate"]         = ^id(JSValue *data, size_t width,
                                                     size_t height, size_t bitsPerComponent, size_t bytesPerRow,
@@ -18,7 +19,7 @@
         CGContextRef bitmapContext = CGBitmapContextCreate([self formatPointerJSToOC:data], width, height, bitsPerComponent, bytesPerRow, [self formatPointerJSToOC:space], bitmapInfo);
         return [self formatPointerOCToJS:bitmapContext];
     };
-
+    
     context[@"CGBitmapContextCreateImage"]    = ^id(JSValue *c) {
         CGImageRef image = CGBitmapContextCreateImage([self formatPointerJSToOC:c]);
         return [self formatPointerOCToJS:image];

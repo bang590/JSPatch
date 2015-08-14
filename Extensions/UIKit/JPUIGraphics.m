@@ -9,17 +9,17 @@
 
 #import "JPUIGraphics.h"
 #import "JPCGGeometry.h"
-
+#import <UIKit/UIKit.h>
 
 @implementation JPUIGraphics
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
     context[@"UIGraphicsGetCurrentContext"] = ^id() {
         CGContextRef c = UIGraphicsGetCurrentContext();
         return [self formatPointerOCToJS:c];
     };
-
+    
     context[@"UIGraphicsBeginImageContext"] = ^void(NSDictionary *sizeDict) {
         CGSize size;
         [JPCGGeometry sizeStruct:&size ofDict:sizeDict];
