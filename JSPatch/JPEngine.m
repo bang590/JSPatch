@@ -647,12 +647,10 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     SEL JPSelector = NSSelectorFromString(JPSelectorName);
     NSString *clsName = NSStringFromClass(cls);
 
-    if (!_JSOverideMethods[clsName][JPSelectorName]) {
-        _initJPOverideMethods(clsName);
-        _JSOverideMethods[clsName][JPSelectorName] = function;
-        
-        class_addMethod(cls, JPSelector, msgForwardIMP, typeDescription);
-    }
+    _initJPOverideMethods(clsName);
+    _JSOverideMethods[clsName][JPSelectorName] = function;
+    
+    class_addMethod(cls, JPSelector, msgForwardIMP, typeDescription);
 }
 
 #pragma mark -
