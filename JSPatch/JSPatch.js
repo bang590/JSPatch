@@ -50,17 +50,19 @@ var global = this
     return obj
   }
   
-  var _methodFunc = function(instance, clsName, methodName, args, isSuper) {
-    methodName = methodName.replace(/__/g, "-")
-    var selectorName = methodName.replace(/_/g, ":").replace(/-/g, "_")
-    var marchArr = selectorName.match(/:/g)
-    var numOfArgs = marchArr ? marchArr.length : 0
-    if (args.length > numOfArgs) {
-      selectorName += ":"
+  var _methodFunc = function(instance, clsName, methodName, args, isSuper, isPerformSelector) {
+    var selectorName = methodName
+    if (!isPerformSelector) {
+      methodName = methodName.replace(/__/g, "-")
+      selectorName = methodName.replace(/_/g, ":").replace(/-/g, "_")
+      var marchArr = selectorName.match(/:/g)
+      var numOfArgs = marchArr ? marchArr.length : 0
+      if (args.length > numOfArgs) {
+        selectorName += ":"
+      }
     }
     var ret = instance ? _OC_callI(instance, selectorName, args, isSuper):
                          _OC_callC(clsName, selectorName, args)
-
     return _formatOCToJS(ret)
   }
 
@@ -79,6 +81,13 @@ var global = this
     if (methodName == 'super') {
       return function() {
         return {__obj: self.__obj, __clsName: self.__clsName, __isSuper: 1}
+      }
+    }
+
+    if (methodName == 'performSelector') {
+      return function(){
+        var args = Array.prototype.slice.call(arguments)
+        return _methodFunc(self.__obj, self.__clsName, args[0], args.splice(1), self.__isSuper, true)
       }
     }
     return function(){
