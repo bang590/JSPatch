@@ -303,9 +303,6 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
         Class currCls = isInstance ? cls: objc_getMetaClass(className.UTF8String);
         NSDictionary *methodDict = [jsMethods toDictionary];
         for (NSString *jsMethodName in methodDict.allKeys) {
-            if ([jsMethodName isEqualToString:@"__c"]) {
-                continue;
-            }
             JSValue *jsMethodArr = [jsMethods valueForProperty:jsMethodName];
             int numberOfArg = [jsMethodArr[0] toInt32];
             NSString *tmpJSMethodName = [jsMethodName stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
@@ -1192,7 +1189,6 @@ static id formatJSToOC(JSValue *jsval)
         }
         NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
         for (NSString *key in [obj allKeys]) {
-            if ([key isEqualToString:@"__c"]) continue;
             [newDict setObject:formatJSToOC(jsval[key]) forKey:key];
         }
         return newDict;
@@ -1229,7 +1225,6 @@ static id _unboxOCObjectToJS(id obj)
     if ([obj isKindOfClass:[NSDictionary class]]) {
         NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
         for (NSString *key in [obj allKeys]) {
-            if ([key isEqualToString:@"__c"]) continue;
             [newDict setObject:_unboxOCObjectToJS(obj[key]) forKey:key];
         }
         return newDict;

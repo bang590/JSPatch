@@ -64,7 +64,7 @@ var global = this
     return _formatOCToJS(ret)
   }
 
-  Object.prototype.__c = function(methodName) {
+  Object.defineProperty(Object.prototype, "__c", {value: function(methodName) {
     if (this instanceof Boolean) {
       return function() {
         return false
@@ -85,7 +85,7 @@ var global = this
       var args = Array.prototype.slice.call(arguments)
       return _methodFunc(self.__obj, self.__clsName, methodName, args, self.__isSuper)
     }
-  }
+  }, configurable:false, enumerable: false})
 
   var _require = function(clsName) {
     if (!global[clsName]) {
@@ -147,12 +147,11 @@ var global = this
     return {args: args, cb: callback}
   }
 
-  global.defineStruct = function() {
-    var args = Array.prototype.slice.call(arguments)
+  global.defineStruct = function(name, type, keys) {
     require('JPEngine').defineStruct({
-      'name': args[0],
-      'types': args[1],
-      'keys': args.slice(2)
+      'name': name,
+      'types': type,
+      'keys': keys
     })
   }
   
