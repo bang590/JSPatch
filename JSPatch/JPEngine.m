@@ -8,6 +8,7 @@
 #import "JPEngine.h"
 #import <objc/runtime.h>
 #import <objc/message.h>
+#import <UIKit/UIApplication.h>
 
 @interface JPBoxing : NSObject
 @property (nonatomic) id obj;
@@ -76,8 +77,8 @@ static NSMutableDictionary *registeredStruct;
         return defineClass(classDeclaration, instanceMethods, classMethods);
     };
     
-    context[@"_OC_callI"] = ^id(JSValue *obj, NSString *selectorName, JSValue *arguments, BOOL isSuper) {
-        return callSelector(nil, selectorName, arguments, obj, isSuper);
+    context[@"_OC_callI"] = ^id(NSString *className, JSValue *obj, NSString *selectorName, JSValue *arguments, BOOL isSuper) {
+        return callSelector(className, selectorName, arguments, obj, isSuper);
     };
     context[@"_OC_callC"] = ^id(NSString *className, NSString *selectorName, JSValue *arguments) {
         return callSelector(className, selectorName, arguments, nil, NO);
@@ -170,6 +171,7 @@ static NSMutableDictionary *registeredStruct;
     
     _nullObj = [[NSObject alloc] init];
     _nilObj = [[NSObject alloc] init];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
     context[@"_OC_null"] = formatOCToJS(_nullObj);
     
     _context = context;
@@ -232,12 +234,19 @@ static NSMutableDictionary *registeredStruct;
     return registeredStruct;
 }
 
++ (void)handleMemoryWarning {
+    @synchronized(_JSMethodSignatureCache) {
+        _JSMethodSignatureCache = nil;
+    }
+}
+
 #pragma mark - Implements
 
 static NSMutableDictionary *_JSOverideMethods;
 static NSMutableDictionary *_TMPMemoryPool;
 static NSRegularExpression *countArgRegex;
 static NSMutableDictionary *_propKeys;
+static NSMutableDictionary *_JSMethodSignatureCache;
 
 static const void *propKey(NSString *propName) {
     if (!_propKeys) _propKeys = [[NSMutableDictionary alloc] init];
@@ -666,7 +675,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         }
     }
 
-    Class cls = className ? NSClassFromString(className) : [instance class];
+    Class cls = instance ? [instance class] : NSClassFromString(className);
     SEL selector = NSSelectorFromString(selectorName);
     
     if (isSuper) {
@@ -693,8 +702,20 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     
     NSInvocation *invocation;
     NSMethodSignature *methodSignature;
+    if (!_JSMethodSignatureCache) {
+        _JSMethodSignatureCache = [[NSMutableDictionary alloc]init];
+    }
     if (instance) {
-        methodSignature = [cls instanceMethodSignatureForSelector:selector];
+        @synchronized(_JSMethodSignatureCache) {
+            if (!_JSMethodSignatureCache[className]) {
+                _JSMethodSignatureCache[className] = [[NSMutableDictionary alloc]init];
+            }
+            methodSignature = _JSMethodSignatureCache[className][selectorName];
+            if (!methodSignature) {
+                methodSignature = [cls instanceMethodSignatureForSelector:selector];
+                _JSMethodSignatureCache[className][selectorName] = methodSignature;
+            }
+        }
         NSCAssert(methodSignature, @"unrecognized selector %@ for instance %@", selectorName, instance);
         invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
         [invocation setTarget:instance];
