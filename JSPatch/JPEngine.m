@@ -172,6 +172,7 @@ static NSMutableDictionary *registeredStruct;
     _nullObj = [[NSObject alloc] init];
     _nilObj = [[NSObject alloc] init];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+    _JSMethodSignatureLock = [[NSLock alloc]init];
     context[@"_OC_null"] = formatOCToJS(_nullObj);
     
     _context = context;
@@ -247,6 +248,7 @@ static NSMutableDictionary *_TMPMemoryPool;
 static NSRegularExpression *countArgRegex;
 static NSMutableDictionary *_propKeys;
 static NSMutableDictionary *_JSMethodSignatureCache;
+static NSLock              *_JSMethodSignatureLock;
 
 static const void *propKey(NSString *propName) {
     if (!_propKeys) _propKeys = [[NSMutableDictionary alloc] init];
@@ -706,16 +708,16 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         _JSMethodSignatureCache = [[NSMutableDictionary alloc]init];
     }
     if (instance) {
-        @synchronized(_JSMethodSignatureCache) {
-            if (!_JSMethodSignatureCache[className]) {
-                _JSMethodSignatureCache[className] = [[NSMutableDictionary alloc]init];
-            }
-            methodSignature = _JSMethodSignatureCache[className][selectorName];
-            if (!methodSignature) {
-                methodSignature = [cls instanceMethodSignatureForSelector:selector];
-                _JSMethodSignatureCache[className][selectorName] = methodSignature;
-            }
+        [_JSMethodSignatureLock lock];
+        if (!_JSMethodSignatureCache[className]) {
+            _JSMethodSignatureCache[className] = [[NSMutableDictionary alloc]init];
         }
+        methodSignature = _JSMethodSignatureCache[className][selectorName];
+        if (!methodSignature) {
+            methodSignature = [cls instanceMethodSignatureForSelector:selector];
+            _JSMethodSignatureCache[className][selectorName] = methodSignature;
+        }
+        [_JSMethodSignatureLock unlock];
         NSCAssert(methodSignature, @"unrecognized selector %@ for instance %@", selectorName, instance);
         invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
         [invocation setTarget:instance];
