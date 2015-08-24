@@ -362,20 +362,17 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
     return @{@"cls": className};
 }
 
-static JSValue* getJSFunctionInObjectHierachy(id slf, SEL selector)
+static JSValue* getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
 {
-    NSString *selectorName = NSStringFromSelector(selector);
-    Class cls = [slf class];
-    NSString *clsName = NSStringFromClass(cls);
-    JSValue *func = _JSOverideMethods[clsName][selectorName];
+    Class cls = object_getClass(slf);
+    JSValue *func = _JSOverideMethods[cls][selectorName];
     while (!func) {
         cls = class_getSuperclass(cls);
         if (!cls) {
             NSCAssert(NO, @"warning can not find selector %@", selectorName);
             return nil;
         }
-        clsName = NSStringFromClass(cls);
-        func = _JSOverideMethods[clsName][selectorName];
+        func = _JSOverideMethods[cls][selectorName];
     }
     return func;
 }
@@ -506,7 +503,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
 
     switch (returnType[0]) {
         #define JP_FWD_RET_CALL_JS \
-            JSValue *fun = getJSFunctionInObjectHierachy(slf, JPSelector); \
+            JSValue *fun = getJSFunctionInObjectHierachy(slf, JPSelectorName); \
             JSValue *jsval; \
             @synchronized(_context) {   \
                 jsval = [fun callWithArguments:params];\
@@ -596,12 +593,12 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
     }
 }
 
-static void _initJPOverideMethods(NSString *clsName) {
+static void _initJPOverideMethods(Class cls) {
     if (!_JSOverideMethods) {
         _JSOverideMethods = [[NSMutableDictionary alloc] init];
     }
-    if (!_JSOverideMethods[clsName]) {
-        _JSOverideMethods[clsName] = [[NSMutableDictionary alloc] init];
+    if (!_JSOverideMethods[cls]) {
+        _JSOverideMethods[(id<NSCopying>)cls] = [[NSMutableDictionary alloc] init];
     }
 }
 
@@ -655,8 +652,8 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     SEL JPSelector = NSSelectorFromString(JPSelectorName);
     NSString *clsName = NSStringFromClass(cls);
 
-    _initJPOverideMethods(clsName);
-    _JSOverideMethods[clsName][JPSelectorName] = function;
+    _initJPOverideMethods(cls);
+    _JSOverideMethods[cls][JPSelectorName] = function;
     
     class_addMethod(cls, JPSelector, msgForwardIMP, typeDescription);
 }
@@ -691,7 +688,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         class_addMethod(cls, superSelector, superIMP, method_getTypeEncoding(superMethod));
         
         NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
-        JSValue *overideFunction = _JSOverideMethods[NSStringFromClass(superCls)][JPSelectorName];
+        JSValue *overideFunction = _JSOverideMethods[superCls][JPSelectorName];
         if (overideFunction) {
             overrideMethod(cls, superSelectorName, overideFunction, NO, NULL);
         }
