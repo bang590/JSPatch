@@ -164,8 +164,10 @@ var global = this
     })
   }
   
-  global.console = {
-    log: global._OC_log
+  var jsLogger = global.console.log
+  global.console.log = function(){
+    global._OC_log.apply(global, arguments)
+    jsLogger.apply(global.console, arguments)
   }
   
   global.YES = 1
