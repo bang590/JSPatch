@@ -189,6 +189,13 @@ static NSMutableDictionary *registeredStruct;
     return [self evaluateScript:script withSourceURL:[NSURL URLWithString:[NSString stringWithFormat:@"%d.js", rand()]]];
 }
 
++ (JSValue *)evaluateScriptWithPath:(NSString *)filePath {
+    NSArray *components = [filePath componentsSeparatedByString:@"/"];
+    NSString *fileName  = [components lastObject];
+    NSString *script    = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
+    return [self evaluateScript:script withSourceURL:[NSURL URLWithString:fileName]];
+}
+
 + (JSValue *)evaluateScript:(NSString *)script withSourceURL:(NSURL *)resourceURL
 {
     if (!script || ![JSContext class]) {
@@ -655,7 +662,6 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
     SEL JPSelector = NSSelectorFromString(JPSelectorName);
-    NSString *clsName = NSStringFromClass(cls);
 
     _initJPOverideMethods(cls);
     _JSOverideMethods[cls][JPSelectorName] = function;
