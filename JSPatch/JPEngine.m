@@ -186,13 +186,14 @@ static NSMutableDictionary *registeredStruct;
 
 + (JSValue *)evaluateScript:(NSString *)script
 {
-    return [self evaluateScript:script withSourceURL:[NSURL URLWithString:[NSString stringWithFormat:@"%d.js", rand()]]];
+    return [self evaluateScript:script withSourceURL:[NSURL URLWithString:@"main.js"]];
 }
 
-+ (JSValue *)evaluateScriptWithPath:(NSString *)filePath {
++ (JSValue *)evaluateScriptWithPath:(NSString *)filePath
+{
     NSArray *components = [filePath componentsSeparatedByString:@"/"];
-    NSString *fileName  = [components lastObject];
-    NSString *script    = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
+    NSString *fileName = [components lastObject];
+    NSString *script = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
     return [self evaluateScript:script withSourceURL:[NSURL URLWithString:fileName]];
 }
 
