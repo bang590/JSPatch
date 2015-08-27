@@ -7,7 +7,6 @@
 //
 
 #import "JPEngine.h"
-#import "JPUIKitHeader.h"
 
 @interface JPUIImage : JPExtension
 

@@ -8,12 +8,18 @@
 
 #import "JPUIGeometry.h"
 #import "JPCGGeometry.h"
+#import <UIKit/UIKit.h>
 
 
 @implementation JPUIGeometry
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
+    [JPEngine defineStruct:@{@"name": @"UIEdgeInsets",
+                             @"types": @"dddd",
+                             @"keys": @[@"bottom", @"left", @"right", @"top"]
+                             }];
+    
     context[@"CGRectFromString"]   = ^NSDictionary *(NSString *string) {
         CGRect rect =  CGRectFromString(string);
         return [JPCGGeometry rectDictOfStruct:&rect];
@@ -33,44 +39,6 @@
         CGVector vector =  CGVectorFromString(string);
         return [JPCGGeometry vectorDictOfStruct:&vector];
     };
-}
-
-+ (void)edgeInsetsStruct:(UIEdgeInsets *)edgeInsets ofDict:(NSDictionary *)dict
-{
-    edgeInsets->bottom = [dict[@"bottom"] doubleValue];
-    edgeInsets->left   = [dict[@"left"] doubleValue];
-    edgeInsets->right  = [dict[@"right"] doubleValue];
-    edgeInsets->top    = [dict[@"top"] doubleValue];
-}
-
-+ (NSDictionary *)edgeInsetOfStruct:(UIEdgeInsets *)edgeInsets
-{
-    return @{@"bottom": @(edgeInsets->bottom), @"left": @(edgeInsets->left), @"right": @(edgeInsets->right), @"top": @(edgeInsets->top)};
-}
-
-
-- (size_t)sizeOfStructWithTypeName:(NSString *)typeName
-{
-    if ([typeName isEqualToString:@"UIEdgeInsets"]) {
-        return sizeof(UIEdgeInsets);
-    }
-    return 0;
-}
-
-- (NSDictionary *)dictOfStruct:(void *)structData typeName:(NSString *)typeName
-{
-    if ([typeName isEqualToString:@"UIEdgeInsets"]) {
-        UIEdgeInsets *edgeInsets = (UIEdgeInsets *)structData;
-        return [JPUIGeometry edgeInsetOfStruct:edgeInsets];
-    }
-    return nil;
-}
-
-- (void)structData:(void *)structData ofDict:(NSDictionary *)dict typeName:(NSString *)typeName
-{
-    if ([typeName isEqualToString:@"UIEdgeInsets"]) {
-        [JPUIGeometry edgeInsetsStruct:structData ofDict:dict];
-    }
 }
 
 @end

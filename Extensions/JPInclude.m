@@ -9,14 +9,13 @@
 #import "JPInclude.h"
 
 @implementation JPInclude
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
     context[@"include"] = ^(NSString *filePath) {
         NSArray *component = [filePath componentsSeparatedByString:@"."];
         if (component.count > 1) {
             NSString *testPath = [[NSBundle bundleForClass:[self class]] pathForResource:component[0] ofType:component[1]];
-            NSString *script = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:testPath] encoding:NSUTF8StringEncoding];
-            [JPEngine evaluateScript:script];
+            [JPEngine evaluateScriptWithPath:testPath];
         }
     };
 }

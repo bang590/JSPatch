@@ -60,7 +60,7 @@ defineClass('AppDelegate', {
 
 ```ruby
 # Your Podfile
-platform :ios, '7.0'
+platform :ios, '6.0'
 pod 'JSPatch'
 ```
 
@@ -217,7 +217,7 @@ There are some extensions provide support for custom struct type, C methods and 
     [JPEngine startEngine];
 
     //add extensions after startEngine
-    [JPEngine addExtensions:@[[JPInclude instance], [JPCGTransform instance]]];
+    [JPEngine addExtensions:@[@"JPInclude", @"JPCGTransform"]];
 
     NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"js"];
     NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8StringEncoding error:nil];
@@ -238,10 +238,7 @@ view.setTransform({a:1, b:0, c:0, d:1, tx:0, ty:100})
 Extensions can be added dynamiclly in JS, which is recommended:
 
 ```js
-require('JPEngine').addExtensions([
-  require('JPInclude').instance(), 
-  require('JPCGTransform').instance(),
-])
+require('JPEngine').addExtensions(['JPInclude', 'JPCGTransform'])
 
 // `include()` and `CGAffineTransform` is avaliable now.
 ```
@@ -250,6 +247,6 @@ You can create your own extension to support custom struct type and C methods in
 
 
 ## Enviroment
-- iOS 7+
+- iOS 7+, forward compatibility with iOS 6
 - JavaScriptCore.framework
 - Support armv7/armv7s/arm64

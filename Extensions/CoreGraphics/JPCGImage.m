@@ -7,10 +7,12 @@
 //
 
 #import "JPCGImage.h"
+#import <CoreGraphics/CoreGraphics.h>
+#import "JPCGGeometry.h"
 
 @implementation JPCGImage
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
     context[@"CGImageCreate"]                = ^id(size_t width, size_t height,
                                                    size_t bitsPerComponent, size_t bitsPerPixel, size_t bytesPerRow,
@@ -78,9 +80,6 @@
         CGImageRelease([self formatPointerJSToOC:image]);
     };
 }
-
-
-
 
 
 @end

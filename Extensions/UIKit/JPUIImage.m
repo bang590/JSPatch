@@ -7,11 +7,11 @@
 //
 
 #import "JPUIImage.h"
-
+#import <UIKit/UIKit.h>
 
 @implementation JPUIImage
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
     context[@"UIImageJPEGRepresentation"] = ^id(JSValue *jsVal, CGFloat compressionQuality) {
         UIImage *image = [self formatJSToOC:jsVal];

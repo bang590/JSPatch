@@ -11,10 +11,9 @@
 #import "JPCGGeometry.h"
 #import <UIKit/UIKit.h>
 
-
 @implementation JPCGContext
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
     context[@"CGContextSetLineCap"]            = ^void(JSValue *c, int cap) {
         CGContextSetLineCap([self formatPointerJSToOC:c], cap);

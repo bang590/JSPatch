@@ -13,8 +13,8 @@
 #import "JPInheritanceTestObjects.h"
 #import "JPMultithreadTestObject.h"
 #import "JPInclude.h"
-#import "JPCoreGraphics.h"
-#import "JPUIKit.h"
+//#import "JPCoreGraphics.h"
+//#import "JPUIKit.h"
 #import "JPMemory.h"
 @interface JSPatchTests : XCTestCase
 
@@ -31,7 +31,7 @@
 - (void)setUp {
     [super setUp];
     [JPEngine startEngine];
-    [JPEngine addExtensions:@[[JPInclude instance], [JPCoreGraphics instance],[JPUIKit instance],[JPMemory instance]]];
+    [JPEngine addExtensions:@[@"JPInclude", @"JPMemory", @"JPStructPointer", @"JPCoreGraphics", @"JPUIKit"]];
 }
 
 - (void)tearDown {

@@ -10,7 +10,7 @@
 
 @implementation JPMemory
 
-- (void)main:(JSContext *)context
++ (void)main:(JSContext *)context
 {
     context[@"memset"] = ^void(JSValue *jsVal, int ch,size_t n) {
         memset([self formatPointerJSToOC:jsVal], ch, n);
@@ -71,67 +71,15 @@
         if ([typeName isEqualToString:@"NSRange"]) return sizeof(NSRange);
         
         @synchronized (weakCtx) {
-            for (JPExtension *ext in registeredStructExtensions) {
-                size_t size = [ext sizeOfStructWithTypeName:typeName];
-                if (size) {
-                    return size;
-                }
+            NSDictionary *structDefine = [JPEngine registeredStruct][typeName];
+            if (structDefine) {
+                return [self sizeOfStructTypes:structDefine[@"types"]];
             }
         }
         return 0;
     };
-    
-    context[@"newStruct"] = ^id(NSString *structName, JSValue *structDict) {
-        #define JP_NEW_STRUCT(_type, _method) \
-            if ([structName isEqualToString:@#_type]) {   \
-                void *ret = malloc(sizeof(_type)); \
-                _type rect = [structDict _method];  \
-                ret = memcpy(ret, &rect, sizeof(_type));   \
-                return [self formatPointerOCToJS:ret];  \
-            }
-        JP_NEW_STRUCT(CGRect, toRect)
-        JP_NEW_STRUCT(CGPoint, toPoint)
-        JP_NEW_STRUCT(CGSize, toSize)
-        JP_NEW_STRUCT(NSRange, toRange)
-        
-        @synchronized (weakCtx) {
-            for (JPExtension *ext in registeredStructExtensions) {
-                size_t size = [ext sizeOfStructWithTypeName:structName];
-                if (size) {
-                    void *ret = malloc(size);
-                    [ext structData:ret ofDict:[structDict toObject] typeName:structName];
-                    return [self formatPointerOCToJS:ret];
-                }
-            }
-        }
-        return nil;
-    };
-    
-    context[@"pvalStruct"] = ^id(NSString *structName, JSValue *structPointer) {
-        if ([structName isEqualToString:@"CGRect"]) {
-            CGRect *rect = [self formatPointerJSToOC:structPointer];
-            return @{@"x": @(rect->origin.x), @"y": @(rect->origin.y), @"width": @(rect->size.width), @"height": @(rect->size.height)};
-        }
-        if ([structName isEqualToString:@"CGPoint"]) {
-            CGPoint *point = [self formatPointerJSToOC:structPointer];
-            return @{@"x": @(point->x), @"y": @(point->y)};
-        }
-        if ([structName isEqualToString:@"CGSize"]) {
-            CGSize *size = [self formatPointerJSToOC:structPointer];
-            return @{@"width": @(size->width), @"height": @(size->height)};
-        }
-        if ([structName isEqualToString:@"NSRange"]) {
-            NSRange *range = [self formatPointerJSToOC:structPointer];
-            return @{@"location": @(range->location), @"length": @(range->length)};
-        }
-        @synchronized (weakCtx) {
-            for (JPExtension *ext in registeredStructExtensions) {
-                NSDictionary *dict = [ext dictOfStruct:[self formatPointerJSToOC:structPointer] typeName:structName];
-                if (dict) return dict;
-            }
-        }
-        return nil;
-    };
 }
+
+
 
 @end

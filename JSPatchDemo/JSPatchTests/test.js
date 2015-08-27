@@ -304,7 +304,6 @@ var global = this;
   var translated = CGAffineTransformTranslate(transform, 10, 10);
   obj.setTransformTranslatePassed(translated.tx == 110 && translated.ty == 110)
  
-  require('JPEngine').addExtensions([require('JPMemory').instance()])
   obj.funcTestPointer(pointer)
   free(pointer)
  
