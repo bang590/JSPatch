@@ -164,8 +164,7 @@ var global = this
     })
   }
   
-  var console = global.console;
-  if (console) {
+  if (global.console) {
     var jsLogger = console.log;
     global.console.log = function() {
       global._OC_log.apply(global, arguments);
