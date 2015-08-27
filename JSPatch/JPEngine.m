@@ -182,7 +182,7 @@ static NSMutableDictionary *registeredStruct;
     NSAssert(path, @"can't find JSPatch.js");
     NSString *jsCore = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:path] encoding:NSUTF8StringEncoding];
     
-    if ([UIDevice currentDevice].systemVersion.floatValue >= 8) {
+    if ([_context respondsToSelector:@selector(evaluateScript:withSourceURL:)]) {
         [_context evaluateScript:jsCore withSourceURL:[NSURL URLWithString:@"JSPatch.js"]];
     } else {
         [_context evaluateScript:jsCore];
@@ -214,7 +214,7 @@ static NSMutableDictionary *registeredStruct;
     }
     NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [_regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:_replaceStr]];
     @try {
-        if ([UIDevice currentDevice].systemVersion.floatValue >= 8) {
+        if ([_context respondsToSelector:@selector(evaluateScript:withSourceURL:)]) {
             return [_context evaluateScript:formatedScript withSourceURL:resourceURL];
         } else {
             return [_context evaluateScript:formatedScript];
