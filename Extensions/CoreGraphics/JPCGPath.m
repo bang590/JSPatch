@@ -80,7 +80,9 @@
 
     context[@"CGPathCreateMutable"]           = ^id() {
         CGMutablePathRef path = CGPathCreateMutable();
-        return [self formatPointerOCToJS:path];
+        id ret = [self formatPointerOCToJS:path];
+        CFRelease(path);
+        return ret;
     };
 
     context[@"CGPathMoveToPoint"]             = ^void(JSValue *path,
@@ -110,7 +112,9 @@
         [JPCGGeometry rectStruct:&rect ofDict:rectDict];
         [JPCGTransform transStruct:&transform ofDict:transformDict];
         CGPathRef path = CGPathCreateWithEllipseInRect(rect, &transform);
-        return [self formatPointerOCToJS:(void *)path];
+        id ret = [self formatPointerOCToJS:(void *)path];
+        CFRelease(path);
+        return ret;
     };
 
     context[@"CGPathGetPathBoundingBox"]      = ^NSDictionary *(JSValue *path) {

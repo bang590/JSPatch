@@ -17,12 +17,16 @@
                                                     size_t height, size_t bitsPerComponent, size_t bytesPerRow,
                                                     JSValue *space, uint32_t bitmapInfo) {
         CGContextRef bitmapContext = CGBitmapContextCreate([self formatPointerJSToOC:data], width, height, bitsPerComponent, bytesPerRow, [self formatPointerJSToOC:space], bitmapInfo);
-        return [self formatPointerOCToJS:bitmapContext];
+        id ret = [self formatPointerOCToJS:bitmapContext];
+        CFRelease(bitmapContext);
+        return ret;
     };
     
     context[@"CGBitmapContextCreateImage"]    = ^id(JSValue *c) {
         CGImageRef image = CGBitmapContextCreateImage([self formatPointerJSToOC:c]);
-        return [self formatPointerOCToJS:image];
+        id ret = [self formatPointerOCToJS:image];
+        CFRelease(image);
+        return ret;
     };
     
     context[@"CGBitmapContextGetBytesPerRow"] = ^size_t(JSValue *c) {
