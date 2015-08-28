@@ -1134,6 +1134,7 @@ static NSDictionary *getDictOfStruct(void *structData, NSDictionary *structDefin
                 memcpy(val, structData + position, size);   \
                 [dict setObject:@(*val) forKey:itemKeys[i]];    \
                 position += size;   \
+                free(val);\
                 break;  \
             }
             JP_STRUCT_DICT_CASE('c', char)

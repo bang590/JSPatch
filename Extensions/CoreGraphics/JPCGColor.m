@@ -21,7 +21,9 @@
         }
         CGColorRef color =  CGColorCreate([self formatPointerJSToOC:space], components);
         free(components);
-        return [self formatPointerOCToJS:color];
+        id ret = [self formatPointerOCToJS:color];
+        CFRelease(color);
+        return ret;
     };
     
     context[@"CGColorEqualToColor"]          = ^BOOL(JSValue *color1, JSValue *color2) {
@@ -52,19 +54,31 @@
     };
     
     context[@"CGColorSpaceCreateDeviceGray"] = ^id() {
-        return [self formatPointerOCToJS:CGColorSpaceCreateDeviceGray()];
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
+        id ret = [self formatPointerOCToJS:colorSpace];
+        CFRelease(colorSpace);
+        return ret;
     };
     
     context[@"CGColorSpaceCreateDeviceRGB"]  = ^id() {
-        return [self formatPointerOCToJS:CGColorSpaceCreateDeviceRGB()];
+        CGColorSpaceRef colorSpace = colorSpace = CGColorSpaceCreateDeviceRGB();
+        id ret = [self formatPointerOCToJS:colorSpace];
+        CFRelease(colorSpace);
+        return ret;
     };
     
     context[@"CGColorSpaceCreateDeviceCMYK"] = ^id() {
-        return [self formatPointerOCToJS:CGColorSpaceCreateDeviceCMYK()];
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceCMYK();
+        id ret = [self formatPointerOCToJS:colorSpace];
+        CFRelease(colorSpace);
+        return ret;
     };
     
     context[@"CGColorSpaceCreatePattern"]    = ^id(JSValue *baseSpace) {
-        return [self formatPointerOCToJS:CGColorSpaceCreatePattern([self formatPointerJSToOC:baseSpace])];
+        CGColorSpaceRef colorSpace = CGColorSpaceCreatePattern([self formatPointerJSToOC:baseSpace]);
+        id ret = [self formatPointerOCToJS:colorSpace];
+        CFRelease(colorSpace);
+        return ret;
     };
     
     context[@"CGColorSpaceGetModel"]         = ^NSInteger(JSValue *space) {
