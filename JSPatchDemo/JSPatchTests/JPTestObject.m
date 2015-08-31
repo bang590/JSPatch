@@ -515,6 +515,37 @@ typedef NSString * (^JSBlock)(NSError *);
     self.funcWithTransformPointerPassed = transform->a == 100;
     transform->tx = 42;
 }
+
+#pragma mark performance
+static NSObject *testPerformanceObj;
+- (void)initTestPerformanceObj {
+    if (!testPerformanceObj) testPerformanceObj = [[NSObject alloc] init];
+}
+- (void)emptyMethod {
+    
+}
+
+- (void)methodWithParamObject:(NSObject *)obj {
+    
+}
+- (NSObject *)methodReturnObject {
+    return testPerformanceObj;
+}
+
+- (void)emptyMethodToOverride {
+    
+}
+- (void)methodWithParamObjectToOverride:(NSObject *)obj {
+    
+}
+- (NSObject *)methodReturnObjectToOverride {
+    return nil;
+}
+
+- (void)jsCallEmptyMethod {}
+- (void)jsCallMethodWithParamObject{}
+- (void)jsCallMethodReturnObject{}
+
 @end
 
 

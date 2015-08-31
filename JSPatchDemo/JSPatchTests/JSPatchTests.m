@@ -40,9 +40,7 @@
 
 - (void)testEngine {
     
-    NSString *testPath = [[NSBundle bundleForClass:[self class]] pathForResource:@"test" ofType:@"js"];
-    NSString *jsTest = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:testPath] encoding:NSUTF8StringEncoding];
-    [JPEngine evaluateScript:jsTest];
+    [self loadPatch:@"test"];
     
     JSValue *objValue = [JPEngine context][@"ocObj"];
     JPTestObject *obj = [objValue toObjectOfClass:[JPTestObject class]];
@@ -234,6 +232,8 @@
     XCTAssertEqualObjects(@"JP_03ObjC_m2",[t3objC m2]);
 }
 
+
+
 #pragma mark - multithreadTest
 
 dispatch_semaphore_t sem;
@@ -276,7 +276,6 @@ void thread(void* context);
     XCTAssertTrue(success,@"concurrent queue test failed");
 }
 
-@end
 
 void thread(void* context)
 {
@@ -292,10 +291,72 @@ void thread(void* context)
         dispatch_semaphore_signal(sem);
         return;
     }
-
+    
     if (finishcount == LOOPCOUNT) {
         finishcount = 0;
         success = true;
         dispatch_semaphore_signal(sem);
     }
 }
+
+
+
+
+#pragma mark - performance
+
+- (void)testJSCallEmptyMethodPerformance
+{
+    [self loadPatch:@"test"];
+    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self measureBlock:^{
+        [obj jsCallEmptyMethod];
+    }];
+}
+
+- (void)testJSCallMethodWithParamObjectPerformance
+{
+    [self loadPatch:@"test"];
+    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self measureBlock:^{
+        [obj jsCallMethodWithParamObject];
+    }];
+}
+- (void)testJSCallMethodReturnObjectPerformance
+{
+    [self loadPatch:@"test"];
+    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self measureBlock:^{
+        [obj jsCallMethodReturnObject];
+    }];
+}
+- (void)testOCCallJSEmptyMethodPerformance
+{
+    [self loadPatch:@"test"];
+    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self measureBlock:^{
+        for (int i = 0; i < 10000; i ++) {
+            [obj emptyMethodToOverride];
+        }
+    }];
+}
+- (void)testOCCallJSMethodWithParamObjectPerformance
+{
+    [self loadPatch:@"test"];
+    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self measureBlock:^{
+        for (int i = 0; i < 10000; i ++) {
+            [obj methodWithParamObjectToOverride:obj];
+        }
+    }];
+}
+- (void)testOCCallJSMethodReturnObjectPerformance
+{
+    [self loadPatch:@"test"];
+    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self measureBlock:^{
+        for (int i = 0; i < 10000; i ++) {
+            [obj methodReturnObjectToOverride];
+        }
+    }];
+}
+@end
