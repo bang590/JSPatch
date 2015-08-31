@@ -61,7 +61,7 @@ var global = this
         selectorName += ":"
       }
     }
-    var ret = instance ? _OC_callI(clsName, instance, selectorName, args, isSuper):
+    var ret = instance ? _OC_callI(instance, selectorName, args, isSuper):
                          _OC_callC(clsName, selectorName, args)
     return _formatOCToJS(ret)
   }

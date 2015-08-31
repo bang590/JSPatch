@@ -77,8 +77,8 @@ static NSMutableDictionary *registeredStruct;
         return defineClass(classDeclaration, instanceMethods, classMethods);
     };
     
-    context[@"_OC_callI"] = ^id(NSString *className, JSValue *obj, NSString *selectorName, JSValue *arguments, BOOL isSuper) {
-        return callSelector(className, selectorName, arguments, obj, isSuper);
+    context[@"_OC_callI"] = ^id(JSValue *obj, NSString *selectorName, JSValue *arguments, BOOL isSuper) {
+        return callSelector(nil, selectorName, arguments, obj, isSuper);
     };
     context[@"_OC_callC"] = ^id(NSString *className, NSString *selectorName, JSValue *arguments) {
         return callSelector(className, selectorName, arguments, nil, NO);
@@ -168,15 +168,17 @@ static NSMutableDictionary *registeredStruct;
         NSAssert(NO, @"js exception: %@", exception);
     };
     
-    
     _nullObj = [[NSObject alloc] init];
-    _nilObj = [[NSObject alloc] init];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
-    _JSMethodSignatureLock = [[NSLock alloc]init];
     context[@"_OC_null"] = formatOCToJS(_nullObj);
     
     _context = context;
+    
+    _nilObj = [[NSObject alloc] init];
+    _JSMethodSignatureLock = [[NSLock alloc] init];
+    _JSMethodForwardCallLock = [[NSRecursiveLock alloc] init];
     registeredStruct = [[NSMutableDictionary alloc] init];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
     
     NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"JSPatch" ofType:@"js"];
     NSAssert(path, @"can't find JSPatch.js");
@@ -237,11 +239,9 @@ static NSMutableDictionary *registeredStruct;
         return;
     }
     NSAssert(_context, @"please call [JPEngine startEngine]");
-    @synchronized (_context) {
-        for (NSString *className in extensions) {
-            Class extCls = NSClassFromString(className);
-            [extCls main:_context];
-        }
+    for (NSString *className in extensions) {
+        Class extCls = NSClassFromString(className);
+        [extCls main:_context];
     }
 }
 
@@ -258,9 +258,9 @@ static NSMutableDictionary *registeredStruct;
 }
 
 + (void)handleMemoryWarning {
-    @synchronized(_JSMethodSignatureCache) {
-        _JSMethodSignatureCache = nil;
-    }
+    [_JSMethodSignatureLock lock];
+    _JSMethodSignatureCache = nil;
+    [_JSMethodSignatureLock unlock];
 }
 
 #pragma mark - Implements
@@ -271,6 +271,7 @@ static NSRegularExpression *countArgRegex;
 static NSMutableDictionary *_propKeys;
 static NSMutableDictionary *_JSMethodSignatureCache;
 static NSLock              *_JSMethodSignatureLock;
+static NSRecursiveLock     *_JSMethodForwardCallLock;
 
 static const void *propKey(NSString *propName) {
     if (!_propKeys) _propKeys = [[NSMutableDictionary alloc] init];
@@ -527,9 +528,9 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
         #define JP_FWD_RET_CALL_JS \
             JSValue *fun = getJSFunctionInObjectHierachy(slf, JPSelectorName); \
             JSValue *jsval; \
-            @synchronized(_context) {   \
-                jsval = [fun callWithArguments:params];\
-            }
+            [_JSMethodForwardCallLock lock];   \
+            jsval = [fun callWithArguments:params]; \
+            [_JSMethodForwardCallLock unlock];
 
         #define JP_FWD_RET_CASE_RET(_typeChar, _type, _retCode)   \
             case _typeChar : { \
@@ -727,13 +728,13 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     }
     if (instance) {
         [_JSMethodSignatureLock lock];
-        if (!_JSMethodSignatureCache[className]) {
-            _JSMethodSignatureCache[className] = [[NSMutableDictionary alloc]init];
+        if (!_JSMethodSignatureCache[cls]) {
+            _JSMethodSignatureCache[(id<NSCopying>)cls] = [[NSMutableDictionary alloc]init];
         }
-        methodSignature = _JSMethodSignatureCache[className][selectorName];
+        methodSignature = _JSMethodSignatureCache[cls][selectorName];
         if (!methodSignature) {
             methodSignature = [cls instanceMethodSignatureForSelector:selector];
-            _JSMethodSignatureCache[className][selectorName] = methodSignature;
+            _JSMethodSignatureCache[cls][selectorName] = methodSignature;
         }
         [_JSMethodSignatureLock unlock];
         NSCAssert(methodSignature, @"unrecognized selector %@ for instance %@", selectorName, instance);
@@ -1251,7 +1252,7 @@ static NSDictionary *_wrapObj(id obj)
     if (!obj || obj == _nilObj) {
         return @{@"__isNil": @(YES)};
     }
-    return @{@"__clsName": NSStringFromClass([obj class]), @"__obj": obj};
+    return @{@"__obj": obj};
 }
 
 static id _unboxOCObjectToJS(id obj)
