@@ -469,7 +469,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                 if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
                     _type arg; \
                     [invocation getArgument:&arg atIndex:i];    \
-                    [argList addObject:[JSValue _transFunc:arg inContext:[JSContext currentContext]]];  \
+                    [argList addObject:[JSValue _transFunc:arg inContext:_context]];  \
                     break; \
                 }
                 JP_FWD_ARG_STRUCT(CGRect, valueWithRect)
@@ -924,7 +924,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
                         _type result;   \
                         [invocation getReturnValue:&result];    \
-                        return [JSValue _methodName:result inContext:[JSContext currentContext]];    \
+                        return [JSValue _methodName:result inContext:_context];    \
                     }
                     JP_CALL_RET_STRUCT(CGRect, valueWithRect)
                     JP_CALL_RET_STRUCT(CGPoint, valueWithPoint)
