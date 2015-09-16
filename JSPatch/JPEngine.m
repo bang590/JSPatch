@@ -854,12 +854,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     __autoreleasing id cb = genCallbackBlock(arguments[i-2]);
                     [invocation setArgument:&cb atIndex:i];
                 } else {
-                    if ([valObj isMemberOfClass:[JPBoxing class]]) {
-                        id obj = (__bridge id)[valObj unboxPointer];
-                        [invocation setArgument:&obj atIndex:i];
-                    }else{
-                        [invocation setArgument:&valObj atIndex:i];
-                    }
+                    [invocation setArgument:&valObj atIndex:i];
                 }
             }
         }
