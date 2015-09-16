@@ -78,6 +78,16 @@
         }
         return 0;
     };
+    
+    context[@"__bridge_id"] = ^id(JSValue *jsVal) {
+        void *p = [self formatPointerJSToOC:jsVal];
+        id obj = (__bridge id)p;
+        return [self formatOCToJS:obj];
+    };
+    
+    context[@"CFRelease"] = ^void(JSValue *jsVal) {
+        CFRelease([self formatPointerJSToOC:jsVal]);
+    };
 }
 
 
