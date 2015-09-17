@@ -121,12 +121,15 @@ var global = this
         newMethods[methodName] = [originMethod.length, function() {
           var args = _formatOCToJS(Array.prototype.slice.call(arguments))
           var lastSelf = global.self
-          
-          global.self = args[0]
-          args.splice(0,1)
-          var ret = originMethod.apply(originMethod, args)
-          global.self = lastSelf
-          
+          var ret;
+          try {
+            global.self = args[0]
+            args.splice(0,1)
+            ret = originMethod.apply(originMethod, args)
+            global.self = lastSelf
+          } catch(e) {
+            _OC_catch(e.message, e.stack)
+          }
           return ret
         }]
       })()
@@ -157,7 +160,7 @@ var global = this
   }
 
   global.defineStruct = function(name, type, keys) {
-    require('JPEngine').defineStruct({
+    require('JPEngine').__c('defineStruct')({
       'name': name,
       'types': type,
       'keys': keys
