@@ -158,14 +158,6 @@ var global = this
     }
     return {args: args, cb: callback}
   }
-
-  global.defineStruct = function(name, type, keys) {
-    require('JPEngine').__c('defineStruct')({
-      'name': name,
-      'types': type,
-      'keys': keys
-    })
-  }
   
   if (global.console) {
     var jsLogger = console.log;
