@@ -9,6 +9,7 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 #import <UIKit/UIApplication.h>
+#import "JPIVar.h"
 
 @interface JPBoxing : NSObject
 @property (nonatomic) id obj;
@@ -289,6 +290,14 @@ static void setPropIMP(id slf, SEL selector, id val, NSString *propName) {
     objc_setAssociatedObject(slf, propKey(propName), val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+static id getIvarIMP(id slf, SEL selector, NSString *ivarName) {
+    return [JPIVar getIvarOfObject:slf name:ivarName];
+}
+
+static void setIvarIMP(id slf, SEL selector, id val, NSString *ivarName) {
+    [JPIVar setIvarOfObject:slf name:ivarName value:val];
+}
+
 static char *methodTypesInProtocol(NSString *protocolName, NSString *selectorName, BOOL isInstanceMethod, BOOL isRequired)
 {
     Protocol *protocol = objc_getProtocol([trim(protocolName) cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -380,6 +389,8 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
 #pragma clang diagnostic ignored "-Wundeclared-selector"
     class_addMethod(cls, @selector(getProp:), (IMP)getPropIMP, "@@:@");
     class_addMethod(cls, @selector(setProp:forKey:), (IMP)setPropIMP, "v@:@@");
+    class_addMethod(cls, @selector(getIvar:), (IMP)getIvarIMP, "@@:@");
+    class_addMethod(cls, @selector(setIvar:forKey:), (IMP)setIvarIMP, "v@:@@");
 #pragma clang diagnostic pop
 
     return @{@"cls": className};
@@ -1164,7 +1175,7 @@ static NSDictionary *getDictOfStruct(void *structData, NSDictionary *structDefin
     return dict;
 }
 
-static NSString *extractStructName(NSString *typeEncodeString)
+NSString *extractStructName(NSString *typeEncodeString)
 {
     NSArray *array = [typeEncodeString componentsSeparatedByString:@"="];
     NSString *typeString = array[0];

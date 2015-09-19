@@ -8,6 +8,13 @@
 
 #import "JPViewController.h"
 
+@interface JPViewController ()
+{
+    NSInteger _count;
+}
+
+@end
+
 @implementation JPViewController
 
 - (void)viewDidLoad {
