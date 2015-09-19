@@ -1,5 +1,9 @@
 defineClass('JPViewController', {
   handleBtn: function(sender) {
+    var count = self.getIvar('_count')
+    count++
+    self.setIvar_forKey(count, '_count')
+    sender.setTitle_forState('Push JPTableViewController ' + count, 0)
     var tableViewCtrl = JPTableViewController.alloc().init()
     self.navigationController().pushViewController_animated(tableViewCtrl, YES)
   }

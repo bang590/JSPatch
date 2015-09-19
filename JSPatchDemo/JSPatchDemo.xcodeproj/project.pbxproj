@@ -39,6 +39,7 @@
 		E1B89EA01B203482000645C2 /* JPMultithreadTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = E1B89E9F1B203482000645C2 /* JPMultithreadTestObject.m */; };
 		E1B89EA31B218986000645C2 /* JPInheritanceTestObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = E1B89EA21B218986000645C2 /* JPInheritanceTestObjects.m */; };
 		E1B89EAE1B228818000645C2 /* multithreadTest.js in Resources */ = {isa = PBXBuildFile; fileRef = E1B89EAD1B228818000645C2 /* multithreadTest.js */; };
+		EC4C82141BACEFA700B3C151 /* JPIVar.m in Sources */ = {isa = PBXBuildFile; fileRef = EC4C82131BACEFA700B3C151 /* JPIVar.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +109,8 @@
 		E1B89EA11B218986000645C2 /* JPInheritanceTestObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPInheritanceTestObjects.h; sourceTree = "<group>"; };
 		E1B89EA21B218986000645C2 /* JPInheritanceTestObjects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPInheritanceTestObjects.m; sourceTree = "<group>"; };
 		E1B89EAD1B228818000645C2 /* multithreadTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = multithreadTest.js; sourceTree = "<group>"; };
+		EC4C82121BACEFA700B3C151 /* JPIVar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPIVar.h; sourceTree = "<group>"; };
+		EC4C82131BACEFA700B3C151 /* JPIVar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPIVar.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +153,8 @@
 				2D5D892A1B0B8C3B009382EC /* JPEngine.h */,
 				2D5D892B1B0B8C3B009382EC /* JPEngine.m */,
 				2D5D892C1B0B8C3B009382EC /* JSPatch.js */,
+				EC4C82121BACEFA700B3C151 /* JPIVar.h */,
+				EC4C82131BACEFA700B3C151 /* JPIVar.m */,
 			);
 			name = JSPatch;
 			path = ../../JSPatch;
@@ -373,6 +378,7 @@
 				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
 				DEE3D2B31B7CC5D200D73DF1 /* JPCGGeometry.m in Sources */,
 				DEE3D2C21B7CD1DC00D73DF1 /* JPUIGeometry.m in Sources */,
+				EC4C82141BACEFA700B3C151 /* JPIVar.m in Sources */,
 				DE6FFEED1B4243500005EE83 /* JPInclude.m in Sources */,
 				DEE3D2C51B7CD1DC00D73DF1 /* JPUIKit.m in Sources */,
 				2D5D892D1B0B8C3B009382EC /* JPEngine.m in Sources */,
