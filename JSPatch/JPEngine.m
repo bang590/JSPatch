@@ -629,12 +629,7 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 {
     SEL selector = NSSelectorFromString(selectorName);
     
-    NSMethodSignature *methodSignature;
-    
-    if (typeDescription) {
-        methodSignature = [NSMethodSignature signatureWithObjCTypes:typeDescription];
-    } else {
-        methodSignature = [cls instanceMethodSignatureForSelector:selector];
+    if (!typeDescription) {
         Method method = class_getInstanceMethod(cls, selector);
         typeDescription = (char *)method_getTypeEncoding(method);
     }
@@ -647,6 +642,7 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
             //In some cases that returns struct, we should use the '_stret' API:
             //http://sealiesoftware.com/blog/archive/2008/10/30/objc_explain_objc_msgSend_stret.html
             //NSMethodSignature knows the detail but has no API to return, we can only get the info from debugDescription.
+            NSMethodSignature *methodSignature = [NSMethodSignature signatureWithObjCTypes:typeDescription];
             if ([methodSignature.debugDescription rangeOfString:@"is special struct return? YES"].location != NSNotFound) {
                 msgForwardIMP = (IMP)_objc_msgForward_stret;
             }
@@ -1129,6 +1125,7 @@ static NSDictionary *getDictOfStruct(void *structData, NSDictionary *structDefin
                 _type *val = malloc(size);   \
                 memcpy(val, structData + position, size);   \
                 [dict setObject:@(*val) forKey:itemKeys[i]];    \
+                free(val);  \
                 position += size;   \
                 break;  \
             }
