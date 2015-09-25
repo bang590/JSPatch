@@ -296,9 +296,13 @@ static char *methodTypesInProtocol(NSString *protocolName, NSString *selectorNam
     struct objc_method_description *methods = protocol_copyMethodDescriptionList(protocol, isRequired, isInstanceMethod, &selCount);
     for (int i = 0; i < selCount; i ++) {
         if ([selectorName isEqualToString:NSStringFromSelector(methods[i].name)]) {
-            return methods[i].types;
+            char *types = malloc(strlen(methods[i].types) + 1);
+            strcpy(types, methods[i].types);
+            free(methods);
+            return types;
         }
     }
+    free(methods);
     return NULL;
 }
 
@@ -361,6 +365,7 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
                     if (!types) types = methodTypesInProtocol(protocolName, selectorName, isInstance, NO);
                     if (types) {
                         overrideMethod(currCls, selectorName, jsMethod, !isInstance, types);
+                        free(types);
                         overrided = YES;
                         break;
                     }
