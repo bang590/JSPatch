@@ -1,6 +1,12 @@
 include('protocolTest.js')
 var global = this;
 
+require('JPEngine').defineStruct({
+    "name": "UIEdgeInsets",
+    "types": "FFFF",
+    "keys": ["top", "left", "bottom", "right"]
+});
+
 (function() {
   var performanceTestObj = require('NSObject').alloc().init();
   defineClass("JPTestObject", {
@@ -50,6 +56,12 @@ var global = this;
     funcToSwizzleReturnRange: function(range) {
       self.setFuncToSwizzleReturnRangeJSPassed(range.length == 42)
       return range;
+    },
+    funcToSwizzleReturnEdgeInsets: function(edge) {
+              console.log(edge);
+              console.log(edge.top == 42);
+        self.setFuncToSwizzleReturnEdgeInsetsJSPassed(edge.top == 42)
+        return edge;
     },
     funcToSwizzleTestGCD: function(completeBlock) {
       var execCount = 0

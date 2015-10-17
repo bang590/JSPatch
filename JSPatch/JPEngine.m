@@ -490,7 +490,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                             void *ret = malloc(size);
                             [invocation getArgument:ret atIndex:i];
                             NSDictionary *dict = getDictOfStruct(ret, structDefine);
-                            [argList addObject:dict];
+                            [argList addObject:[JSValue valueWithObject:dict inContext:_context]];
                             free(ret);
                             break;
                         }
@@ -613,6 +613,18 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
             JP_FWD_RET_STRUCT(CGPoint, toPoint)
             JP_FWD_RET_STRUCT(CGSize, toSize)
             JP_FWD_RET_STRUCT(NSRange, toRange)
+            
+            @synchronized (_context) {
+                NSDictionary *structDefine = registeredStruct[typeString];
+                if (structDefine) {
+                    size_t size = sizeOfStructTypes(structDefine[@"types"]);
+                    JP_FWD_RET_CALL_JS
+                    void *ret = malloc(size);
+                    NSDictionary *dict = formatJSToOC(jsval);
+                    getStructDataWithDict(ret, dict, structDefine);
+                    [invocation setReturnValue:ret];
+                }
+            }
             break;
         }
         default: {
@@ -927,7 +939,6 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     JP_CALL_RET_STRUCT(CGSize, valueWithSize)
                     JP_CALL_RET_STRUCT(NSRange, valueWithRange)
                     @synchronized (_context) {
-                        
                         NSDictionary *structDefine = registeredStruct[typeString];
                         if (structDefine) {
                             size_t size = sizeOfStructTypes(structDefine[@"types"]);

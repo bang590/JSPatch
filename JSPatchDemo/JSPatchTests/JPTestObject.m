@@ -239,6 +239,9 @@ typedef struct {
     NSRange range = [self funcToSwizzleReturnRange:NSMakeRange(0, 42)];
     self.funcToSwizzleReturnRangePassed = range.length == 42;
     
+    UIEdgeInsets edgeInsets = [self funcToSwizzleReturnEdgeInsets:UIEdgeInsetsMake(42, 42, 0, 0)];
+    self.funcToSwizzleReturnEdgeInsetsPassed = edgeInsets.left == 42;
+    
     SEL selector = [self funcToSwizzleTestSelector:@selector(funcToSwizzleTestSelector:)];
     self.funcToSwizzleTestSelectorPassed = [NSStringFromSelector(selector) isEqualToString:@"funcToSwizzleTestSelector:"];
     
@@ -312,6 +315,10 @@ typedef struct {
 - (NSRange)funcToSwizzleReturnRange:(NSRange)range
 {
     return NSMakeRange(0, 0);
+}
+- (UIEdgeInsets)funcToSwizzleReturnEdgeInsets:(UIEdgeInsets)edgeInsets
+{
+    return UIEdgeInsetsZero;
 }
 
 - (void)funcToSwizzleTestGCD:(void(^)())block

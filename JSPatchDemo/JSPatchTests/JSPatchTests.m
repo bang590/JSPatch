@@ -97,11 +97,15 @@
     XCTAssert(obj.funcToSwizzleReturnPointPassed, @"funcToSwizzleReturnPointPassed");
     XCTAssert(obj.funcToSwizzleReturnSizePassed, @"funcToSwizzleReturnSizePassed");
     XCTAssert(obj.funcToSwizzleReturnRangePassed, @"funcToSwizzleReturnRangePassed");
+    XCTAssert(obj.funcToSwizzleReturnEdgeInsetsPassed, @"funcToSwizzleReturnEdgeInsetsPassed");
+    
     
     XCTAssert(obj.funcToSwizzleReturnRectJSPassed, @"funcToSwizzleReturnRectJSPassed");
     XCTAssert(obj.funcToSwizzleReturnPointJSPassed, @"funcToSwizzleReturnPointJSPassed");
     XCTAssert(obj.funcToSwizzleReturnSizeJSPassed, @"funcToSwizzleReturnSizeJSPassed");
     XCTAssert(obj.funcToSwizzleReturnRangeJSPassed, @"funcToSwizzleReturnRangeJSPassed");
+    XCTAssert(obj.funcToSwizzleReturnEdgeInsetsJSPassed, @"funcToSwizzleReturnEdgeInsetsJSPassed");
+    
     
     XCTAssert(obj.funcToSwizzleTestClassPassed, @"funcToSwizzleTestClassPassed");
     XCTAssert(obj.funcToSwizzleTestSelectorPassed, @"funcToSwizzleTestSelectorPassed");
