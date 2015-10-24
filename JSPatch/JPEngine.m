@@ -431,7 +431,11 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
     }
     
     NSMutableArray *argList = [[NSMutableArray alloc] init];
-    [argList addObject:slf];
+    if ([slf class] == slf) {
+        [argList addObject:[JSValue valueWithObject:@{@"__clsName": NSStringFromClass([slf class])} inContext:_context]];
+    } else {
+        [argList addObject:slf];
+    }
     
     for (NSUInteger i = 2; i < numberOfArguments; i++) {
         const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];

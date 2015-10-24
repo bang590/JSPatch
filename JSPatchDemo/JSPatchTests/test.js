@@ -123,7 +123,7 @@ require('JPEngine').defineStruct({
       o.setClassFuncToSwizzlePassed(num == 10)
     },
     classFuncToSwizzleReturnObj: function(o) {
-      JPTestObject.ORIGclassFuncToSwizzleReturnObj(o) 
+      self.ORIGclassFuncToSwizzleReturnObj(o)
       return o
     },
     classFuncToSwizzleReturnInt: function(i) {
