@@ -29,6 +29,7 @@ Pod::Spec.new do |s|
   s.subspec 'Core' do |ss|
     ss.source_files = "JSPatch/*.{h,m}"
     ss.public_header_files = "JSPatch/*.h"
+    ss.resources    = "JSPatch/*.js"
   end
 
   s.subspec 'Extensions' do |ss|

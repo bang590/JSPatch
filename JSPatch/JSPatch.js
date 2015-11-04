@@ -99,7 +99,6 @@ var global = this
   var _require = function(clsName) {
     if (!global[clsName]) {
       global[clsName] = {
-        __isCls: 1,
         __clsName: clsName
       }
     } 
