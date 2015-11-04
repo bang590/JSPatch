@@ -58,8 +58,6 @@ require('JPEngine').defineStruct({
       return range;
     },
     funcToSwizzleReturnEdgeInsets: function(edge) {
-              console.log(edge);
-              console.log(edge.top == 42);
         self.setFuncToSwizzleReturnEdgeInsetsJSPassed(edge.top == 42)
         return edge;
     },
