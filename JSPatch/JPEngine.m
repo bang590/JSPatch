@@ -983,7 +983,8 @@ static id genCallbackBlock(JSValue *jsVal)
 #define BLK_DEFINE_2 cb = ^id(void *p0, void *p1) {
 #define BLK_DEFINE_3 cb = ^id(void *p0, void *p1, void *p2) {
 #define BLK_DEFINE_4 cb = ^id(void *p0, void *p1, void *p2, void *p3) {
-
+#define BLK_INIT_PARAMETERS NSMutableArray *list = [[NSMutableArray alloc] init];
+    
 #define BLK_ADD_OBJ(_paramName) [list addObject:formatOCToJS((__bridge id)_paramName)];
 #define BLK_ADD_INT(_paramName) [list addObject:formatOCToJS([NSNumber numberWithLongLong:(long long)_paramName])];
 
@@ -1000,22 +1001,24 @@ static id genCallbackBlock(JSValue *jsVal)
 };
 
     NSArray *argTypes = [[jsVal[@"args"] toString] componentsSeparatedByString:@","];
-    NSMutableArray *list = [[NSMutableArray alloc] init];
     NSInteger count = argTypes.count;
     id cb;
     if (count == 1) {
         BLK_DEFINE_1
+        BLK_INIT_PARAMETERS
         BLK_TRAITS_ARG(0, p0)
         BLK_END
     }
     if (count == 2) {
         BLK_DEFINE_2
+        BLK_INIT_PARAMETERS
         BLK_TRAITS_ARG(0, p0)
         BLK_TRAITS_ARG(1, p1)
         BLK_END
     }
     if (count == 3) {
         BLK_DEFINE_3
+        BLK_INIT_PARAMETERS
         BLK_TRAITS_ARG(0, p0)
         BLK_TRAITS_ARG(1, p1)
         BLK_TRAITS_ARG(2, p2)
@@ -1023,6 +1026,7 @@ static id genCallbackBlock(JSValue *jsVal)
     }
     if (count == 4) {
         BLK_DEFINE_4
+        BLK_INIT_PARAMETERS
         BLK_TRAITS_ARG(0, p0)
         BLK_TRAITS_ARG(1, p1)
         BLK_TRAITS_ARG(2, p2)
