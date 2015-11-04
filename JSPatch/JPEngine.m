@@ -539,7 +539,18 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
             JSValue *jsval; \
             [_JSMethodForwardCallLock lock];   \
             jsval = [fun callWithArguments:params]; \
-            [_JSMethodForwardCallLock unlock];
+            [_JSMethodForwardCallLock unlock]; \
+            while (![jsval isNull] && ![jsval isUndefined] && [jsval hasProperty:@"__isPerformInOC"]) { \
+                NSArray *args = nil;  \
+                JSValue *cb = jsval[@"cb"]; \
+                if ([jsval hasProperty:@"sel"]) {   \
+                    id callRet = callSelector(![jsval[@"clsName"] isUndefined] ? [jsval[@"clsName"] toString] : nil, [jsval[@"sel"] toString], jsval[@"args"], ![jsval[@"obj"] isUndefined] ? jsval[@"obj"] : nil, NO);  \
+                    args = @[[_context[@"_formatOCToJS"] callWithArguments:callRet ? @[callRet] : _formatOCToJSList(@[_nilObj])]];  \
+                }   \
+                [_JSMethodForwardCallLock lock];    \
+                jsval = [cb callWithArguments:args];  \
+                [_JSMethodForwardCallLock unlock];  \
+            }
 
         #define JP_FWD_RET_CASE_RET(_typeChar, _type, _retCode)   \
             case _typeChar : { \
@@ -579,7 +590,6 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
             }
 
         JP_FWD_RET_CASE_RET('@', id, JP_FWD_RET_CODE_ID)
-
         JP_FWD_RET_CASE_RET('^', void*, JP_FWD_RET_CODE_POINTER)
         JP_FWD_RET_CASE_RET('*', void*, JP_FWD_RET_CODE_POINTER)
         JP_FWD_RET_CASE_RET('#', Class, JP_FWD_RET_CODE_CLASS)

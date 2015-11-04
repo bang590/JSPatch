@@ -84,10 +84,17 @@ var global = this
       }
     }
 
-    if (methodName == 'performSelector') {
-      return function(){
-        var args = Array.prototype.slice.call(arguments)
-        return _methodFunc(self.__obj, self.__clsName, args[0], args.splice(1), self.__isSuper, true)
+    if (methodName.indexOf('performSelector') > -1) {
+      if (methodName == 'performSelector') {
+        return function(){
+          var args = Array.prototype.slice.call(arguments)
+          return _methodFunc(self.__obj, self.__clsName, args[0], args.splice(1), self.__isSuper, true)
+        }
+      } else if (methodName == 'performSelectorInOC') {
+        return function(){
+          var args = Array.prototype.slice.call(arguments)
+          return {__isPerformInOC:1, obj:self.__obj, clsName:self.__clsName, sel: args[0], args: args[1], cb: args[2]}
+        }
       }
     }
     return function(){
