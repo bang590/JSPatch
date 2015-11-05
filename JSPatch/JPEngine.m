@@ -103,20 +103,20 @@ static NSMutableDictionary *registeredStruct;
 
     __weak JSContext *weakCtx = context;
     context[@"dispatch_after"] = ^(double time, JSValue *func) {
-        JSValue *currSelf = weakCtx[@"self"];
+        id currSelf = formatJSToOC(weakCtx[@"self"]);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             JSValue *prevSelf = weakCtx[@"self"];
-            weakCtx[@"self"] = currSelf;
+            weakCtx[@"self"] = formatOCToJS([JPBoxing boxWeakObj:currSelf]);
             [func callWithArguments:nil];
             weakCtx[@"self"] = prevSelf;
         });
     };
     
     context[@"dispatch_async_main"] = ^(JSValue *func) {
-        JSValue *currSelf = weakCtx[@"self"];
+        id currSelf = formatJSToOC(weakCtx[@"self"]);
         dispatch_async(dispatch_get_main_queue(), ^{
             JSValue *prevSelf = weakCtx[@"self"];
-            weakCtx[@"self"] = currSelf;
+            weakCtx[@"self"] = formatOCToJS([JPBoxing boxWeakObj:currSelf]);
             [func callWithArguments:nil];
             weakCtx[@"self"] = prevSelf;
         });
@@ -133,10 +133,10 @@ static NSMutableDictionary *registeredStruct;
     };
     
     context[@"dispatch_async_global_queue"] = ^(JSValue *func) {
-        JSValue *currSelf = weakCtx[@"self"];
+        id currSelf = formatJSToOC(weakCtx[@"self"]);
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             JSValue *prevSelf = weakCtx[@"self"];
-            weakCtx[@"self"] = currSelf;
+            weakCtx[@"self"] = formatOCToJS([JPBoxing boxWeakObj:currSelf]);
             [func callWithArguments:nil];
             weakCtx[@"self"] = prevSelf;
         });
