@@ -103,8 +103,43 @@ static NSMutableDictionary *registeredStruct;
 
     __weak JSContext *weakCtx = context;
     context[@"dispatch_after"] = ^(double time, JSValue *func) {
+        id tmpSelf = formatJSToOC(weakCtx[@"self"]);
+        
         JSValue *currSelf = weakCtx[@"self"];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            NSLog(@"JSPatch GCD: the current self is %@", tmpSelf);
+            JSValue *prevSelf = weakCtx[@"self"];
+            
+            weakCtx[@"self"] = currSelf;
+            [func callWithArguments:nil];
+            weakCtx[@"self"] = prevSelf;
+            
+        });
+    };
+    
+    context[@"dispatch_after_weak_self"] = ^(double time, JSValue *func) {
+        __weak id tmpSelf = formatJSToOC(weakCtx[@"self"]);
+        
+        JSValue *currSelf = weakCtx[@"self"];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            
+            NSLog(@"JSPatch GCD: the current self is %@", tmpSelf);
+            JSValue *prevSelf = weakCtx[@"self"];
+            
+            weakCtx[@"self"] = currSelf;
+            [func callWithArguments:nil];
+            weakCtx[@"self"] = prevSelf;
+            
+        });
+    };
+    
+    context[@"dispatch_async_main"] = ^(JSValue *func) {
+        id tmpSelf = formatJSToOC(weakCtx[@"self"]);
+        
+        JSValue *currSelf = weakCtx[@"self"];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            NSLog(@"JSPatch GCD: the current self is %@", tmpSelf);
             JSValue *prevSelf = weakCtx[@"self"];
             weakCtx[@"self"] = currSelf;
             [func callWithArguments:nil];
@@ -112,9 +147,13 @@ static NSMutableDictionary *registeredStruct;
         });
     };
     
-    context[@"dispatch_async_main"] = ^(JSValue *func) {
+    context[@"dispatch_async_main_weak_self"] = ^(JSValue *func) {
+        __weak id tmpSelf = formatJSToOC(weakCtx[@"self"]);
+        
         JSValue *currSelf = weakCtx[@"self"];
         dispatch_async(dispatch_get_main_queue(), ^{
+            
+            NSLog(@"JSPatch GCD: the current self is %@", tmpSelf);
             JSValue *prevSelf = weakCtx[@"self"];
             weakCtx[@"self"] = currSelf;
             [func callWithArguments:nil];
@@ -133,8 +172,24 @@ static NSMutableDictionary *registeredStruct;
     };
     
     context[@"dispatch_async_global_queue"] = ^(JSValue *func) {
+        id tmpSelf = formatJSToOC(weakCtx[@"self"]);
+        
         JSValue *currSelf = weakCtx[@"self"];
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            NSLog(@"JSPatch GCD: the current self is %@", tmpSelf);
+            JSValue *prevSelf = weakCtx[@"self"];
+            weakCtx[@"self"] = currSelf;
+            [func callWithArguments:nil];
+            weakCtx[@"self"] = prevSelf;
+        });
+    };
+    
+    context[@"dispatch_async_global_queue_weak_self"] = ^(JSValue *func) {
+        __weak id tmpSelf = formatJSToOC(weakCtx[@"self"]);
+        
+        JSValue *currSelf = weakCtx[@"self"];
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            NSLog(@"JSPatch GCD: the current self is %@", tmpSelf);
             JSValue *prevSelf = weakCtx[@"self"];
             weakCtx[@"self"] = currSelf;
             [func callWithArguments:nil];
@@ -1241,7 +1296,24 @@ static id formatJSToOC(JSValue *jsval)
     id obj = [jsval toObject];
     if (!obj || [obj isKindOfClass:[NSNull class]]) return _nilObj;
     
-    if ([obj isKindOfClass:[JPBoxing class]]) return [obj unbox];
+    if ([obj isKindOfClass:[JPBoxing class]]) {
+        JPBoxing *boxing = obj;
+        
+        while ([boxing isKindOfClass:[JPBoxing class]]) {
+            if (!boxing.obj && !boxing.weakObj) {
+                boxing = nil;
+            } else {
+                boxing = [boxing unbox];
+            }
+        }
+        if (!boxing || [boxing isKindOfClass:[NSNull class]]) {
+            return _nilObj;
+        } else {
+            return boxing;
+        }
+        
+    }
+    
     if ([obj isKindOfClass:[NSArray class]]) {
         NSMutableArray *newArr = [[NSMutableArray alloc] init];
         for (int i = 0; i < [obj count]; i ++) {
