@@ -434,7 +434,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
     if ([slf class] == slf) {
         [argList addObject:[JSValue valueWithObject:@{@"__clsName": NSStringFromClass([slf class])} inContext:_context]];
     } else {
-        [argList addObject:slf];
+        [argList addObject:[JPBoxing boxWeakObj:slf]];
     }
     
     for (NSUInteger i = 2; i < numberOfArguments; i++) {
