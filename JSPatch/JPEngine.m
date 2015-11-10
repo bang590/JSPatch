@@ -464,8 +464,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
             case '@': {
                 __unsafe_unretained id arg;
                 [invocation getArgument:&arg atIndex:i];
-                static const char *blockType = @encode(typeof(^{}));
-                if (!strcmp(argumentType, blockType)) {
+                if ([arg isKindOfClass:NSClassFromString(@"NSBlock")]) {
                     [argList addObject:(arg ? [arg copy]: _nilObj)];
                 } else {
                     [argList addObject:(arg ? arg: _nilObj)];
@@ -876,8 +875,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     [invocation setArgument:&valObj atIndex:i];
                     break;
                 }
-                static const char *blockType = @encode(typeof(^{}));
-                if (!strcmp(argumentType, blockType)) {
+                if ([(JSValue *)arguments[i-2] hasProperty:@"__isBlock"]) {
                     __autoreleasing id cb = genCallbackBlock(arguments[i-2]);
                     [invocation setArgument:&cb atIndex:i];
                 } else {

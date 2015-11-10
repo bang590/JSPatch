@@ -162,7 +162,7 @@ var global = this
       var args = Array.prototype.slice.call(arguments)
       return cb.apply(slf, _formatOCToJS(args))
     }
-    return {args: args, cb: callback}
+    return {args: args, cb: callback, __isBlock: 1}
   }
   
   if (global.console) {
