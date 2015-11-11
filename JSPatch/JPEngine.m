@@ -56,7 +56,7 @@ JPBOXING_GEN(boxWeakObj, weakObj, id)
 @implementation JPEngine
 
 static JSContext *_context;
-static NSString *_regexStr = @"\\.\\s*(\\w+)\\s*\\(";
+static NSString *_regexStr = @"(?<!\\\\)\\.\\s*(\\w+)\\s*\\(";
 static NSString *_replaceStr = @".__c(\"$1\")(";
 static NSRegularExpression* _regex;
 static NSObject *_nullObj;
