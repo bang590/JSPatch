@@ -439,7 +439,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
     
     for (NSUInteger i = 2; i < numberOfArguments; i++) {
         const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];
-        switch(argumentType[0]) {
+        switch(argumentType[0] == 'r' ? argumentType[1] : argumentType[0]) {
         
             #define JP_FWD_ARG_CASE(_typeChar, _type) \
             case _typeChar: {   \
@@ -532,7 +532,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
     NSArray *params = _formatOCToJSList(argList);
     const char *returnType = [methodSignature methodReturnType];
 
-    switch (returnType[0]) {
+    switch (returnType[0] == 'r' ? returnType[1] : returnType[0]) {
         #define JP_FWD_RET_CALL_JS \
             JSValue *fun = getJSFunctionInObjectHierachy(slf, JPSelectorName); \
             JSValue *jsval; \
@@ -778,7 +778,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     for (NSUInteger i = 2; i < numberOfArguments; i++) {
         const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];
         id valObj = argumentsObj[i-2];
-        switch (argumentType[0]) {
+        switch (argumentType[0] == 'r' ? argumentType[1] : argumentType[0]) {
                 
                 #define JP_CALL_ARG_CASE(_typeString, _type, _selector) \
                 case _typeString: {                              \
@@ -914,7 +914,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
             return formatOCToJS(returnValue);
             
         } else {
-            switch (returnType[0]) {
+            switch (returnType[0] == 'r' ? returnType[1] : returnType[0]) {
                     
                 #define JP_CALL_RET_CASE(_typeString, _type) \
                 case _typeString: {                              \
