@@ -15,6 +15,14 @@
 		2D6D12FD1B0B8CF20095A435 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D12FA1B0B8CF20095A435 /* Images.xcassets */; };
 		2D6D12FF1B0B8CF20095A435 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6D12FC1B0B8CF20095A435 /* main.m */; };
 		2D6D13011B0B8CFF0095A435 /* demo.js in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D13001B0B8CFF0095A435 /* demo.js */; };
+		36F0DC6D1BF6CF5C0090EA4A /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 36F0DC611BF6CF5C0090EA4A /* ioapi.c */; };
+		36F0DC6E1BF6CF5C0090EA4A /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 36F0DC631BF6CF5C0090EA4A /* mztools.c */; };
+		36F0DC6F1BF6CF5C0090EA4A /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 36F0DC651BF6CF5C0090EA4A /* unzip.c */; };
+		36F0DC701BF6CF5C0090EA4A /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 36F0DC671BF6CF5C0090EA4A /* zip.c */; };
+		36F0DC711BF6CF5C0090EA4A /* RSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 36F0DC6A1BF6CF5C0090EA4A /* RSA.m */; };
+		36F0DC741BF6CFE60090EA4A /* ZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 36F0DC731BF6CFE60090EA4A /* ZipArchive.m */; };
+		36F0DC761BF6D00E0090EA4A /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F0DC751BF6D00E0090EA4A /* libz.tbd */; };
+		36F0DC791BF6D5D20090EA4A /* JPLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 36F0DC781BF6D5D20090EA4A /* JPLoader.m */; };
 		3F6C38EB1B4A37D600F88662 /* JPMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C38EA1B4A37D600F88662 /* JPMemory.m */; };
 		DE58B6481B7C312800F64C63 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE58B6471B7C312800F64C63 /* JavaScriptCore.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		DE6FFEED1B4243500005EE83 /* JPInclude.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6FFEEB1B4243500005EE83 /* JPInclude.m */; };
@@ -64,6 +72,22 @@
 		2D6D12FB1B0B8CF20095A435 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D6D12FC1B0B8CF20095A435 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2D6D13001B0B8CFF0095A435 /* demo.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = demo.js; sourceTree = "<group>"; };
+		36F0DC601BF6CF5C0090EA4A /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		36F0DC611BF6CF5C0090EA4A /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		36F0DC621BF6CF5C0090EA4A /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		36F0DC631BF6CF5C0090EA4A /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		36F0DC641BF6CF5C0090EA4A /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		36F0DC651BF6CF5C0090EA4A /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		36F0DC661BF6CF5C0090EA4A /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		36F0DC671BF6CF5C0090EA4A /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		36F0DC681BF6CF5C0090EA4A /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		36F0DC691BF6CF5C0090EA4A /* RSA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSA.h; sourceTree = "<group>"; };
+		36F0DC6A1BF6CF5C0090EA4A /* RSA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSA.m; sourceTree = "<group>"; };
+		36F0DC721BF6CFE60090EA4A /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
+		36F0DC731BF6CFE60090EA4A /* ZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZipArchive.m; sourceTree = "<group>"; };
+		36F0DC751BF6D00E0090EA4A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		36F0DC771BF6D5D20090EA4A /* JPLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPLoader.h; sourceTree = "<group>"; };
+		36F0DC781BF6D5D20090EA4A /* JPLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPLoader.m; sourceTree = "<group>"; };
 		3F6C38E91B4A37D600F88662 /* JPMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPMemory.h; sourceTree = "<group>"; };
 		3F6C38EA1B4A37D600F88662 /* JPMemory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPMemory.m; sourceTree = "<group>"; };
 		DE58B6471B7C312800F64C63 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -115,6 +139,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				36F0DC761BF6D00E0090EA4A /* libz.tbd in Frameworks */,
 				DE58B6481B7C312800F64C63 /* JavaScriptCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -132,6 +157,7 @@
 		2D5D89161B0B8BFF009382EC /* JSPatchDemo */ = {
 			isa = PBXGroup;
 			children = (
+				36F0DC591BF6CF5C0090EA4A /* Loader */,
 				DE6FFEE71B4243500005EE83 /* Extensions */,
 				2D5D89291B0B8C3B009382EC /* JSPatch */,
 				2D6D12F91B0B8CF20095A435 /* Supporting Files */,
@@ -165,6 +191,45 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		36F0DC591BF6CF5C0090EA4A /* Loader */ = {
+			isa = PBXGroup;
+			children = (
+				36F0DC771BF6D5D20090EA4A /* JPLoader.h */,
+				36F0DC781BF6D5D20090EA4A /* JPLoader.m */,
+				36F0DC5C1BF6CF5C0090EA4A /* libs */,
+			);
+			name = Loader;
+			path = ../../Loader;
+			sourceTree = "<group>";
+		};
+		36F0DC5C1BF6CF5C0090EA4A /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				36F0DC5F1BF6CF5C0090EA4A /* minizip */,
+				36F0DC721BF6CFE60090EA4A /* ZipArchive.h */,
+				36F0DC731BF6CFE60090EA4A /* ZipArchive.m */,
+				36F0DC691BF6CF5C0090EA4A /* RSA.h */,
+				36F0DC6A1BF6CF5C0090EA4A /* RSA.m */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+		36F0DC5F1BF6CF5C0090EA4A /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				36F0DC601BF6CF5C0090EA4A /* crypt.h */,
+				36F0DC611BF6CF5C0090EA4A /* ioapi.c */,
+				36F0DC621BF6CF5C0090EA4A /* ioapi.h */,
+				36F0DC631BF6CF5C0090EA4A /* mztools.c */,
+				36F0DC641BF6CF5C0090EA4A /* mztools.h */,
+				36F0DC651BF6CF5C0090EA4A /* unzip.c */,
+				36F0DC661BF6CF5C0090EA4A /* unzip.h */,
+				36F0DC671BF6CF5C0090EA4A /* zip.c */,
+				36F0DC681BF6CF5C0090EA4A /* zip.h */,
+			);
+			path = minizip;
+			sourceTree = "<group>";
+		};
 		DE6FFEE71B4243500005EE83 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -184,6 +249,7 @@
 		DE94AE021AF246BE00E461D4 = {
 			isa = PBXGroup;
 			children = (
+				36F0DC751BF6D00E0090EA4A /* libz.tbd */,
 				DE58B6471B7C312800F64C63 /* JavaScriptCore.framework */,
 				2D5D89161B0B8BFF009382EC /* JSPatchDemo */,
 				DE94AE271AF246C000E461D4 /* JSPatchTests */,
@@ -372,6 +438,7 @@
 			files = (
 				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
 				DEE3D2B31B7CC5D200D73DF1 /* JPCGGeometry.m in Sources */,
+				36F0DC6E1BF6CF5C0090EA4A /* mztools.c in Sources */,
 				DEE3D2C21B7CD1DC00D73DF1 /* JPUIGeometry.m in Sources */,
 				DE6FFEED1B4243500005EE83 /* JPInclude.m in Sources */,
 				DEE3D2C51B7CD1DC00D73DF1 /* JPUIKit.m in Sources */,
@@ -379,16 +446,22 @@
 				E1B89EA01B203482000645C2 /* JPMultithreadTestObject.m in Sources */,
 				DEE3D29D1B7CC11700D73DF1 /* JPStructPointer.m in Sources */,
 				DEE3D2B11B7CC5D200D73DF1 /* JPCGColor.m in Sources */,
+				36F0DC791BF6D5D20090EA4A /* JPLoader.m in Sources */,
 				DEE3D2C31B7CD1DC00D73DF1 /* JPUIGraphics.m in Sources */,
 				2D5D89251B0B8BFF009382EC /* JPViewController.m in Sources */,
+				36F0DC6D1BF6CF5C0090EA4A /* ioapi.c in Sources */,
 				DEE3D2B51B7CC5D200D73DF1 /* JPCGPath.m in Sources */,
 				DEE3D2B61B7CC5D200D73DF1 /* JPCGTransform.m in Sources */,
+				36F0DC6F1BF6CF5C0090EA4A /* unzip.c in Sources */,
 				DEE3D2B01B7CC5D200D73DF1 /* JPCGBitmapContext.m in Sources */,
 				DEE3D2B21B7CC5D200D73DF1 /* JPCGContext.m in Sources */,
 				3F6C38EB1B4A37D600F88662 /* JPMemory.m in Sources */,
 				DEE3D2B41B7CC5D200D73DF1 /* JPCGImage.m in Sources */,
 				2D6D12FF1B0B8CF20095A435 /* main.m in Sources */,
 				DEE3D2B71B7CC5D200D73DF1 /* JPCoreGraphics.m in Sources */,
+				36F0DC701BF6CF5C0090EA4A /* zip.c in Sources */,
+				36F0DC741BF6CFE60090EA4A /* ZipArchive.m in Sources */,
+				36F0DC711BF6CF5C0090EA4A /* RSA.m in Sources */,
 				DEE3D2C41B7CD1DC00D73DF1 /* JPUIImage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
