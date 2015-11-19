@@ -4,14 +4,6 @@ var global = this
 
   var callbacks = {}
   var callbackID = 0
-  
-  var _methodNameOCToJS = function(name) {
-    name = name.replace(/\:/g, '_')
-    if (name[name.length - 1] == '_') {
-      return name.substr(0, name.length - 1)
-    }
-    return name
-  }
 
   var _formatOCToJS = function(obj) {
     if (obj === undefined || obj === null) return false
