@@ -422,6 +422,10 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
 #pragma clang diagnostic ignored "-Wundeclared-selector"
         SEL origForwardSelector = @selector(ORIGforwardInvocation:);
         NSMethodSignature *methodSignature = [slf methodSignatureForSelector:origForwardSelector];
+        if (!methodSignature) {
+            NSCAssert(methodSignature, @"unrecognized selector -ORIGforwardInvocation: for instance %@", slf);
+            return;
+        }
         NSInvocation *forwardInv= [NSInvocation invocationWithMethodSignature:methodSignature];
         [forwardInv setTarget:slf];
         [forwardInv setSelector:origForwardSelector];
@@ -764,12 +768,18 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
             _JSMethodSignatureCache[cls][selectorName] = methodSignature;
         }
         [_JSMethodSignatureLock unlock];
-        NSCAssert(methodSignature, @"unrecognized selector %@ for instance %@", selectorName, instance);
+        if (!methodSignature) {
+            NSCAssert(methodSignature, @"unrecognized selector %@ for instance %@", selectorName, instance);
+            return nil;
+        }
         invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
         [invocation setTarget:instance];
     } else {
         methodSignature = [cls methodSignatureForSelector:selector];
-        NSCAssert(methodSignature, @"unrecognized selector %@ for class %@", selectorName, className);
+        if (!methodSignature) {
+            NSCAssert(methodSignature, @"unrecognized selector %@ for class %@", selectorName, className);
+            return nil;
+        }
         invocation= [NSInvocation invocationWithMethodSignature:methodSignature];
         [invocation setTarget:cls];
     }
