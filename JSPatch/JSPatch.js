@@ -66,6 +66,9 @@ var global = this
     }
     
     if (!this.__obj && !this.__clsName) {
+      if (!this[methodName]) {
+        throw new Error(this + '.' + methodName + ' is undefined')
+      }
       return this[methodName].bind(this);
     }
 

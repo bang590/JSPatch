@@ -155,7 +155,8 @@ static NSMutableDictionary *registeredStruct;
     context[@"_OC_log"] = ^() {
         NSArray *args = [JSContext currentArguments];
         for (JSValue *jsVal in args) {
-            NSLog(@"JSPatch.log: %@", formatJSToOC(jsVal));
+            id obj = formatJSToOC(jsVal);
+            NSLog(@"JSPatch.log: %@", obj == _nilObj ? nil : (obj == _nullObj ? [NSNull null]: obj));
         }
     };
     
