@@ -12,7 +12,7 @@
 #import "RSA.h"
 #import <CommonCrypto/CommonDigest.h>
 
-static NSString *kJSPatchVersion = @"JSPatchVersion";
+#define kJSPatchVersion(appVersion)   [NSString stringWithFormat:@"JSPatchVersion_%@", appVersion]
 
 void (^JPLogger)(NSString *log);
 
@@ -159,7 +159,7 @@ void (^JPLogger)(NSString *log);
             [[NSFileManager defaultManager] removeItemAtPath:unzipVerifyDirectory error:nil];
             [[NSFileManager defaultManager] removeItemAtPath:unzipTmpDirectory error:nil];
             
-            [[NSUserDefaults standardUserDefaults] setInteger:version forKey:kJSPatchVersion];
+            [[NSUserDefaults standardUserDefaults] setInteger:version forKey:kJSPatchVersion(appVersion)];
             [[NSUserDefaults standardUserDefaults] synchronize];
             
             if (callback) callback(nil);
@@ -189,7 +189,8 @@ void (^JPLogger)(NSString *log);
 
 + (NSInteger)currentVersion
 {
-    return [[NSUserDefaults standardUserDefaults] integerForKey:kJSPatchVersion];
+    NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    return [[NSUserDefaults standardUserDefaults] integerForKey:kJSPatchVersion(appVersion)];
 }
 
 #pragma mark utils
