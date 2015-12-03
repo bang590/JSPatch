@@ -8,7 +8,10 @@
 #import "JPEngine.h"
 #import <objc/runtime.h>
 #import <objc/message.h>
+
+#if TARGET_OS_IPHONE
 #import <UIKit/UIApplication.h>
+#endif
 
 @interface JPBoxing : NSObject
 @property (nonatomic) id obj;
@@ -179,7 +182,9 @@ static NSMutableDictionary *registeredStruct;
     _JSMethodForwardCallLock = [[NSRecursiveLock alloc] init];
     registeredStruct = [[NSMutableDictionary alloc] init];
     
+#if TARGET_OS_IPHONE
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+#endif
     
     NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"JSPatch" ofType:@"js"];
     NSAssert(path, @"can't find JSPatch.js");
