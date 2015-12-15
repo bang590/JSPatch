@@ -80,8 +80,8 @@ static NSMutableDictionary *registeredStruct;
         return defineClass(classDeclaration, instanceMethods, classMethods);
     };
 
-    context[@"_OC_defineProtocol"] = ^(NSString *protocolDeclaration, JSValue *protocolMethod) {
-        return defineProtocol(protocolDeclaration, protocolMethod);
+    context[@"_OC_defineProtocol"] = ^(NSString *protocolDeclaration, JSValue *instProtocol, JSValue *clsProtocol) {
+        return defineProtocol(protocolDeclaration, instProtocol,clsProtocol);
     };
     
     context[@"_OC_callI"] = ^id(JSValue *obj, NSString *selectorName, JSValue *arguments, BOOL isSuper) {
@@ -317,26 +317,22 @@ static char *methodTypesInProtocol(NSString *protocolName, NSString *selectorNam
 }
 
 
-static void defineProtocol(NSString *protocolDeclaration, JSValue *protoMethods)
+
+static void defineProtocol(NSString *protocolDeclaration, JSValue *instProtocol, JSValue *clsProtocol)
 {
     const char* protocolName = [protocolDeclaration UTF8String];
     Protocol* newprotocol = objc_allocateProtocol(protocolName);
     if (newprotocol) {
-        NSArray *methodArr = [protoMethods toArray];
-        NSUInteger num = methodArr.count;
+        
+        //instance protocol
+        NSArray *instMethodArr = [instProtocol toArray];
+        NSUInteger num = instMethodArr.count;
         for (NSUInteger i= 0; i < num; i++) {
-            NSDictionary * protoMethod = [methodArr objectAtIndex:i];
-            for (NSString* methodkey in protoMethod.allKeys) {
-                if ([methodkey isEqualToString:@"defineTypeEncoding"]) {
-                    
-                }else if([methodkey isEqualToString:@"isInstance"]){
-                    
-                }else if([methodkey isEqualToString:@"numberOfArgs"]){
-                    
-                }else
-                {
-                    NSInteger numberOfArg = [[protoMethod objectForKey:@"numberOfArgs"]integerValue];
-                    NSString *tmpJSMethodName = [methodkey stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
+            NSDictionary * instProtoMethod = [instMethodArr objectAtIndex:i];
+            for (NSString* instProtokey in instProtoMethod.allKeys) {
+                if (![instProtokey isEqualToString:@"defineTypeEncoding"]) {
+                    NSInteger numberOfArg = [[instProtoMethod objectForKey:instProtokey]integerValue];
+                    NSString *tmpJSMethodName = [instProtokey stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
                     NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
                     selectorName = [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
                     
@@ -348,10 +344,34 @@ static void defineProtocol(NSString *protocolDeclaration, JSValue *protoMethods)
                         selectorName = [selectorName stringByAppendingString:@":"];
                     }
                     
-                    NSString* typeencoding = [protoMethod objectForKey:@"defineTypeEncoding"];
-                    BOOL isInstance = [[protoMethod objectForKey:@"isInstance"]boolValue];
-                    addMethodToProtocol(newprotocol, selectorName, typeencoding, isInstance);
+                    NSString* typeencoding = [instProtoMethod objectForKey:@"defineTypeEncoding"];
+                    addMethodToProtocol(newprotocol, selectorName, typeencoding, YES);
+                }
+            }
+        }
+        
+        //class protocol
+        NSArray *clsMethodArr = [clsProtocol toArray];
+        NSUInteger clsnum = clsMethodArr.count;
+        for (NSUInteger i= 0; i < clsnum; i++) {
+            NSDictionary * clsProtoMethod = [clsMethodArr objectAtIndex:i];
+            for (NSString* clsProtokey in clsProtoMethod.allKeys) {
+                if (![clsProtokey isEqualToString:@"defineTypeEncoding"]) {
+                    NSInteger numberOfArg = [[clsProtoMethod objectForKey:clsProtokey]integerValue];
+                    NSString *tmpJSMethodName = [clsProtokey stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
+                    NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
+                    selectorName = [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
                     
+                    if (!countArgRegex) {
+                        countArgRegex = [NSRegularExpression regularExpressionWithPattern:@":" options:NSRegularExpressionCaseInsensitive error:nil];
+                    }
+                    NSUInteger numberOfMatches = [countArgRegex numberOfMatchesInString:selectorName options:0 range:NSMakeRange(0, [selectorName length])];
+                    if (numberOfMatches < numberOfArg) {
+                        selectorName = [selectorName stringByAppendingString:@":"];
+                    }
+                    
+                    NSString* typeencoding = [clsProtoMethod objectForKey:@"defineTypeEncoding"];
+                    addMethodToProtocol(newprotocol, selectorName, typeencoding, NO);
                 }
             }
         }

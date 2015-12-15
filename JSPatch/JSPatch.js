@@ -147,10 +147,29 @@ var global = this
     return require(ret["cls"])
   }
 
-  global.defineProtocol = function(declaration, protoMethods) {
-  
-      var ret = _OC_defineProtocol(declaration, protoMethods)
-      
+  var _formatDefineProtocols = function(protos, newProtos) {
+      var num = protos.length;
+      for (var i=0; i < num; i++) {
+          var protoInfo = protos[i];
+          var newProtoInfo = {};
+          for (var key in protoInfo) {
+              if (key != "defineTypeEncoding"){
+                  var method = protoInfo[key];
+                  newProtoInfo[key] = method.length;
+              }else
+              {
+                  newProtoInfo[key] = protoInfo[key];
+              }
+          }
+          newProtos.push(newProtoInfo);
+      }
+  }
+  global.defineProtocol = function(declaration, instProtos , clsProtos) {
+      var newInstProtos = [], newClsProtos = [];
+      clsProtos = clsProtos||[];
+      _formatDefineProtocols(instProtos, newInstProtos);
+      _formatDefineProtocols(clsProtos, newClsProtos);
+      var ret = _OC_defineProtocol(declaration, newInstProtos,newClsProtos);
       return ret
   }
 
