@@ -79,6 +79,10 @@ static NSMutableDictionary *registeredStruct;
     context[@"_OC_defineClass"] = ^(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods) {
         return defineClass(classDeclaration, instanceMethods, classMethods);
     };
+
+    context[@"_OC_defineProtocol"] = ^(NSString *protocolDeclaration, JSValue *protocolMethod) {
+        return defineProtocol(protocolDeclaration, protocolMethod);
+    };
     
     context[@"_OC_callI"] = ^id(JSValue *obj, NSString *selectorName, JSValue *arguments, BOOL isSuper) {
         return callSelector(nil, selectorName, arguments, obj, isSuper);
@@ -311,6 +315,59 @@ static char *methodTypesInProtocol(NSString *protocolName, NSString *selectorNam
     free(methods);
     return NULL;
 }
+
+
+static void defineProtocol(NSString *protocolDeclaration, JSValue *protoMethods)
+{
+    const char* protocolName = [protocolDeclaration UTF8String];
+    Protocol* newprotocol = objc_allocateProtocol(protocolName);
+    if (newprotocol) {
+        NSArray *methodArr = [protoMethods toArray];
+        NSUInteger num = methodArr.count;
+        for (NSUInteger i= 0; i < num; i++) {
+            NSDictionary * protoMethod = [methodArr objectAtIndex:i];
+            for (NSString* methodkey in protoMethod.allKeys) {
+                if ([methodkey isEqualToString:@"defineTypeEncoding"]) {
+                    
+                }else if([methodkey isEqualToString:@"isInstance"]){
+                    
+                }else if([methodkey isEqualToString:@"numberOfArgs"]){
+                    
+                }else
+                {
+                    NSInteger numberOfArg = [[protoMethod objectForKey:@"numberOfArgs"]integerValue];
+                    NSString *tmpJSMethodName = [methodkey stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
+                    NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
+                    selectorName = [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+                    
+                    if (!countArgRegex) {
+                        countArgRegex = [NSRegularExpression regularExpressionWithPattern:@":" options:NSRegularExpressionCaseInsensitive error:nil];
+                    }
+                    NSUInteger numberOfMatches = [countArgRegex numberOfMatchesInString:selectorName options:0 range:NSMakeRange(0, [selectorName length])];
+                    if (numberOfMatches < numberOfArg) {
+                        selectorName = [selectorName stringByAppendingString:@":"];
+                    }
+                    
+                    NSString* typeencoding = [protoMethod objectForKey:@"defineTypeEncoding"];
+                    BOOL isInstance = [[protoMethod objectForKey:@"isInstance"]boolValue];
+                    addMethodToProtocol(newprotocol, selectorName, typeencoding, isInstance);
+                    
+                }
+            }
+        }
+
+        objc_registerProtocol ( newprotocol );
+    }
+}
+
+static void addMethodToProtocol(Protocol* protocol, NSString *selectorName, NSString *typeencoding, BOOL isInstance)
+{
+    SEL sel = NSSelectorFromString(selectorName);
+    const char* type = [typeencoding UTF8String];
+    protocol_addMethodDescription(protocol,sel,type,YES,isInstance);
+}
+
+
 
 static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods)
 {
