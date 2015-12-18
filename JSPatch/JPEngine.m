@@ -154,7 +154,7 @@ static NSMutableDictionary *registeredStruct;
             void *pointer =  [(JPBoxing *)([jsVal toObject][@"__obj"]) unboxPointer];
             id obj = *((__unsafe_unretained id *)pointer);
             @synchronized(_TMPMemoryPool) {
-                [_TMPMemoryPool removeObjectForKey:[NSNumber numberWithInteger:[obj hash]]];
+                [_TMPMemoryPool removeObjectForKey:[NSNumber numberWithInteger:[(NSObject*)obj hash]]];
             }
         }
     };
@@ -323,61 +323,84 @@ static void defineProtocol(NSString *protocolDeclaration, JSValue *instProtocol,
     const char* protocolName = [protocolDeclaration UTF8String];
     Protocol* newprotocol = objc_allocateProtocol(protocolName);
     if (newprotocol) {
-        
-        //instance protocol
-        NSArray *instMethodArr = [instProtocol toArray];
-        NSUInteger num = instMethodArr.count;
-        for (NSUInteger i= 0; i < num; i++) {
-            NSDictionary * instProtoMethod = [instMethodArr objectAtIndex:i];
-            for (NSString* instProtokey in instProtoMethod.allKeys) {
-                if (![instProtokey isEqualToString:@"defineTypeEncoding"]) {
-                    NSInteger numberOfArg = [[instProtoMethod objectForKey:instProtokey]integerValue];
-                    NSString *tmpJSMethodName = [instProtokey stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
-                    NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
-                    selectorName = [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
-                    
-                    if (!countArgRegex) {
-                        countArgRegex = [NSRegularExpression regularExpressionWithPattern:@":" options:NSRegularExpressionCaseInsensitive error:nil];
-                    }
-                    NSUInteger numberOfMatches = [countArgRegex numberOfMatchesInString:selectorName options:0 range:NSMakeRange(0, [selectorName length])];
-                    if (numberOfMatches < numberOfArg) {
-                        selectorName = [selectorName stringByAppendingString:@":"];
-                    }
-                    
-                    NSString* typeencoding = [instProtoMethod objectForKey:@"defineTypeEncoding"];
-                    addMethodToProtocol(newprotocol, selectorName, typeencoding, YES);
-                }
-            }
-        }
-        
-        //class protocol
-        NSArray *clsMethodArr = [clsProtocol toArray];
-        NSUInteger clsnum = clsMethodArr.count;
-        for (NSUInteger i= 0; i < clsnum; i++) {
-            NSDictionary * clsProtoMethod = [clsMethodArr objectAtIndex:i];
-            for (NSString* clsProtokey in clsProtoMethod.allKeys) {
-                if (![clsProtokey isEqualToString:@"defineTypeEncoding"]) {
-                    NSInteger numberOfArg = [[clsProtoMethod objectForKey:clsProtokey]integerValue];
-                    NSString *tmpJSMethodName = [clsProtokey stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
-                    NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
-                    selectorName = [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
-                    
-                    if (!countArgRegex) {
-                        countArgRegex = [NSRegularExpression regularExpressionWithPattern:@":" options:NSRegularExpressionCaseInsensitive error:nil];
-                    }
-                    NSUInteger numberOfMatches = [countArgRegex numberOfMatchesInString:selectorName options:0 range:NSMakeRange(0, [selectorName length])];
-                    if (numberOfMatches < numberOfArg) {
-                        selectorName = [selectorName stringByAppendingString:@":"];
-                    }
-                    
-                    NSString* typeencoding = [clsProtoMethod objectForKey:@"defineTypeEncoding"];
-                    addMethodToProtocol(newprotocol, selectorName, typeencoding, NO);
-                }
-            }
-        }
-
+        addGroupMethodsToProtocol(newprotocol,instProtocol,YES);
+        addGroupMethodsToProtocol(newprotocol,clsProtocol,NO);
         objc_registerProtocol ( newprotocol );
     }
+}
+
+static void addGroupMethodsToProtocol(Protocol* protocol,JSValue *groupMethods,BOOL isInstance)
+{
+    NSDictionary *groupDic = [groupMethods toDictionary];
+    for (NSString* jpSelector in groupDic.allKeys) {
+        NSDictionary* methodDic = [groupDic objectForKey:jpSelector];
+        NSString* paraString = [methodDic objectForKey:@"paramsType"];
+        NSString* returnString = [methodDic objectForKey:@"returnType"];
+        NSString* typeEncode = [methodDic objectForKey:@"typeEncode"];
+        
+        NSArray* ArgStrArr = [paraString componentsSeparatedByString:@","];
+        //selector string create
+        NSInteger numberOfArg = ArgStrArr.count;
+        NSString *tmpJSMethodName = [jpSelector stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
+        NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
+        selectorName = [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+        
+        if (!countArgRegex) {
+            countArgRegex = [NSRegularExpression regularExpressionWithPattern:@":" options:NSRegularExpressionCaseInsensitive error:nil];
+        }
+        NSUInteger numberOfMatches = [countArgRegex numberOfMatchesInString:selectorName options:0 range:NSMakeRange(0, [selectorName length])];
+        if (numberOfMatches < numberOfArg) {
+            selectorName = [selectorName stringByAppendingString:@":"];
+        }
+
+        if (typeEncode) {
+            addMethodToProtocol(protocol, selectorName, typeEncode, isInstance);
+        }else
+        {
+            //type encode string create
+            NSMutableDictionary* typeEncodeDic = [[NSMutableDictionary alloc]init];
+            #define JP_DEFINE_TYPE_ENCODE_CASE(_typeString, _type) \
+            if ([_typeString length] > 0) {\
+                char* encode = @encode(_type);\
+                NSString * encodestr = [NSString stringWithUTF8String:encode];\
+                [typeEncodeDic setObject:encodestr forKey:_typeString];\
+            }
+            JP_DEFINE_TYPE_ENCODE_CASE(@"id", id);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"BOOL", BOOL);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"int", int);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"void", void);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"char", char);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"short", short);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"unsigned short", unsigned short);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"unsigned int", unsigned int);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"long", long);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"unsigned long", unsigned long);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"long long", long long);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"float", float);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"double", double);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"CGFloat", CGFloat);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"CGSize", CGSize);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"CGRect", CGRect);
+            JP_DEFINE_TYPE_ENCODE_CASE(@"NSInteger", NSInteger);
+            
+            
+            NSString* returnEncode = [typeEncodeDic objectForKey:returnString];
+            if (returnEncode.length > 0) {
+                NSMutableString* encode = [returnEncode mutableCopy];
+                [encode appendString:@"@:"];
+                for (NSInteger i = 0; i < ArgStrArr.count; i++) {
+                    NSString* argstr = [ArgStrArr objectAtIndex:i];
+                    NSString* argencode = [typeEncodeDic objectForKey:argstr];
+                    [encode appendString:argencode];
+                }
+                addMethodToProtocol(protocol, selectorName, encode, isInstance);
+            }
+            
+        }
+        
+    }
+    
+    
 }
 
 static void addMethodToProtocol(Protocol* protocol, NSString *selectorName, NSString *typeencoding, BOOL isInstance)
@@ -406,6 +429,7 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
         }
     }
     NSArray *protocols = [protocolNames componentsSeparatedByString:@","];
+    
     if (!superClassName) superClassName = @"NSObject";
     className = trim(className);
     superClassName = trim(superClassName);
@@ -418,6 +442,13 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
         }
         cls = objc_allocateClassPair(superCls, className.UTF8String, 0);
         objc_registerClassPair(cls);
+    }
+    
+    if (protocols.count > 0) {
+        for (NSString* protocolName in protocols) {
+            Protocol *protocol = objc_getProtocol([trim(protocolName) cStringUsingEncoding:NSUTF8StringEncoding]);
+            class_addProtocol (cls, protocol);
+        }
     }
     
     for (int i = 0; i < 2; i ++) {
@@ -988,7 +1019,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
             id obj = *((__unsafe_unretained id *)pointer);
             if (obj) {
                 @synchronized(_TMPMemoryPool) {
-                    [_TMPMemoryPool setObject:obj forKey:[NSNumber numberWithInteger:[obj hash]]];
+                    [_TMPMemoryPool setObject:obj forKey:[NSNumber numberWithInteger:[(NSObject*)obj hash]]];
                 }
             }
         }
@@ -1338,7 +1369,7 @@ static id formatJSToOC(JSValue *jsval)
     if ([obj isKindOfClass:[JPBoxing class]]) return [obj unbox];
     if ([obj isKindOfClass:[NSArray class]]) {
         NSMutableArray *newArr = [[NSMutableArray alloc] init];
-        for (int i = 0; i < [obj count]; i ++) {
+        for (int i = 0; i < [(NSArray*)obj count]; i ++) {
             [newArr addObject:formatJSToOC(jsval[i])];
         }
         return newArr;
@@ -1379,7 +1410,7 @@ static id _unboxOCObjectToJS(id obj)
 {
     if ([obj isKindOfClass:[NSArray class]]) {
         NSMutableArray *newArr = [[NSMutableArray alloc] init];
-        for (int i = 0; i < [obj count]; i ++) {
+        for (int i = 0; i < [(NSArray*)obj count]; i ++) {
             [newArr addObject:_unboxOCObjectToJS(obj[i])];
         }
         return newArr;
