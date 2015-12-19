@@ -359,29 +359,36 @@ static void addGroupMethodsToProtocol(Protocol* protocol,JSValue *groupMethods,B
         {
             //type encode string create
             NSMutableDictionary* typeEncodeDic = [[NSMutableDictionary alloc]init];
-            #define JP_DEFINE_TYPE_ENCODE_CASE(_typeString, _type) \
-            if ([_typeString length] > 0) {\
+            #define JP_DEFINE_TYPE_ENCODE_CASE(_type) \
+            if ([@#_type length] > 0) {\
                 char* encode = @encode(_type);\
                 NSString * encodestr = [NSString stringWithUTF8String:encode];\
-                [typeEncodeDic setObject:encodestr forKey:_typeString];\
+                [typeEncodeDic setObject:encodestr forKey:@#_type];\
             }
-            JP_DEFINE_TYPE_ENCODE_CASE(@"id", id);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"BOOL", BOOL);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"int", int);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"void", void);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"char", char);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"short", short);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"unsigned short", unsigned short);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"unsigned int", unsigned int);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"long", long);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"unsigned long", unsigned long);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"long long", long long);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"float", float);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"double", double);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"CGFloat", CGFloat);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"CGSize", CGSize);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"CGRect", CGRect);
-            JP_DEFINE_TYPE_ENCODE_CASE(@"NSInteger", NSInteger);
+            JP_DEFINE_TYPE_ENCODE_CASE(id);
+            JP_DEFINE_TYPE_ENCODE_CASE(BOOL);
+            JP_DEFINE_TYPE_ENCODE_CASE(int);
+            JP_DEFINE_TYPE_ENCODE_CASE(void);
+            JP_DEFINE_TYPE_ENCODE_CASE(char);
+            JP_DEFINE_TYPE_ENCODE_CASE(short);
+            JP_DEFINE_TYPE_ENCODE_CASE(unsigned short);
+            JP_DEFINE_TYPE_ENCODE_CASE(unsigned int);
+            JP_DEFINE_TYPE_ENCODE_CASE(long);
+            JP_DEFINE_TYPE_ENCODE_CASE(unsigned long);
+            JP_DEFINE_TYPE_ENCODE_CASE(long long);
+            JP_DEFINE_TYPE_ENCODE_CASE(float);
+            JP_DEFINE_TYPE_ENCODE_CASE(double);
+            JP_DEFINE_TYPE_ENCODE_CASE(CGFloat);
+            JP_DEFINE_TYPE_ENCODE_CASE(CGSize);
+            JP_DEFINE_TYPE_ENCODE_CASE(CGRect);
+            JP_DEFINE_TYPE_ENCODE_CASE(CGPoint);
+            JP_DEFINE_TYPE_ENCODE_CASE(CGVector);
+            JP_DEFINE_TYPE_ENCODE_CASE(UIEdgeInsets);
+            JP_DEFINE_TYPE_ENCODE_CASE(NSInteger);
+            JP_DEFINE_TYPE_ENCODE_CASE(Class);
+            JP_DEFINE_TYPE_ENCODE_CASE(SEL);
+            
+            [typeEncodeDic setObject:@"@?" forKey:@"block"];
             
             
             NSString* returnEncode = [typeEncodeDic objectForKey:returnString];
@@ -391,7 +398,15 @@ static void addGroupMethodsToProtocol(Protocol* protocol,JSValue *groupMethods,B
                 for (NSInteger i = 0; i < ArgStrArr.count; i++) {
                     NSString* argstr = [ArgStrArr objectAtIndex:i];
                     NSString* argencode = [typeEncodeDic objectForKey:argstr];
-                    [encode appendString:argencode];
+                    if (argencode.length <= 0) {
+                        Class cls = NSClassFromString(argstr);
+                        if ([(id)cls isKindOfClass:[NSObject class]]) {
+                            argencode = @"@";
+                        }
+                    }
+                    if (argencode.length > 0) {
+                        [encode appendString:argencode];
+                    }
                 }
                 addMethodToProtocol(protocol, selectorName, encode, isInstance);
             }
