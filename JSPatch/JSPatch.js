@@ -147,6 +147,11 @@ var global = this
     return require(ret["cls"])
   }
 
+  global.defineProtocol = function(declaration, instProtos , clsProtos) {
+      var ret = _OC_defineProtocol(declaration, instProtos,clsProtos);
+      return ret
+  }
+
   global.block = function(args, cb) {
     var slf = this
     if (args instanceof Function) {
