@@ -24,6 +24,8 @@
 		36F0DC791BF6D5D20090EA4A /* JPLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 36F0DC781BF6D5D20090EA4A /* JPLoader.m */; };
 		36F0DCC61BFAF41C0090EA4A /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */; };
 		3F6C38EB1B4A37D600F88662 /* JPMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C38EA1B4A37D600F88662 /* JPMemory.m */; };
+		6C9C0EE41C25A7C700FCAAC5 /* newProtocolTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */; };
+		6C9C0EE51C25A7DA00FCAAC5 /* newProtocolTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */; };
 		DE58B6481B7C312800F64C63 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE58B6471B7C312800F64C63 /* JavaScriptCore.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		DE6FFEED1B4243500005EE83 /* JPInclude.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6FFEEB1B4243500005EE83 /* JPInclude.m */; };
 		DE6FFF031B42B01C0005EE83 /* protocolTest.js in Resources */ = {isa = PBXBuildFile; fileRef = DE6FFF021B42B01C0005EE83 /* protocolTest.js */; };
@@ -90,6 +92,7 @@
 		36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = ../../../../../../usr/lib/libz.1.dylib; sourceTree = "<group>"; };
 		3F6C38E91B4A37D600F88662 /* JPMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPMemory.h; sourceTree = "<group>"; };
 		3F6C38EA1B4A37D600F88662 /* JPMemory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPMemory.m; sourceTree = "<group>"; };
+		6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = newProtocolTest.js; sourceTree = "<group>"; };
 		DE58B6471B7C312800F64C63 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		DE6FFEEA1B4243500005EE83 /* JPInclude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPInclude.h; sourceTree = "<group>"; };
 		DE6FFEEB1B4243500005EE83 /* JPInclude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPInclude.m; sourceTree = "<group>"; };
@@ -269,6 +272,7 @@
 		DE94AE271AF246C000E461D4 /* JSPatchTests */ = {
 			isa = PBXGroup;
 			children = (
+				6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */,
 				E1B89E9E1B203482000645C2 /* JPMultithreadTestObject.h */,
 				E1B89E9F1B203482000645C2 /* JPMultithreadTestObject.m */,
 				DE94AE431AF2480000E461D4 /* JPTestObject.h */,
@@ -411,6 +415,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C9C0EE51C25A7DA00FCAAC5 /* newProtocolTest.js in Resources */,
 				DE6FFF051B42C25D0005EE83 /* protocolTest.js in Resources */,
 				2D5D892E1B0B8C3B009382EC /* JSPatch.js in Resources */,
 				2D6D12FD1B0B8CF20095A435 /* Images.xcassets in Resources */,
@@ -425,6 +430,7 @@
 				DE6FFF031B42B01C0005EE83 /* protocolTest.js in Resources */,
 				2D0DF7071B22F75C005695DA /* inheritTest.js in Resources */,
 				DE94AE471AF2480000E461D4 /* test.js in Resources */,
+				6C9C0EE41C25A7C700FCAAC5 /* newProtocolTest.js in Resources */,
 				E1B89EAE1B228818000645C2 /* multithreadTest.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
