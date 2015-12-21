@@ -1,4 +1,5 @@
 include('protocolTest.js')
+include('newProtocolTest.js')
 var global = this;
 
 require('JPEngine').defineStruct({

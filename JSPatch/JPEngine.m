@@ -277,11 +277,11 @@ static NSMutableDictionary *registeredStruct;
 
 static NSMutableDictionary *_JSOverideMethods;
 static NSMutableDictionary *_TMPMemoryPool;
-static NSRegularExpression *countArgRegex;
 static NSMutableDictionary *_propKeys;
 static NSMutableDictionary *_JSMethodSignatureCache;
 static NSLock              *_JSMethodSignatureLock;
 static NSRecursiveLock     *_JSMethodForwardCallLock;
+static NSMutableDictionary *_protocolTypeEncodeDict;
 
 static const void *propKey(NSString *propName) {
     if (!_propKeys) _propKeys = [[NSMutableDictionary alloc] init];
@@ -316,113 +316,98 @@ static char *methodTypesInProtocol(NSString *protocolName, NSString *selectorNam
     return NULL;
 }
 
-
-
 static void defineProtocol(NSString *protocolDeclaration, JSValue *instProtocol, JSValue *clsProtocol)
 {
     const char* protocolName = [protocolDeclaration UTF8String];
     Protocol* newprotocol = objc_allocateProtocol(protocolName);
     if (newprotocol) {
-        addGroupMethodsToProtocol(newprotocol,instProtocol,YES);
-        addGroupMethodsToProtocol(newprotocol,clsProtocol,NO);
-        objc_registerProtocol ( newprotocol );
+        addGroupMethodsToProtocol(newprotocol, instProtocol, YES);
+        addGroupMethodsToProtocol(newprotocol, clsProtocol, NO);
+        objc_registerProtocol(newprotocol);
     }
 }
 
 static void addGroupMethodsToProtocol(Protocol* protocol,JSValue *groupMethods,BOOL isInstance)
 {
     NSDictionary *groupDic = [groupMethods toDictionary];
-    for (NSString* jpSelector in groupDic.allKeys) {
-        NSDictionary* methodDic = [groupDic objectForKey:jpSelector];
-        NSString* paraString = [methodDic objectForKey:@"paramsType"];
-        NSString* returnString = [methodDic objectForKey:@"returnType"];
-        NSString* typeEncode = [methodDic objectForKey:@"typeEncode"];
+    for (NSString *jpSelector in groupDic.allKeys) {
+        NSDictionary *methodDict = groupDic[jpSelector];
+        NSString *paraString = methodDict[@"paramsType"];
+        NSString *returnString = methodDict[@"returnType"] ?: @"void";
+        NSString *typeEncode = methodDict[@"typeEncode"];
         
-        NSArray* ArgStrArr = [paraString componentsSeparatedByString:@","];
-        //selector string create
-        NSInteger numberOfArg = ArgStrArr.count;
-        NSString *tmpJSMethodName = [jpSelector stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
-        NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
-        selectorName = [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+        NSArray *argStrArr = [paraString componentsSeparatedByString:@","];
+        NSString *selectorName = convertJPSelectorString(jpSelector);
         
-        if (!countArgRegex) {
-            countArgRegex = [NSRegularExpression regularExpressionWithPattern:@":" options:NSRegularExpressionCaseInsensitive error:nil];
-        }
-        NSUInteger numberOfMatches = [countArgRegex numberOfMatchesInString:selectorName options:0 range:NSMakeRange(0, [selectorName length])];
-        if (numberOfMatches < numberOfArg) {
+        if ([selectorName componentsSeparatedByString:@":"].count - 1 < argStrArr.count) {
             selectorName = [selectorName stringByAppendingString:@":"];
         }
 
         if (typeEncode) {
             addMethodToProtocol(protocol, selectorName, typeEncode, isInstance);
-        }else
-        {
-            //type encode string create
-            NSMutableDictionary* typeEncodeDic = [[NSMutableDictionary alloc]init];
-            #define JP_DEFINE_TYPE_ENCODE_CASE(_type) \
-            if ([@#_type length] > 0) {\
-                char* encode = @encode(_type);\
-                NSString * encodestr = [NSString stringWithUTF8String:encode];\
-                [typeEncodeDic setObject:encodestr forKey:@#_type];\
+            
+        } else {
+            if (!_protocolTypeEncodeDict) {
+                _protocolTypeEncodeDict = [[NSMutableDictionary alloc] init];
+                #define JP_DEFINE_TYPE_ENCODE_CASE(_type) \
+                    [_protocolTypeEncodeDict setObject:[NSString stringWithUTF8String:@encode(_type)] forKey:@#_type];\
+
+                JP_DEFINE_TYPE_ENCODE_CASE(id);
+                JP_DEFINE_TYPE_ENCODE_CASE(BOOL);
+                JP_DEFINE_TYPE_ENCODE_CASE(int);
+                JP_DEFINE_TYPE_ENCODE_CASE(void);
+                JP_DEFINE_TYPE_ENCODE_CASE(char);
+                JP_DEFINE_TYPE_ENCODE_CASE(short);
+                JP_DEFINE_TYPE_ENCODE_CASE(unsigned short);
+                JP_DEFINE_TYPE_ENCODE_CASE(unsigned int);
+                JP_DEFINE_TYPE_ENCODE_CASE(long);
+                JP_DEFINE_TYPE_ENCODE_CASE(unsigned long);
+                JP_DEFINE_TYPE_ENCODE_CASE(long long);
+                JP_DEFINE_TYPE_ENCODE_CASE(float);
+                JP_DEFINE_TYPE_ENCODE_CASE(double);
+                JP_DEFINE_TYPE_ENCODE_CASE(CGFloat);
+                JP_DEFINE_TYPE_ENCODE_CASE(CGSize);
+                JP_DEFINE_TYPE_ENCODE_CASE(CGRect);
+                JP_DEFINE_TYPE_ENCODE_CASE(CGPoint);
+                JP_DEFINE_TYPE_ENCODE_CASE(CGVector);
+                JP_DEFINE_TYPE_ENCODE_CASE(UIEdgeInsets);
+                JP_DEFINE_TYPE_ENCODE_CASE(NSInteger);
+                JP_DEFINE_TYPE_ENCODE_CASE(Class);
+                JP_DEFINE_TYPE_ENCODE_CASE(SEL);
+                JP_DEFINE_TYPE_ENCODE_CASE(void*);
+
+                [_protocolTypeEncodeDict setObject:@"@?" forKey:@"block"];
             }
-            JP_DEFINE_TYPE_ENCODE_CASE(id);
-            JP_DEFINE_TYPE_ENCODE_CASE(BOOL);
-            JP_DEFINE_TYPE_ENCODE_CASE(int);
-            JP_DEFINE_TYPE_ENCODE_CASE(void);
-            JP_DEFINE_TYPE_ENCODE_CASE(char);
-            JP_DEFINE_TYPE_ENCODE_CASE(short);
-            JP_DEFINE_TYPE_ENCODE_CASE(unsigned short);
-            JP_DEFINE_TYPE_ENCODE_CASE(unsigned int);
-            JP_DEFINE_TYPE_ENCODE_CASE(long);
-            JP_DEFINE_TYPE_ENCODE_CASE(unsigned long);
-            JP_DEFINE_TYPE_ENCODE_CASE(long long);
-            JP_DEFINE_TYPE_ENCODE_CASE(float);
-            JP_DEFINE_TYPE_ENCODE_CASE(double);
-            JP_DEFINE_TYPE_ENCODE_CASE(CGFloat);
-            JP_DEFINE_TYPE_ENCODE_CASE(CGSize);
-            JP_DEFINE_TYPE_ENCODE_CASE(CGRect);
-            JP_DEFINE_TYPE_ENCODE_CASE(CGPoint);
-            JP_DEFINE_TYPE_ENCODE_CASE(CGVector);
-            JP_DEFINE_TYPE_ENCODE_CASE(UIEdgeInsets);
-            JP_DEFINE_TYPE_ENCODE_CASE(NSInteger);
-            JP_DEFINE_TYPE_ENCODE_CASE(Class);
-            JP_DEFINE_TYPE_ENCODE_CASE(SEL);
             
-            [typeEncodeDic setObject:@"@?" forKey:@"block"];
-            
-            
-            NSString* returnEncode = [typeEncodeDic objectForKey:returnString];
+            NSString *returnEncode = _protocolTypeEncodeDict[returnString];
             if (returnEncode.length > 0) {
-                NSMutableString* encode = [returnEncode mutableCopy];
+                NSMutableString *encode = [returnEncode mutableCopy];
                 [encode appendString:@"@:"];
-                for (NSInteger i = 0; i < ArgStrArr.count; i++) {
-                    NSString* argstr = [ArgStrArr objectAtIndex:i];
-                    NSString* argencode = [typeEncodeDic objectForKey:argstr];
-                    if (argencode.length <= 0) {
-                        Class cls = NSClassFromString(argstr);
+                for (NSInteger i = 0; i < argStrArr.count; i++) {
+                    NSString *argStr = trim([argStrArr objectAtIndex:i]);
+                    NSString *argEncode = _protocolTypeEncodeDict[argStr];
+                    if (!argEncode) {
+                        Class cls = NSClassFromString(argStr);
                         if ([(id)cls isKindOfClass:[NSObject class]]) {
-                            argencode = @"@";
+                            argEncode = @"@";
+                        } else {
+                            NSCAssert(argEncode, @"unreconized type %@", argStr);
+                            return;
                         }
                     }
-                    if (argencode.length > 0) {
-                        [encode appendString:argencode];
-                    }
+                    [encode appendString:argEncode];
                 }
                 addMethodToProtocol(protocol, selectorName, encode, isInstance);
             }
-            
         }
-        
     }
-    
-    
 }
 
 static void addMethodToProtocol(Protocol* protocol, NSString *selectorName, NSString *typeencoding, BOOL isInstance)
 {
     SEL sel = NSSelectorFromString(selectorName);
     const char* type = [typeencoding UTF8String];
-    protocol_addMethodDescription(protocol,sel,type,YES,isInstance);
+    protocol_addMethodDescription(protocol, sel, type, YES, isInstance);
 }
 
 
@@ -479,11 +464,7 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
             NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
             selectorName = [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
             
-            if (!countArgRegex) {
-                countArgRegex = [NSRegularExpression regularExpressionWithPattern:@":" options:NSRegularExpressionCaseInsensitive error:nil];
-            }
-            NSUInteger numberOfMatches = [countArgRegex numberOfMatchesInString:selectorName options:0 range:NSMakeRange(0, [selectorName length])];
-            if (numberOfMatches < numberOfArg) {
+            if ([selectorName componentsSeparatedByString:@":"].count - 1 < numberOfArg) {
                 selectorName = [selectorName stringByAppendingString:@":"];
             }
             
@@ -1362,6 +1343,14 @@ static BOOL blockTypeIsObject(NSString *typeString)
 {
     return [typeString rangeOfString:@"*"].location != NSNotFound || [typeString isEqualToString:@"id"];
 }
+
+static NSString *convertJPSelectorString(NSString *selectorString)
+{
+    NSString *tmpJSMethodName = [selectorString stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
+    NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
+    return [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+}
+
 
 #pragma mark - Object format
 
