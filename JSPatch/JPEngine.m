@@ -318,7 +318,7 @@ static char *methodTypesInProtocol(NSString *protocolName, NSString *selectorNam
 
 static void defineProtocol(NSString *protocolDeclaration, JSValue *instProtocol, JSValue *clsProtocol)
 {
-    const char* protocolName = [protocolDeclaration UTF8String];
+    const char *protocolName = [protocolDeclaration UTF8String];
     Protocol* newprotocol = objc_allocateProtocol(protocolName);
     if (newprotocol) {
         addGroupMethodsToProtocol(newprotocol, instProtocol, YES);
@@ -377,6 +377,7 @@ static void addGroupMethodsToProtocol(Protocol* protocol,JSValue *groupMethods,B
                 JP_DEFINE_TYPE_ENCODE_CASE(void*);
 
                 [_protocolTypeEncodeDict setObject:@"@?" forKey:@"block"];
+                [_protocolTypeEncodeDict setObject:@"^@" forKey:@"id*"];
             }
             
             NSString *returnEncode = _protocolTypeEncodeDict[returnString];
@@ -387,11 +388,11 @@ static void addGroupMethodsToProtocol(Protocol* protocol,JSValue *groupMethods,B
                     NSString *argStr = trim([argStrArr objectAtIndex:i]);
                     NSString *argEncode = _protocolTypeEncodeDict[argStr];
                     if (!argEncode) {
-                        Class cls = NSClassFromString(argStr);
-                        if ([(id)cls isKindOfClass:[NSObject class]]) {
+                        NSString *argClassName = trim([argStr stringByReplacingOccurrencesOfString:@"*" withString:@""]);
+                        if (NSClassFromString(argClassName) != NULL) {
                             argEncode = @"@";
                         } else {
-                            NSCAssert(argEncode, @"unreconized type %@", argStr);
+                            NSCAssert(NO, @"unreconized type %@", argStr);
                             return;
                         }
                     }
@@ -460,9 +461,7 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
         for (NSString *jsMethodName in methodDict.allKeys) {
             JSValue *jsMethodArr = [jsMethods valueForProperty:jsMethodName];
             int numberOfArg = [jsMethodArr[0] toInt32];
-            NSString *tmpJSMethodName = [jsMethodName stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
-            NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
-            selectorName = [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+            NSString *selectorName = convertJPSelectorString(jsMethodName);
             
             if ([selectorName componentsSeparatedByString:@":"].count - 1 < numberOfArg) {
                 selectorName = [selectorName stringByAppendingString:@":"];
