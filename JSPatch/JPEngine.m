@@ -833,7 +833,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     id argumentsObj = formatJSToOC(arguments);
     
     if (instance && [selectorName isEqualToString:@"toJS"]) {
-        if ([instance isKindOfClass:[NSString class]] || [instance isKindOfClass:[NSDictionary class]] || [instance isKindOfClass:[NSArray class]]) {
+        if ([instance isKindOfClass:[NSString class]] || [instance isKindOfClass:[NSDictionary class]] || [instance isKindOfClass:[NSArray class]] || [instance isKindOfClass:[NSDate class]]) {
             return _unboxOCObjectToJS(instance);
         }
     }
@@ -1355,7 +1355,7 @@ static NSString *convertJPSelectorString(NSString *selectorString)
 
 static id formatOCToJS(id obj)
 {
-    if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSDictionary class]] || [obj isKindOfClass:[NSArray class]]) {
+    if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSDictionary class]] || [obj isKindOfClass:[NSArray class]] || [obj isKindOfClass:[NSDate class]]) {
         return _wrapObj([JPBoxing boxObj:obj]);
     }
     if ([obj isKindOfClass:[NSNumber class]] || [obj isKindOfClass:NSClassFromString(@"NSBlock")] || [obj isKindOfClass:[JSValue class]]) {
@@ -1425,7 +1425,7 @@ static id _unboxOCObjectToJS(id obj)
         }
         return newDict;
     }
-    if ([obj isKindOfClass:[NSString class]] ||[obj isKindOfClass:[NSNumber class]] || [obj isKindOfClass:NSClassFromString(@"NSBlock")]) {
+    if ([obj isKindOfClass:[NSString class]] ||[obj isKindOfClass:[NSNumber class]] || [obj isKindOfClass:NSClassFromString(@"NSBlock")] || [obj isKindOfClass:[NSDate class]]) {
         return obj;
     }
     return _wrapObj(obj);
