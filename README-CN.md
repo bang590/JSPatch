@@ -4,6 +4,8 @@ JSPatch 可以让你用 JavaScript 书写原生 iOS APP。只需在项目引入�
 
 项目仍在开发中，欢迎一起完善这个项目。
 
+**注意**：完善的文档请移步 [Wiki](https://github.com/bang590/JSPatch/wiki/)。
+
 ## 示例
 
 ```objc
@@ -48,6 +50,7 @@ defineClass('AppDelegate', {
 });
 ```
 
+可以使用 [JSPatch Convertor](https://github.com/bang590/JSPatchConvertor) 自动把 Objective-C 代码转为 JavaScript 代码。
 
 ## 安装
 
@@ -121,7 +124,7 @@ console.log(jsArr.push("Patch").join(''))  //output: JSPatch
 
 // 在JS用字典的方式表示 CGRect / CGSize / CGPoint / NSRange
 var view = UIView.alloc().initWithFrame({x:20, y:20, width:100, height:100});
-var x = view.bounds.x;
+var x = view.bounds().x;
 
 // block 从 JavaScript 传入 Objective-C 时，需要写上每个参数的类型。
 // OC Method: + (void)request:(void(^)(NSString *content, BOOL success))callback
