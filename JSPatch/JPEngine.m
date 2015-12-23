@@ -439,7 +439,8 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
     if (!cls) {
         Class superCls = NSClassFromString(superClassName);
         if (!superCls) {
-            return nil;
+            NSCAssert(NO, @"can't find the super class %@", superClassName);
+            return @{@"cls": className};
         }
         cls = objc_allocateClassPair(superCls, className.UTF8String, 0);
         objc_registerClassPair(cls);
