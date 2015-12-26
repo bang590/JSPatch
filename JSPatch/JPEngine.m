@@ -370,6 +370,7 @@ static void addGroupMethodsToProtocol(Protocol* protocol,JSValue *groupMethods,B
                 JP_DEFINE_TYPE_ENCODE_CASE(CGRect);
                 JP_DEFINE_TYPE_ENCODE_CASE(CGPoint);
                 JP_DEFINE_TYPE_ENCODE_CASE(CGVector);
+                JP_DEFINE_TYPE_ENCODE_CASE(NSRange);
                 JP_DEFINE_TYPE_ENCODE_CASE(UIEdgeInsets);
                 JP_DEFINE_TYPE_ENCODE_CASE(NSInteger);
                 JP_DEFINE_TYPE_ENCODE_CASE(Class);
