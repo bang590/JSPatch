@@ -1,5 +1,3 @@
 language: objective-c
-before_script:
-    - brew update && brew upgrade xctool
 script:
     - xctool test -project JSPatchDemo/JSPatchDemo.xcodeproj -scheme JSPatchDemo -sdk iphonesimulator

@@ -7,6 +7,8 @@ JSPatch bridges Objective-C and JavaScript using the Objective-C runtime. You ca
 
 JSPatch is still in development, welcome to improve the project together.
 
+**Notice**: Please go to [Wiki](https://github.com/bang590/JSPatch/wiki/) to get full document.
+
 ## Example
 
 ```objc
@@ -51,6 +53,7 @@ defineClass('AppDelegate', {
 });
 ```
 
+You can also try to use [JSPatch Convertor](https://github.com/bang590/JSPatchConvertor) to convertor code from Objective-C to JavaScript automatically.
 
 ## Installation
 
@@ -137,7 +140,7 @@ console.log(jsArr.push("Patch").join(''))  //output: JSPatch
 
 // use hashes to represent struct like CGRect / CGSize / CGPoint / NSRange
 var view = UIView.alloc().initWithFrame({x:20, y:20, width:100, height:100});
-var x = view.bounds.x;
+var x = view.bounds().x;
 
 // wrap function with `block()` when passing block from JS to OC
 // OC Method: + (void)request:(void(^)(NSString *content, BOOL success))callback
