@@ -68,8 +68,3 @@
 
 @end
 
-@interface newProrotcolTest : NSObject
-
--(void)testNewProtocol;
-
-@end
