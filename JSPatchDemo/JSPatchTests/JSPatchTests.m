@@ -13,6 +13,7 @@
 #import "JPInheritanceTestObjects.h"
 #import "JPMultithreadTestObject.h"
 #import "JPInclude.h"
+#import "newProtocolTest.h"
 //#import "JPCoreGraphics.h"
 //#import "JPUIKit.h"
 #import "JPMemory.h"
@@ -362,5 +363,67 @@ void thread(void* context)
             [obj methodReturnObjectToOverride];
         }
     }];
+}
+
+
+- (void)testNewProtocol{
+    [self loadPatch:@"newProtocolTest"];
+    
+    //Protocol baseTest
+    baseTestProtocolObject *baseTest = [baseTestProtocolObject new];
+    int retBaseTest1 = [baseTest testProtocol:YES];
+    XCTAssertEqual(retBaseTest1, 1);
+    
+    [baseTest test2Protocol:2];
+    [baseTest test3Protocol:NO withB:0.2f withC:3.4f];
+    NSLog(@"new protocol base test end");
+    
+    //Protocol structTest
+    structTestProtocolObject *structTest = [structTestProtocolObject new];
+    int retStructTest1 = [structTest testProtocol:CGRectZero];
+    XCTAssertEqual(retStructTest1, 1);
+    CGPoint retStructTest2 = [structTest test2Protocol:CGSizeZero];
+    XCTAssertTrue(CGPointEqualToPoint(retStructTest2, CGPointMake(100, 100)));
+    CGSize retStructTest3 = [structTest test3Protocol:CGRectZero withB:3.1f withC:4];
+    XCTAssertTrue(CGSizeEqualToSize(retStructTest3, CGSizeMake(100, 100)));
+    NSLog(@"new protocol struct test end");
+    
+    //Protocol objectTest
+    objectTestProtocolObject *objectTest = [objectTestProtocolObject new];
+    int retObjectTest1 = [objectTest testProtocol:@"teststring"];
+    XCTAssertEqual(retObjectTest1, 1);
+    int retObjectTest2 = [objectTest test2Protocol:@"teststring"];
+    XCTAssertEqual(retObjectTest2, 1);
+    CGSize retObjectTest3 = [objectTest test3Protocol:@[@1,@2] withB:@"teststring" withC:2];
+    XCTAssertTrue(CGSizeEqualToSize(retObjectTest3, CGSizeMake(100, 100)));
+    NSLog(@"new protocol object test end");
+    
+    //Protocol sepcialTest
+    specialTestProtocolObject *specialTest = [specialTestProtocolObject new];
+    [specialTest testProtocol:@selector(viewDidLoad)];
+    [specialTest test2Protocol:^{
+        NSLog(@"11");
+    }];
+    [specialTest test3Protocol:0.5f withB:^{
+        NSLog(@"11");
+    } withC:@selector(viewDidLoad)];
+    NSLog(@"new protocol special test end");
+    
+    //Protocol typeEncodeTest
+    typeEncodeTestProtocolObject *encodeTest = [typeEncodeTestProtocolObject new];
+    [encodeTest testProtocol:@"teststring"];
+    NSString* retEncodeTest2 = [encodeTest test2Protocol:@[@1,@2] withB:@"testtest"];
+    XCTAssertTrue([retEncodeTest2 isEqualToString:@"string"]);
+    NSLog(@"new protocol encode test end");
+    
+    
+    //Protocol classTest
+    int retClassTest1 = [classTestProtocolObject testProtocol:@"teststring"];
+    XCTAssertEqual(retClassTest1, 1);
+    int retClassTest2 = [classTestProtocolObject test2Protocol:@"teststring"];
+    XCTAssertEqual(retClassTest2, 1);
+    CGSize retClassTest3 = [classTestProtocolObject test3Protocol:@[@1,@2] withB:@"teststring" withC:2];
+    XCTAssertTrue(CGSizeEqualToSize(retClassTest3, CGSizeMake(100, 100)));
+    NSLog(@"new protocol object test end");
 }
 @end
