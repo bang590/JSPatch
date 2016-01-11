@@ -1385,6 +1385,9 @@ static id formatJSToOC(JSValue *jsval)
             if ([ocObj isKindOfClass:[JPBoxing class]]) return [ocObj unbox];
             return ocObj;
         }
+        if (obj[@"__isBlock"]) {
+            return genCallbackBlock(jsval);
+        }
         NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
         for (NSString *key in [obj allKeys]) {
             [newDict setObject:formatJSToOC(jsval[key]) forKey:key];
