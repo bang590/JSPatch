@@ -1111,60 +1111,28 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
 
 static id genCallbackBlock(JSValue *jsVal)
 {
-#define BLK_DEFINE_1 cb = ^id(void *p0) {
-#define BLK_DEFINE_2 cb = ^id(void *p0, void *p1) {
-#define BLK_DEFINE_3 cb = ^id(void *p0, void *p1, void *p2) {
-#define BLK_DEFINE_4 cb = ^id(void *p0, void *p1, void *p2, void *p3) {
-#define BLK_INIT_PARAMETERS NSMutableArray *list = [[NSMutableArray alloc] init];
-    
-#define BLK_ADD_OBJ(_paramName) [list addObject:formatOCToJS((__bridge id)_paramName)];
-#define BLK_ADD_INT(_paramName) [list addObject:formatOCToJS([NSNumber numberWithLongLong:(long long)_paramName])];
-
-#define BLK_TRAITS_ARG(_idx, _paramName) \
-    if (blockTypeIsObject(trim(argTypes[_idx]))) {  \
-        BLK_ADD_OBJ(_paramName) \
-    } else {  \
-        BLK_ADD_INT(_paramName) \
-    }   \
-
-#define BLK_END \
-    JSValue *ret = [jsVal[@"cb"] callWithArguments:list];    \
-    return formatJSToOC(ret); \
-};
+    #define BLK_TRAITS_ARG(_idx, _paramName) \
+    if (_idx < argTypes.count) { \
+        if (blockTypeIsObject(trim(argTypes[_idx]))) {  \
+            [list addObject:formatOCToJS((__bridge id)_paramName)]; \
+        } else {  \
+            [list addObject:formatOCToJS([NSNumber numberWithLongLong:(long long)_paramName])]; \
+        }   \
+    }
 
     NSArray *argTypes = [[jsVal[@"args"] toString] componentsSeparatedByString:@","];
-    NSInteger count = argTypes.count;
-    id cb;
-    if (count == 1) {
-        BLK_DEFINE_1
-        BLK_INIT_PARAMETERS
-        BLK_TRAITS_ARG(0, p0)
-        BLK_END
-    }
-    if (count == 2) {
-        BLK_DEFINE_2
-        BLK_INIT_PARAMETERS
-        BLK_TRAITS_ARG(0, p0)
-        BLK_TRAITS_ARG(1, p1)
-        BLK_END
-    }
-    if (count == 3) {
-        BLK_DEFINE_3
-        BLK_INIT_PARAMETERS
-        BLK_TRAITS_ARG(0, p0)
-        BLK_TRAITS_ARG(1, p1)
-        BLK_TRAITS_ARG(2, p2)
-        BLK_END
-    }
-    if (count == 4) {
-        BLK_DEFINE_4
-        BLK_INIT_PARAMETERS
+    id cb = ^id(void *p0, void *p1, void *p2, void *p3, void *p4, void *p5) {
+        NSMutableArray *list = [[NSMutableArray alloc] init];
         BLK_TRAITS_ARG(0, p0)
         BLK_TRAITS_ARG(1, p1)
         BLK_TRAITS_ARG(2, p2)
         BLK_TRAITS_ARG(3, p3)
-        BLK_END
-    }
+        BLK_TRAITS_ARG(4, p4)
+        BLK_TRAITS_ARG(5, p5)
+        JSValue *ret = [jsVal[@"cb"] callWithArguments:list];
+        return formatJSToOC(ret);
+    };
+    
     return cb;
 }
 
