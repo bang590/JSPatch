@@ -8,9 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <UIKit/UIKit.h>
 
 
-@interface JPEngine : NSObject
+@interface JPEngine : UIResponder
 
 /*!
  @method
