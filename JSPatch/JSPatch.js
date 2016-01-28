@@ -53,7 +53,7 @@ var global = this
         selectorName += ":"
       }
     }
-    var ret = instance ? _OC_callI(instance, selectorName, args, isSuper):
+    var ret = instance ? _OC_callI(instance, selectorName, args, isSuper,clsName):
                          _OC_callC(clsName, selectorName, args)
     return _formatOCToJS(ret)
   }
@@ -75,6 +75,8 @@ var global = this
     var self = this
     if (methodName == 'super') {
       return function() {
+                        var a = typeof(self);
+        var test = {__obj: self.__obj, __clsName: self.__clsName, __isSuper: 1};
         return {__obj: self.__obj, __clsName: self.__clsName, __isSuper: 1}
       }
     }
@@ -115,7 +117,7 @@ var global = this
     return lastRequire
   }
 
-  var _formatDefineMethods = function(methods, newMethods) {
+  var _formatDefineMethods = function(methods, newMethods ,clsName) {
     for (var methodName in methods) {
       (function(){
        var originMethod = methods[methodName]
@@ -126,6 +128,7 @@ var global = this
           try {
             global.self = args[0]
             args.splice(0,1)
+          global.self.__clsName = clsName;
             ret = originMethod.apply(originMethod, args)
             global.self = lastSelf
           } catch(e) {
@@ -139,8 +142,8 @@ var global = this
 
   global.defineClass = function(declaration, instMethods, clsMethods) {
     var newInstMethods = {}, newClsMethods = {}
-    _formatDefineMethods(instMethods, newInstMethods)
-    _formatDefineMethods(clsMethods, newClsMethods)
+    _formatDefineMethods(instMethods, newInstMethods,declaration)
+    _formatDefineMethods(clsMethods, newClsMethods,declaration)
 
     var ret = _OC_defineClass(declaration, newInstMethods, newClsMethods)
 

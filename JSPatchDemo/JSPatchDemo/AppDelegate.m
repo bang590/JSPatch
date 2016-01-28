@@ -19,6 +19,10 @@
     NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8StringEncoding error:nil];
     [JPEngine evaluateScript:script];
     
+    NSString *sourcePath2 = [[NSBundle mainBundle] pathForResource:@"superTest" ofType:@"js"];
+    NSString *script2 = [NSString stringWithContentsOfFile:sourcePath2 encoding:NSUTF8StringEncoding error:nil];
+    [JPEngine evaluateScript:script2];
+    
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     JPViewController *rootViewController = [[JPViewController alloc] init];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
