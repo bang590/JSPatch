@@ -17,11 +17,13 @@
 void (^JPLogger)(NSString *log);
 
 #pragma mark - Extension
+
 @interface JPLoaderInclude : JPExtension
 
 @end
 
 @implementation JPLoaderInclude
+
 + (void)main:(JSContext *)context
 {
     context[@"include"] = ^(NSString *filePath) {
@@ -37,14 +39,15 @@ void (^JPLogger)(NSString *log);
         }
     };
 }
-@end
 
+@end
 
 @interface JPLoaderTestInclude : JPExtension
 
 @end
 
 @implementation JPLoaderTestInclude
+
 + (void)main:(JSContext *)context
 {
     context[@"include"] = ^(NSString *filePath) {
@@ -55,17 +58,19 @@ void (^JPLogger)(NSString *log);
         }
     };
 }
+
 @end
 
 #pragma mark - Loader
+
 @implementation JPLoader
+
 + (BOOL)run
 {
-    NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    
     if (JPLogger) JPLogger(@"JSPatch: runScript");
-    NSString *libraryDirectory = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) firstObject];
-    NSString *scriptPath = [libraryDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"JSPatch/%@/main.js", appVersion]];
+    
+    NSString *scriptDirectory = [self fetchScriptDirectory];
+    NSString *scriptPath = [scriptDirectory stringByAppendingPathComponent:@"main.js"];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:scriptPath]) {
         [JPEngine startEngine];
@@ -84,25 +89,35 @@ void (^JPLogger)(NSString *log);
     
     if (JPLogger) JPLogger([NSString stringWithFormat:@"JSPatch: updateToVersion: %@", @(version)]);
     
+    // create url request
     NSString *downloadKey = [NSString stringWithFormat:@"/%@/v%@.zip", appVersion, @(version)];
     NSURL *downloadURL = [NSURL URLWithString:[rootUrl stringByAppendingString:downloadKey]];
     NSURLRequest *request = [NSURLRequest requestWithURL:downloadURL cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:20.0];
     
     if (JPLogger) JPLogger([NSString stringWithFormat:@"JSPatch: request file %@", downloadURL]);
     
+    // create task
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (!error) {
             if (JPLogger) JPLogger([NSString stringWithFormat:@"JSPatch: request file success, data length:%@", @(data.length)]);
-            NSString *scriptDirectory = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"JSPatch/%@/", appVersion]];
-            NSString *downloadTmpPath = [NSString stringWithFormat:@"%@/patch_%@_%@", NSTemporaryDirectory(), appVersion, @(version)];
-            NSString *unzipTmpDirectory = [NSString stringWithFormat:@"%@/patch_%@_%@_unzip/", NSTemporaryDirectory(), appVersion, @(version)];
-            NSString *unzipVerifyDirectory = [NSString stringWithFormat:@"%@/patch_%@_%@_unzipTest/", NSTemporaryDirectory(), appVersion, @(version)];
             
+            // script directory
+            NSString *scriptDirectory = [self fetchScriptDirectory];
+            
+            // temporary files and directories
+            NSString *downloadTmpPath = [NSString stringWithFormat:@"%@patch_%@_%@", NSTemporaryDirectory(), appVersion, @(version)];
+            NSString *unzipVerifyDirectory = [NSString stringWithFormat:@"%@patch_%@_%@_unzipTest/", NSTemporaryDirectory(), appVersion, @(version)];
+            NSString *unzipTmpDirectory = [NSString stringWithFormat:@"%@patch_%@_%@_unzip/", NSTemporaryDirectory(), appVersion, @(version)];
+            
+            // save data
             [data writeToFile:downloadTmpPath atomically:YES];
             
-            //unzip script file and encrypted md5 file
-            NSString *scriptZipFilePath;
+            // is the processing flow failed
+            BOOL isFailed = NO;
+            
+            // 1. unzip encrypted md5 file and script file
             NSString *keyFilePath;
+            NSString *scriptZipFilePath;
             ZipArchive *verifyZipArchive = [[ZipArchive alloc] init];
             [verifyZipArchive UnzipOpenFile:downloadTmpPath];
             BOOL verifyUnzipSucc = [verifyZipArchive UnzipFileTo:unzipVerifyDirectory overWrite:YES];
@@ -110,63 +125,81 @@ void (^JPLogger)(NSString *log);
                 for (NSString *filePath in verifyZipArchive.unzippedFiles) {
                     NSString *filename = [filePath lastPathComponent];
                     if ([filename isEqualToString:@"key"]) {
+                        // encrypted md5 file
                         keyFilePath = filePath;
                     } else if ([[filename pathExtension] isEqualToString:@"zip"]) {
+                        // script file
                         scriptZipFilePath = filePath;
                     }
                 }
             } else {
                 if (JPLogger) JPLogger(@"JSPatch: fail to unzip file");
+                isFailed = YES;
+                
                 if (callback) {
                     callback([NSError errorWithDomain:@"org.jspatch" code:JPUpdateErrorUnzipFailed userInfo:nil]);
                 }
-                return;
             }
             
-            
-            //decrypt and verify md5 file
-            NSString *md5 = [self fileMD5:scriptZipFilePath];
-            NSData *md5Data = [RSA decryptData:[NSData dataWithContentsOfFile:keyFilePath] publicKey:publicKey];
-            NSString *decryptMD5 = [[NSString alloc] initWithData:md5Data encoding:NSUTF8StringEncoding];
-            if (![decryptMD5 isEqualToString:md5]) {
-                if (callback) {
-                    callback([NSError errorWithDomain:@"org.jspatch" code:JPUpdateErrorVerifyFailed userInfo:nil]);
-                }
-                
-                if (JPLogger) JPLogger([NSString stringWithFormat:@"JSPatch: decompress error, md5 didn't match, decrypt:%@ md5:%@", decryptMD5, md5]);
-                return;
-            }
-            
-            //unzip script files
-            ZipArchive *zipArchive = [[ZipArchive alloc] init];
-            [zipArchive UnzipOpenFile:scriptZipFilePath];
-            BOOL unzipSucc = [zipArchive UnzipFileTo:unzipTmpDirectory overWrite:YES];
-            if (unzipSucc) {
-                for (NSString *filePath in zipArchive.unzippedFiles) {
-                    NSString *filename = [filePath lastPathComponent];
-                    if ([[filename pathExtension] isEqualToString:@"js"]) {
-                        [[NSFileManager defaultManager] createDirectoryAtPath:scriptDirectory withIntermediateDirectories:YES attributes:nil error:nil];
-                        NSString *newFilePath = [scriptDirectory stringByAppendingPathComponent:filename];
-                        [[NSData dataWithContentsOfFile:filePath] writeToFile:newFilePath atomically:YES];
+            // 2. decrypt and verify md5 file
+            if (!isFailed) {
+                NSData *md5Data = [RSA decryptData:[NSData dataWithContentsOfFile:keyFilePath] publicKey:publicKey];
+                NSString *decryptMD5 = [[NSString alloc] initWithData:md5Data encoding:NSUTF8StringEncoding];
+                NSString *md5 = [self fileMD5:scriptZipFilePath];
+                if (![decryptMD5 isEqualToString:md5]) {
+                    if (JPLogger) JPLogger([NSString stringWithFormat:@"JSPatch: decompress error, md5 didn't match, decrypt:%@ md5:%@", decryptMD5, md5]);
+                    isFailed = YES;
+                    
+                    if (callback) {
+                        callback([NSError errorWithDomain:@"org.jspatch" code:JPUpdateErrorVerifyFailed userInfo:nil]);
                     }
                 }
             }
             
-            if (JPLogger) JPLogger([NSString stringWithFormat:@"JSPatch: updateToVersion: %@ success", @(version)]);
+            // 3. unzip script file and save
+            if (!isFailed) {
+                ZipArchive *zipArchive = [[ZipArchive alloc] init];
+                [zipArchive UnzipOpenFile:scriptZipFilePath];
+                BOOL unzipSucc = [zipArchive UnzipFileTo:unzipTmpDirectory overWrite:YES];
+                if (unzipSucc) {
+                    for (NSString *filePath in zipArchive.unzippedFiles) {
+                        NSString *filename = [filePath lastPathComponent];
+                        if ([[filename pathExtension] isEqualToString:@"js"]) {
+                            [[NSFileManager defaultManager] createDirectoryAtPath:scriptDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+                            NSString *newFilePath = [scriptDirectory stringByAppendingPathComponent:filename];
+                            [[NSData dataWithContentsOfFile:filePath] writeToFile:newFilePath atomically:YES];
+                        }
+                    }
+                }
+                else
+                {
+                    if (JPLogger) JPLogger(@"JSPatch: fail to unzip script file");
+                    isFailed = YES;
+                    
+                    if (callback) {
+                        callback([NSError errorWithDomain:@"org.jspatch" code:JPUpdateErrorUnzipFailed userInfo:nil]);
+                    }
+                }
+            }
             
-            //clear tmp files
+            // success
+            if (!isFailed) {
+                if (JPLogger) JPLogger([NSString stringWithFormat:@"JSPatch: updateToVersion: %@ success", @(version)]);
+                
+                [[NSUserDefaults standardUserDefaults] setInteger:version forKey:kJSPatchVersion(appVersion)];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                
+                if (callback) callback(nil);
+            }
+            
+            // clear temporary files
             [[NSFileManager defaultManager] removeItemAtPath:downloadTmpPath error:nil];
             [[NSFileManager defaultManager] removeItemAtPath:unzipVerifyDirectory error:nil];
             [[NSFileManager defaultManager] removeItemAtPath:unzipTmpDirectory error:nil];
-            
-            [[NSUserDefaults standardUserDefaults] setInteger:version forKey:kJSPatchVersion(appVersion)];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-            
-            if (callback) callback(nil);
-            
         } else {
-            if (callback) callback(error);
             if (JPLogger) JPLogger([NSString stringWithFormat:@"JSPatch: request error %@", error]);
+            
+            if (callback) callback(error);
         }
     }];
     [task resume];
@@ -191,6 +224,14 @@ void (^JPLogger)(NSString *log);
 {
     NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     return [[NSUserDefaults standardUserDefaults] integerForKey:kJSPatchVersion(appVersion)];
+}
+
++ (NSString *)fetchScriptDirectory
+{
+    NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    NSString *libraryDirectory = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *scriptDirectory = [libraryDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"JSPatch/%@/", appVersion]];
+    return scriptDirectory;
 }
 
 #pragma mark utils
