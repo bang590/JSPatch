@@ -24,6 +24,8 @@
 		36F0DC791BF6D5D20090EA4A /* JPLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 36F0DC781BF6D5D20090EA4A /* JPLoader.m */; };
 		36F0DCC61BFAF41C0090EA4A /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */; };
 		3F6C38EB1B4A37D600F88662 /* JPMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C38EA1B4A37D600F88662 /* JPMemory.m */; };
+		6C421B891C5A1DCF002729AF /* superTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C421B871C5A1DCF002729AF /* superTest.js */; };
+		6C421B8A1C5A1DCF002729AF /* SuperTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C421B881C5A1DCF002729AF /* SuperTest.m */; };
 		6C72B7961C352BA80086C98D /* newProtocolTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C72B7951C352BA80086C98D /* newProtocolTest.m */; };
 		6C9C0EE41C25A7C700FCAAC5 /* newProtocolTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */; };
 		6C9C0EE51C25A7DA00FCAAC5 /* newProtocolTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */; };
@@ -93,6 +95,9 @@
 		36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = ../../../../../../usr/lib/libz.1.dylib; sourceTree = "<group>"; };
 		3F6C38E91B4A37D600F88662 /* JPMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPMemory.h; sourceTree = "<group>"; };
 		3F6C38EA1B4A37D600F88662 /* JPMemory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPMemory.m; sourceTree = "<group>"; };
+		6C421B861C5A1DCF002729AF /* SuperTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperTest.h; sourceTree = "<group>"; };
+		6C421B871C5A1DCF002729AF /* superTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = superTest.js; sourceTree = "<group>"; };
+		6C421B881C5A1DCF002729AF /* SuperTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SuperTest.m; sourceTree = "<group>"; };
 		6C72B7941C352BA80086C98D /* newProtocolTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = newProtocolTest.h; sourceTree = "<group>"; };
 		6C72B7951C352BA80086C98D /* newProtocolTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = newProtocolTest.m; sourceTree = "<group>"; };
 		6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = newProtocolTest.js; sourceTree = "<group>"; };
@@ -169,6 +174,9 @@
 				2D6D12F91B0B8CF20095A435 /* Supporting Files */,
 				2D5D89171B0B8BFF009382EC /* AppDelegate.h */,
 				2D5D89181B0B8BFF009382EC /* AppDelegate.m */,
+				6C421B861C5A1DCF002729AF /* SuperTest.h */,
+				6C421B871C5A1DCF002729AF /* superTest.js */,
+				6C421B881C5A1DCF002729AF /* SuperTest.m */,
 				2D5D891D1B0B8BFF009382EC /* JPViewController.h */,
 				2D5D891E1B0B8BFF009382EC /* JPViewController.m */,
 				2D6D13001B0B8CFF0095A435 /* demo.js */,
@@ -422,6 +430,7 @@
 			files = (
 				6C9C0EE51C25A7DA00FCAAC5 /* newProtocolTest.js in Resources */,
 				DE6FFF051B42C25D0005EE83 /* protocolTest.js in Resources */,
+				6C421B891C5A1DCF002729AF /* superTest.js in Resources */,
 				2D5D892E1B0B8C3B009382EC /* JSPatch.js in Resources */,
 				2D6D12FD1B0B8CF20095A435 /* Images.xcassets in Resources */,
 				2D6D13011B0B8CFF0095A435 /* demo.js in Resources */,
@@ -464,6 +473,7 @@
 				DEE3D2B51B7CC5D200D73DF1 /* JPCGPath.m in Sources */,
 				DEE3D2B61B7CC5D200D73DF1 /* JPCGTransform.m in Sources */,
 				36F0DC6F1BF6CF5C0090EA4A /* unzip.c in Sources */,
+				6C421B8A1C5A1DCF002729AF /* SuperTest.m in Sources */,
 				DEE3D2B01B7CC5D200D73DF1 /* JPCGBitmapContext.m in Sources */,
 				DEE3D2B21B7CC5D200D73DF1 /* JPCGContext.m in Sources */,
 				3F6C38EB1B4A37D600F88662 /* JPMemory.m in Sources */,
