@@ -7,7 +7,7 @@
 //
 
 #import "JPViewController.h"
-
+#import "SuperTest.h"
 @implementation JPViewController
 
 - (void)viewDidLoad {
@@ -17,6 +17,9 @@
     [btn addTarget:self action:@selector(handleBtn:) forControlEvents:UIControlEventTouchUpInside];
     [btn setBackgroundColor:[UIColor grayColor]];
     [self.view addSubview:btn];
+    
+    SuperTestC* testb = [[SuperTestC alloc]init];
+    [testb testSuper];
 }
 
 - (void)handleBtn:(id)sender
