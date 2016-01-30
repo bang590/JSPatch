@@ -1426,6 +1426,11 @@ static id _unboxOCObjectToJS(id obj)
     }
 }
 
++ (id)formatRetainedCFTypeOCToJS:(CFTypeRef)CF_CONSUMED type
+{
+    return formatOCToJS([JPBoxing boxPointer:(void *)type]);
+}
+
 + (id)formatPointerOCToJS:(void *)pointer
 {
     return formatOCToJS([JPBoxing boxPointer:pointer]);
