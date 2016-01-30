@@ -1213,11 +1213,11 @@ static void getStructDataWithDict(void *structData, NSDictionary *dict, NSDictio
             case 'F': {
                 int size = sizeof(CGFloat);
                 CGFloat val;
-                if (size == sizeof(double)) {
-                    val = [dict[itemKeys[i]] doubleValue];
-                } else {
-                    val = [dict[itemKeys[i]] floatValue];
-                }
+                #if CGFLOAT_IS_DOUBLE
+                val = [dict[itemKeys[i]] doubleValue];
+                #else
+                val = [dict[itemKeys[i]] floatValue];
+                #endif
                 memcpy(structData + position, &val, size);
                 position += size;
                 break;
