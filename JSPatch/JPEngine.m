@@ -754,6 +754,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                     NSDictionary *dict = formatJSToOC(jsval);
                     getStructDataWithDict(ret, dict, structDefine);
                     [invocation setReturnValue:ret];
+                    free(ret);
                 }
             }
             break;
