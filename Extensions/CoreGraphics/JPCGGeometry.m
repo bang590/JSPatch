@@ -19,6 +19,12 @@
                              @"keys": @[@"dx", @"dy"]
                              }];
     
+    [JPEngine defineStruct:@{
+                             @"name": @"CGAffineTransform",
+                             @"types": @"FFFFFF",
+                             @"keys": @[@"a", @"b", @"c", @"d", @"tx", @"ty"]
+                             }];
+    
     context[@"CGRectContainsPoint"]  = ^BOOL(NSDictionary *rectDict, NSDictionary *pointDict) {
         CGRect rect;
         CGPoint point;
