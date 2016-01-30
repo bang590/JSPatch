@@ -76,6 +76,7 @@
 + (void)main:(JSContext *)context;
 
 + (void *)formatPointerJSToOC:(JSValue *)val;
++ (id)formatRetainedCFTypeOCToJS:(CFTypeRef)CF_CONSUMED type;
 + (id)formatPointerOCToJS:(void *)pointer;
 + (id)formatJSToOC:(JSValue *)val;
 + (id)formatOCToJS:(id)obj;

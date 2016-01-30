@@ -21,7 +21,7 @@
                                                    int intent) {
         if (decodeArray == nil) {
             CGImageRef  createdImage = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel,bytesPerRow, [self formatPointerJSToOC:space], bitmapInfo, [self formatPointerJSToOC:provider], NULL, shouldInterpolate, intent);
-            return [self formatPointerOCToJS:createdImage];
+            return [self formatRetainedCFTypeOCToJS:createdImage];
         }else {
             CGFloat *decode = malloc(decodeArray.count * sizeof(CGFloat));
             for (int i = 0; i < decodeArray.count; i++) {
@@ -29,7 +29,7 @@
             }
             CGImageRef  createdImage = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel,bytesPerRow, [self formatPointerJSToOC:space], bitmapInfo, [self formatPointerJSToOC:provider], decode, shouldInterpolate, intent);
             free(decode);
-            return [self formatPointerOCToJS:createdImage];
+            return [self formatRetainedCFTypeOCToJS:createdImage];
         }
     };
     
@@ -37,12 +37,12 @@
         CGRect rect;
         [JPCGGeometry rectStruct:&rect ofDict:rectDict];
         CGImageRef retImage = CGImageCreateWithImageInRect([self formatPointerJSToOC:image], rect);
-        return [self formatPointerOCToJS:retImage];
+        return [self formatRetainedCFTypeOCToJS:retImage];
     };
     
     context[@"CGImageCreateWithMask"]        = ^id(JSValue *image, JSValue *mask) {
         CGImageRef createdImage = CGImageCreateWithMask([self formatPointerJSToOC:image], [self formatPointerJSToOC:mask]);
-        return [self formatPointerOCToJS:createdImage];
+        return [self formatRetainedCFTypeOCToJS:createdImage];
     };
     
     context[@"CGImageGetAlphaInfo"]          = ^CGImageAlphaInfo(JSValue *image) {

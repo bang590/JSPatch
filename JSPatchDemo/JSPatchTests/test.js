@@ -27,6 +27,9 @@ require('JPEngine').defineStruct({
     funcToSwizzleReturnDictionary: function(dict) {
       return dict
     },
+    funcToSwizzleReturnJSDictionary: function() {
+      return {"str" : "js_string"};
+    },
     funcToSwizzleReturnArray: function(arr) {
       return arr
     },
