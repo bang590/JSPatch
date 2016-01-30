@@ -9,6 +9,9 @@
 #import "newProtocolTest.h"
 #import "JPEngine.h"
 
+#pragma clang diagnostic push
+
+#pragma clang diagnostic ignored "-Wincomplete-implementation"
 @implementation baseTestProtocolObject
 // no method definition
 // no crash means addProtocol success
@@ -39,3 +42,4 @@
 // no crash means addProtocol success
 @end
 
+#pragma clang diagnostic pop

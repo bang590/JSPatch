@@ -280,6 +280,11 @@ typedef struct {
     return nil;
 }
 
+- (NSDictionary *)funcToSwizzleReturnJSDictionary
+{
+    return nil;
+}
+
 - (NSArray *)funcToSwizzleReturnArray:(NSArray *)arr
 {
     return nil;
@@ -356,10 +361,13 @@ typedef struct {
     return NULL;
 }
 
-- (void)funcTestNSErrorPointer:(NSError **)error
+- (BOOL)funcTestNSErrorPointer:(NSError **)error
 {
     NSError *tmp = [[NSError alloc]initWithDomain:@"com.albert43" code:43 userInfo:@{@"msg":@"test error"}];
-    *error = tmp;
+    if (error)
+        *error = tmp;
+    
+    return NO;
 }
 
 - (void *)funcReturnPointer

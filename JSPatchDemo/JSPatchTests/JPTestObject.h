@@ -111,6 +111,7 @@
 - (void)funcToSwizzleTestGCD:(void(^)())block;
 
 - (NSDictionary *)funcToSwizzleReturnDictionary:(NSDictionary *)dict;
+- (NSDictionary *)funcToSwizzleReturnJSDictionary;
 - (NSArray *)funcToSwizzleReturnArray:(NSArray *)arr;
 - (NSString *)funcToSwizzleReturnString:(NSString *)str;
 

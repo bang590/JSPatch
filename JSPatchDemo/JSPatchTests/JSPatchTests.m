@@ -122,6 +122,9 @@
     NSDictionary *dict = [obj funcToSwizzleReturnDictionary:originalDict];
     XCTAssert(originalDict == dict, @"funcToSwizzleReturnDictionary");
     
+    dict = [obj funcToSwizzleReturnJSDictionary];
+    XCTAssertEqualObjects(dict[@"str"], @"js_string", @"funcToSwizzleReturnJSDictionary");
+    
     NSArray *originalArr = @[@"js", @"patch"];
     NSArray *arr = [obj funcToSwizzleReturnArray:originalArr];
     XCTAssert(originalArr == arr, @"funcToSwizzleReturnArray");
