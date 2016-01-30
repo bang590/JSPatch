@@ -280,6 +280,11 @@ typedef struct {
     return nil;
 }
 
+- (NSDictionary *)funcToSwizzleReturnJSDictionary
+{
+    return nil;
+}
+
 - (NSArray *)funcToSwizzleReturnArray:(NSArray *)arr
 {
     return nil;

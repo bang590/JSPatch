@@ -681,7 +681,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
             JP_FWD_RET_CASE_RET(_typeChar, _type, _type ret = [[jsval toObject] _typeSelector];)   \
 
         #define JP_FWD_RET_CODE_ID \
-            id ret = formatJSToOC(jsval); \
+            id __autoreleasing ret = formatJSToOC(jsval); \
             if (ret == _nilObj ||   \
                 ([ret isKindOfClass:[NSNumber class]] && strcmp([ret objCType], "c") == 0 && ![ret boolValue])) ret = nil;  \
 
