@@ -15,7 +15,7 @@
 {
     [JPEngine defineStruct:@{
                              @"name": @"CGVector",
-                             @"types": @"ff",
+                             @"types": @"FF",
                              @"keys": @[@"dx", @"dy"]
                              }];
     

@@ -16,8 +16,8 @@
 + (void)main:(JSContext *)context
 {
     [JPEngine defineStruct:@{@"name": @"UIEdgeInsets",
-                             @"types": @"dddd",
-                             @"keys": @[@"bottom", @"left", @"right", @"top"]
+                             @"types": @"FFFF",
+                             @"keys": @[@"top", @"left", @"bottom", @"right"]
                              }];
     
     context[@"CGRectFromString"]   = ^NSDictionary *(NSString *string) {
