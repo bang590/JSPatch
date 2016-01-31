@@ -556,8 +556,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
     NSMutableArray *argList = [[NSMutableArray alloc] init];
     if ([slf class] == slf) {
         [argList addObject:[JSValue valueWithObject:@{@"__clsName": NSStringFromClass([slf class])} inContext:_context]];
-    } else if ([slf class] != slf &&
-               [selectorName isEqualToString:@"dealloc"]) {
+    } else if ([selectorName isEqualToString:@"dealloc"]) {
         [argList addObject:[JPBoxing boxAssignObj:slf]];
         deallocFlag = YES;
     } else {
