@@ -18,6 +18,7 @@
 @property (nonatomic) void *pointer;
 @property (nonatomic) Class cls;
 @property (nonatomic, weak) id weakObj;
+@property (nonatomic, assign) id assignObj;
 - (id)unbox;
 - (void *)unboxPointer;
 - (Class)unboxClass;
@@ -37,11 +38,13 @@ JPBOXING_GEN(boxObj, obj, id)
 JPBOXING_GEN(boxPointer, pointer, void *)
 JPBOXING_GEN(boxClass, cls, Class)
 JPBOXING_GEN(boxWeakObj, weakObj, id)
+JPBOXING_GEN(boxAssignObj, assignObj, id)
 
 - (id)unbox
 {
     if (self.obj) return self.obj;
     if (self.weakObj) return self.weakObj;
+    if (self.assignObj) return self.assignObj;
     return self;
 }
 - (void *)unboxPointer
@@ -521,8 +524,10 @@ static JSValue* getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
 
 #pragma clang diagnostic pop
 
-static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
+static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, NSInvocation *invocation)
 {
+    BOOL deallocFlag = NO;
+    id slf = assignSlf;
     NSMethodSignature *methodSignature = [invocation methodSignature];
     NSInteger numberOfArguments = [methodSignature numberOfArguments];
     
@@ -551,6 +556,9 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
     NSMutableArray *argList = [[NSMutableArray alloc] init];
     if ([slf class] == slf) {
         [argList addObject:[JSValue valueWithObject:@{@"__clsName": NSStringFromClass([slf class])} inContext:_context]];
+    } else if ([selectorName isEqualToString:@"dealloc"]) {
+        [argList addObject:[JPBoxing boxAssignObj:slf]];
+        deallocFlag = YES;
     } else {
         [argList addObject:[JPBoxing boxWeakObj:slf]];
     }
@@ -754,6 +762,7 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
                     NSDictionary *dict = formatJSToOC(jsval);
                     getStructDataWithDict(ret, dict, structDefine);
                     [invocation setReturnValue:ret];
+                    free(ret);
                 }
             }
             break;
@@ -761,6 +770,14 @@ static void JPForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
         default: {
             break;
         }
+    }
+    
+    if (deallocFlag) {
+        slf = nil;
+        Class instClass = object_getClass(assignSlf);
+        Method deallocMethod = class_getInstanceMethod(instClass, NSSelectorFromString(@"ORIGdealloc"));
+        void (*originalDealloc)(__unsafe_unretained id, SEL) = (__typeof__(originalDealloc))method_getImplementation(deallocMethod);
+        originalDealloc(assignSlf, NSSelectorFromString(@"dealloc"));
     }
 }
 
@@ -1212,11 +1229,11 @@ static void getStructDataWithDict(void *structData, NSDictionary *dict, NSDictio
             case 'F': {
                 int size = sizeof(CGFloat);
                 CGFloat val;
-                if (size == sizeof(double)) {
-                    val = [dict[itemKeys[i]] doubleValue];
-                } else {
-                    val = [dict[itemKeys[i]] floatValue];
-                }
+                #if CGFLOAT_IS_DOUBLE
+                val = [dict[itemKeys[i]] doubleValue];
+                #else
+                val = [dict[itemKeys[i]] floatValue];
+                #endif
                 memcpy(structData + position, &val, size);
                 position += size;
                 break;
