@@ -16,6 +16,7 @@
 #import "newProtocolTest.h"
 //#import "JPCoreGraphics.h"
 //#import "JPUIKit.h"
+#import "SuperTestObject.h"
 #import "JPMemory.h"
 @interface JSPatchTests : XCTestCase
 
@@ -172,6 +173,13 @@
     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
                                  beforeDate:[NSDate dateWithTimeIntervalSinceNow:10]];
+}
+
+- (void)testSuperClass
+{
+    [self loadPatch:@"superTest"];
+    SuperTestC *testobject = [[SuperTestC alloc]init];
+    [testobject testSuper];
 }
 
 - (void)testInheritance

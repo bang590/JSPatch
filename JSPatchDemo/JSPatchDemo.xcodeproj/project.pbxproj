@@ -24,6 +24,8 @@
 		36F0DC791BF6D5D20090EA4A /* JPLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 36F0DC781BF6D5D20090EA4A /* JPLoader.m */; };
 		36F0DCC61BFAF41C0090EA4A /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */; };
 		3F6C38EB1B4A37D600F88662 /* JPMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C38EA1B4A37D600F88662 /* JPMemory.m */; };
+		6C6CAC741C5F0BCA00444348 /* superTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C6CAC721C5F0BCA00444348 /* superTest.js */; };
+		6C6CAC751C5F0BCA00444348 /* SuperTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6CAC731C5F0BCA00444348 /* SuperTestObject.m */; };
 		6C72B7961C352BA80086C98D /* newProtocolTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C72B7951C352BA80086C98D /* newProtocolTest.m */; };
 		6C9C0EE41C25A7C700FCAAC5 /* newProtocolTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */; };
 		6C9C0EE51C25A7DA00FCAAC5 /* newProtocolTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */; };
@@ -93,6 +95,9 @@
 		36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = ../../../../../../usr/lib/libz.1.dylib; sourceTree = "<group>"; };
 		3F6C38E91B4A37D600F88662 /* JPMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPMemory.h; sourceTree = "<group>"; };
 		3F6C38EA1B4A37D600F88662 /* JPMemory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPMemory.m; sourceTree = "<group>"; };
+		6C6CAC711C5F0BCA00444348 /* SuperTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperTestObject.h; sourceTree = "<group>"; };
+		6C6CAC721C5F0BCA00444348 /* superTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = superTest.js; sourceTree = "<group>"; };
+		6C6CAC731C5F0BCA00444348 /* SuperTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SuperTestObject.m; sourceTree = "<group>"; };
 		6C72B7941C352BA80086C98D /* newProtocolTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = newProtocolTest.h; sourceTree = "<group>"; };
 		6C72B7951C352BA80086C98D /* newProtocolTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = newProtocolTest.m; sourceTree = "<group>"; };
 		6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = newProtocolTest.js; sourceTree = "<group>"; };
@@ -275,6 +280,9 @@
 		DE94AE271AF246C000E461D4 /* JSPatchTests */ = {
 			isa = PBXGroup;
 			children = (
+				6C6CAC711C5F0BCA00444348 /* SuperTestObject.h */,
+				6C6CAC721C5F0BCA00444348 /* superTest.js */,
+				6C6CAC731C5F0BCA00444348 /* SuperTestObject.m */,
 				6C72B7941C352BA80086C98D /* newProtocolTest.h */,
 				6C72B7951C352BA80086C98D /* newProtocolTest.m */,
 				6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */,
@@ -434,6 +442,7 @@
 			files = (
 				DE6FFF031B42B01C0005EE83 /* protocolTest.js in Resources */,
 				2D0DF7071B22F75C005695DA /* inheritTest.js in Resources */,
+				6C6CAC741C5F0BCA00444348 /* superTest.js in Resources */,
 				DE94AE471AF2480000E461D4 /* test.js in Resources */,
 				6C9C0EE41C25A7C700FCAAC5 /* newProtocolTest.js in Resources */,
 				E1B89EAE1B228818000645C2 /* multithreadTest.js in Resources */,
@@ -481,6 +490,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C6CAC751C5F0BCA00444348 /* SuperTestObject.m in Sources */,
 				6C72B7961C352BA80086C98D /* newProtocolTest.m in Sources */,
 				DE94AE461AF2480000E461D4 /* JPTestObject.m in Sources */,
 				E1B89EA31B218986000645C2 /* JPInheritanceTestObjects.m in Sources */,

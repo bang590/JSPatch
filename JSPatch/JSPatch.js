@@ -115,7 +115,7 @@ var global = this
     return lastRequire
   }
 
-  var _formatDefineMethods = function(methods, newMethods) {
+  var _formatDefineMethods = function(methods, newMethods, declaration) {
     for (var methodName in methods) {
       (function(){
        var originMethod = methods[methodName]
@@ -125,6 +125,9 @@ var global = this
           var ret;
           try {
             global.self = args[0]
+            if (global.self.__obj) {
+              global.self.__obj.__clsDeclaration = declaration
+            }
             args.splice(0,1)
             ret = originMethod.apply(originMethod, args)
             global.self = lastSelf
@@ -139,8 +142,8 @@ var global = this
 
   global.defineClass = function(declaration, instMethods, clsMethods) {
     var newInstMethods = {}, newClsMethods = {}
-    _formatDefineMethods(instMethods, newInstMethods)
-    _formatDefineMethods(clsMethods, newClsMethods)
+    _formatDefineMethods(instMethods, newInstMethods,declaration)
+    _formatDefineMethods(clsMethods, newClsMethods,declaration)
 
     var ret = _OC_defineClass(declaration, newInstMethods, newClsMethods)
 
