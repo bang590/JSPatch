@@ -87,11 +87,11 @@ static NSMutableDictionary *registeredStruct;
         return defineProtocol(protocolDeclaration, instProtocol,clsProtocol);
     };
     
-    context[@"_OC_callI"] = ^id(JSValue *obj, NSString *selectorName, JSValue *arguments, BOOL isSuper) {
-        return callSelector(nil, selectorName, arguments, obj, isSuper);
+    context[@"_OC_callI"] = ^id(JSValue *obj, NSString *selectorName, JSValue *arguments, BOOL isSuper , NSString* defineName) {
+        return callSelector(nil, selectorName, arguments, obj, isSuper,defineName);
     };
     context[@"_OC_callC"] = ^id(NSString *className, NSString *selectorName, JSValue *arguments) {
-        return callSelector(className, selectorName, arguments, nil, NO);
+        return callSelector(className, selectorName, arguments, nil, NO,nil);
     };
     context[@"_OC_formatJSToOC"] = ^id(JSValue *obj) {
         return formatJSToOC(obj);
@@ -669,7 +669,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
                 NSArray *args = nil;  \
                 JSValue *cb = jsval[@"cb"]; \
                 if ([jsval hasProperty:@"sel"]) {   \
-                    id callRet = callSelector(![jsval[@"clsName"] isUndefined] ? [jsval[@"clsName"] toString] : nil, [jsval[@"sel"] toString], jsval[@"args"], ![jsval[@"obj"] isUndefined] ? jsval[@"obj"] : nil, NO);  \
+                    id callRet = callSelector(![jsval[@"clsName"] isUndefined] ? [jsval[@"clsName"] toString] : nil, [jsval[@"sel"] toString], jsval[@"args"], ![jsval[@"obj"] isUndefined] ? jsval[@"obj"] : nil, NO,nil);  \
                     args = @[[_context[@"_formatOCToJS"] callWithArguments:callRet ? @[callRet] : _formatOCToJSList(@[_nilObj])]];  \
                 }   \
                 [_JSMethodForwardCallLock lock];    \
@@ -843,7 +843,7 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 
 #pragma mark -
 
-static id callSelector(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper)
+static id callSelector(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper, NSString* defineName)
 {
     if (instance) {
         instance = formatJSToOC(instance);
@@ -864,7 +864,14 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         NSString *superSelectorName = [NSString stringWithFormat:@"SUPER_%@", selectorName];
         SEL superSelector = NSSelectorFromString(superSelectorName);
         
-        Class superCls = [cls superclass];
+        Class superCls;
+        if (defineName.length > 0) {
+            Class thisCls = NSClassFromString(defineName);
+            superCls = [thisCls superclass];
+        }else{
+            superCls = [cls superclass];
+        }
+        
         Method superMethod = class_getInstanceMethod(superCls, selector);
         IMP superIMP = method_getImplementation(superMethod);
         
