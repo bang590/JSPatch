@@ -6,10 +6,8 @@
 //
 
 #import "JPEngine.h"
-#import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import <objc/message.h>
-#import <objc/objc.h>
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIApplication.h>
@@ -842,6 +840,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         }
     }
 
+    
     Class cls = instance ? [instance class] : NSClassFromString(className);
     SEL selector = NSSelectorFromString(selectorName);
     
@@ -1143,7 +1142,6 @@ break; \
                         value = NSSelectorFromString(valObj);
                     }
                     [argumentsList addObject:valObj];
-                    //[invocation setArgument:&value atIndex:i];
                     break;
                 }
                 case '{': {
@@ -1165,7 +1163,6 @@ break; \
                             size_t size = sizeOfStructTypes(structDefine[@"types"]);
                             void *ret = malloc(size);
                             getStructDataWithDict(ret, valObj, structDefine);
-                            //[invocation setArgument:ret atIndex:i];
                             [argumentsList addObject:valObj];
                             free(ret);
                             break;
@@ -1190,15 +1187,11 @@ break; \
                             [_markArray addObject:valObj];
                         }
                         [argumentsList addObject:valObj];
-                        //[invocation setArgument:&value atIndex:i];
                         break;
                     }
                 }
                 case '#': {
                     if ([valObj isKindOfClass:[JPBoxing class]]) {
-                        Class value = [((JPBoxing *)valObj) unboxClass];
-                        //[invocation setArgument:&value atIndex:i];
-                        //[argumentsList addObject:value];
                         [argumentsList addObject:valObj];
                         break;
                     }
@@ -1206,38 +1199,26 @@ break; \
                 default: {
                     if (valObj == _nullObj) {
                         valObj = [NSNull null];
-                        //[invocation setArgument:&valObj atIndex:i];
                         [argumentsList addObject:valObj];
                         break;
                     }
                     if (valObj == _nilObj ||
                         ([valObj isKindOfClass:[NSNumber class]] && strcmp([valObj objCType], "c") == 0 && ![valObj boolValue])) {
                         valObj = nil;
-                        //[invocation setArgument:&valObj atIndex:i];
                         [argumentsList addObject:_nilObj];
                         break;
                     }
                     if ([(JSValue *)arguments[j] hasProperty:@"__isBlock"]) {
                         __autoreleasing id cb = genCallbackBlock(arguments[j]);
-                        //[invocation setArgument:&cb atIndex:i];
                         [argumentsList addObject:cb];
                     } else {
-                        //[invocation setArgument:&valObj atIndex:i];
                         [argumentsList addObject:valObj];
                     }
                 }
             }
         }
         
-        
-        
-        //id (*typed_msgSend)(id, SEL,...) = (void (*)) objc_msgSend;
-        //response(self.target, self.successAction, category);
-        
-        //id (*typed_msgSend)(id, SEL, ...) = (void *)objc_msgSend;
-        
         id results;
-        
         id sender = instance != nil ? instance : cls;
         
         results = invokeMethod(argumentsList, methodSignature, sender, selector);
@@ -1268,15 +1249,6 @@ break; \
                 
             } else {
                 switch (returnType[0] == 'r' ? returnType[1] : returnType[0]) {
-                        
-#define JP_CALL_RET_CASE(_typeString, _type) \
-case _typeString: {                              \
-_type tempResultSet; \
-[invocation getReturnValue:&tempResultSet];\
-returnValue = @(tempResultSet); \
-break; \
-}
-                        
                         JP_CALL_RET_CASE('c', char)
                         JP_CALL_RET_CASE('C', unsigned char)
                         JP_CALL_RET_CASE('s', short)
@@ -1293,12 +1265,7 @@ break; \
                         
                     case '{': {
                         NSString *typeString = extractStructName([NSString stringWithUTF8String:returnType]);
-#define JP_CALL_RET_STRUCT(_type, _methodName) \
-if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
-_type result;   \
-[invocation getReturnValue:&result];    \
-return [JSValue _methodName:result inContext:_context];    \
-}
+                        
                         JP_CALL_RET_STRUCT(CGRect, valueWithRect)
                         JP_CALL_RET_STRUCT(CGPoint, valueWithPoint)
                         JP_CALL_RET_STRUCT(CGSize, valueWithSize)
@@ -1760,7 +1727,7 @@ static id formatJSToOC(JSValue *jsval)
     
     if ([obj isKindOfClass:[JPBoxing class]]) return [obj unbox];
     if ([obj isKindOfClass:[NSArray class]]) {
-        NSMutableArray *newArr = [NSMutableArray new];
+        NSMutableArray *newArr = [[NSMutableArray alloc] init];
         for (int i = 0; i < [(NSArray*)obj count]; i ++) {
             [newArr addObject:formatJSToOC(jsval[i])];
         }
