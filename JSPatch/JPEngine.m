@@ -419,25 +419,14 @@ static void addMethodToProtocol(Protocol* protocol, NSString *selectorName, NSSt
 
 static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods)
 {
-    NSString *className;
-    NSString *superClassName;
-    NSString *protocolNames;
     
-    NSScanner *scanner = [NSScanner scannerWithString:classDeclaration];
-    [scanner scanUpToString:@":" intoString:&className];
-    if (!scanner.isAtEnd) {
-        scanner.scanLocation = scanner.scanLocation + 1;
-        [scanner scanUpToString:@"<" intoString:&superClassName];
-        if (!scanner.isAtEnd) {
-            scanner.scanLocation = scanner.scanLocation + 1;
-            [scanner scanUpToString:@">" intoString:&protocolNames];
-        }
-    }
+    NSDictionary *declarationDic = convertJPDeclarationString(classDeclaration);
+    
+    NSString *className = [declarationDic objectForKey:@"className"];
+    NSString *superClassName = [declarationDic objectForKey:@"superClassName"];
+    NSString *protocolNames = [declarationDic objectForKey:@"protocolNames"];
+    
     NSArray *protocols = [protocolNames componentsSeparatedByString:@","];
-    
-    if (!superClassName) superClassName = @"NSObject";
-    className = trim(className);
-    superClassName = trim(superClassName);
     
     Class cls = NSClassFromString(className);
     if (!cls) {
@@ -845,6 +834,8 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 
 static id callSelector(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper)
 {
+    NSString *clsDeclaration = [[instance valueForProperty:@"__clsDeclaration"] toString];
+   
     if (instance) {
         instance = formatJSToOC(instance);
         if (!instance || instance == _nilObj) return @{@"__isNil": @(YES)};
@@ -864,7 +855,18 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         NSString *superSelectorName = [NSString stringWithFormat:@"SUPER_%@", selectorName];
         SEL superSelector = NSSelectorFromString(superSelectorName);
         
-        Class superCls = [cls superclass];
+        Class superCls;
+        if (clsDeclaration && clsDeclaration.length > 0) {
+            NSDictionary * declarationDic =convertJPDeclarationString(clsDeclaration);
+            NSString *defineClsName = [declarationDic objectForKey:@"className"];
+
+            Class defineClass = NSClassFromString(defineClsName);
+            superCls = defineClass?[defineClass superclass]:[cls superclass];
+        }else
+        {
+            superCls = [cls superclass];
+        }
+        
         Method superMethod = class_getInstanceMethod(superCls, selector);
         IMP superIMP = method_getImplementation(superMethod);
         
@@ -1335,6 +1337,40 @@ static NSString *convertJPSelectorString(NSString *selectorString)
     NSString *tmpJSMethodName = [selectorString stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
     NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
     return [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+}
+
+static NSDictionary *convertJPDeclarationString(NSString *declaration){
+    
+    NSScanner *scanner = [NSScanner scannerWithString:declaration];
+    
+    NSString *className;
+    NSString *superClassName;
+    NSString *protocolNames;
+    [scanner scanUpToString:@":" intoString:&className];
+    if (!scanner.isAtEnd) {
+        scanner.scanLocation = scanner.scanLocation + 1;
+        [scanner scanUpToString:@"<" intoString:&superClassName];
+        if (!scanner.isAtEnd) {
+            scanner.scanLocation = scanner.scanLocation + 1;
+            [scanner scanUpToString:@">" intoString:&protocolNames];
+        }
+    }
+    
+    if (!superClassName) superClassName = @"NSObject";
+    className = trim(className);
+    superClassName = trim(superClassName);
+    
+    NSMutableDictionary *retDic = [[NSMutableDictionary alloc]init];
+    if (className) {
+        [retDic setObject:className forKey:@"className"];
+    }
+    if (superClassName) {
+        [retDic setObject:superClassName forKey:@"superClassName"];
+    }
+    if (protocolNames) {
+        [retDic setObject:protocolNames forKey:@"protocolNames"];
+    }
+    return retDic;
 }
 
 
