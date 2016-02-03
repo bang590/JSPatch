@@ -15,8 +15,14 @@
 {
     [JPEngine defineStruct:@{
                              @"name": @"CGVector",
-                             @"types": @"ff",
+                             @"types": @"FF",
                              @"keys": @[@"dx", @"dy"]
+                             }];
+    
+    [JPEngine defineStruct:@{
+                             @"name": @"CGAffineTransform",
+                             @"types": @"FFFFFF",
+                             @"keys": @[@"a", @"b", @"c", @"d", @"tx", @"ty"]
                              }];
     
     context[@"CGRectContainsPoint"]  = ^BOOL(NSDictionary *rectDict, NSDictionary *pointDict) {
@@ -70,34 +76,34 @@
         return CGRectGetMinY(rect);
     };
 
-    context[@"CGRectInset"]          = ^NSDictionary *(NSDictionary *rectDict, CGFloat dx, CGFloat dy) {
+    context[@"CGRectInset"]          = ^CGRect(NSDictionary *rectDict, CGFloat dx, CGFloat dy) {
         CGRect rect;
         [JPCGGeometry rectStruct:&rect ofDict:rectDict];
         CGRect rectInset = CGRectInset(rect, dx, dy);
-        return [JPCGGeometry rectDictOfStruct:&rectInset];
+        return rectInset;
     };
 
-    context[@"CGRectIntegral"]       = ^NSDictionary *(NSDictionary *rectDict) {
+    context[@"CGRectIntegral"]       = ^CGRect(NSDictionary *rectDict) {
         CGRect rect;
         [JPCGGeometry rectStruct:&rect ofDict:rectDict];
         CGRect rectIntegral = CGRectIntegral(rect);
-        return [JPCGGeometry rectDictOfStruct:&rectIntegral];
+        return rectIntegral;
     };
 
-    context[@"CGRectIntersection"]   = ^NSDictionary *(NSDictionary *rectDict1, NSDictionary *rectDict2) {
+    context[@"CGRectIntersection"]   = ^CGRect(NSDictionary *rectDict1, NSDictionary *rectDict2) {
         CGRect rect1,rect2;
         [JPCGGeometry rectStruct:&rect1 ofDict:rectDict1];
         [JPCGGeometry rectStruct:&rect2 ofDict:rectDict2];
 
-    CGRect rectIntersection          = CGRectIntersection(rect1, rect2);
-        return [JPCGGeometry rectDictOfStruct:&rectIntersection];
+        CGRect rectIntersection = CGRectIntersection(rect1, rect2);
+        return rectIntersection;
     };
 
-    context[@"CGRectOffset"]         = ^NSDictionary *(NSDictionary *rectDict, CGFloat dx, CGFloat dy) {
+    context[@"CGRectOffset"]         = ^CGRect(NSDictionary *rectDict, CGFloat dx, CGFloat dy) {
         CGRect rect;
         [JPCGGeometry rectStruct:&rect ofDict:rectDict];
         CGRect rectOffset = CGRectOffset(rect, dx, dy);
-        return [JPCGGeometry rectDictOfStruct:&rectOffset];
+        return rectOffset;
     };
 
     context[@"CGRectIntersectsRect"] = ^BOOL(NSDictionary *rectDict1, NSDictionary *rectDict2) {
