@@ -415,18 +415,13 @@ static void addMethodToProtocol(Protocol* protocol, NSString *selectorName, NSSt
     protocol_addMethodDescription(protocol, sel, type, YES, isInstance);
 }
 
-
-
 static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods)
 {
+    NSDictionary *declarationDict = convertJPDeclarationString(classDeclaration);
     
-    NSDictionary *declarationDic = convertJPDeclarationString(classDeclaration);
-    
-    NSString *className = [declarationDic objectForKey:@"className"];
-    NSString *superClassName = [declarationDic objectForKey:@"superClassName"];
-    NSString *protocolNames = [declarationDic objectForKey:@"protocolNames"];
-    
-    NSArray *protocols = [protocolNames componentsSeparatedByString:@","];
+    NSString *className = declarationDict[@"className"];
+    NSString *superClassName = declarationDict[@"superClassName"];
+    NSArray *protocols = [declarationDict[@"protocolNames"] length] ? [declarationDict[@"protocolNames"] componentsSeparatedByString:@","] : nil;
     
     Class cls = NSClassFromString(className);
     if (!cls) {
@@ -856,14 +851,13 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         SEL superSelector = NSSelectorFromString(superSelectorName);
         
         Class superCls;
-        if (clsDeclaration && clsDeclaration.length > 0) {
-            NSDictionary * declarationDic =convertJPDeclarationString(clsDeclaration);
-            NSString *defineClsName = [declarationDic objectForKey:@"className"];
+        if (clsDeclaration.length) {
+            NSDictionary *declarationDict = convertJPDeclarationString(clsDeclaration);
+            NSString *defineClsName = declarationDict[@"className"];
 
             Class defineClass = NSClassFromString(defineClsName);
-            superCls = defineClass?[defineClass superclass]:[cls superclass];
-        }else
-        {
+            superCls = defineClass ? [defineClass superclass] : [cls superclass];
+        } else {
             superCls = [cls superclass];
         }
         
@@ -1360,17 +1354,12 @@ static NSDictionary *convertJPDeclarationString(NSString *declaration){
     className = trim(className);
     superClassName = trim(superClassName);
     
-    NSMutableDictionary *retDic = [[NSMutableDictionary alloc]init];
-    if (className) {
-        [retDic setObject:className forKey:@"className"];
-    }
-    if (superClassName) {
-        [retDic setObject:superClassName forKey:@"superClassName"];
-    }
-    if (protocolNames) {
-        [retDic setObject:protocolNames forKey:@"protocolNames"];
-    }
-    return retDic;
+    NSDictionary *ret = @{
+                          @"className": className ?: @"",
+                          @"superClassName": superClassName ?: @"",
+                          @"protocolNames": protocolNames ?: @""
+                        };
+    return ret;
 }
 
 
