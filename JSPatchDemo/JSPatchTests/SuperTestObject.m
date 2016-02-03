@@ -18,9 +18,18 @@
 @end
 
 @implementation SuperTestA
+-(instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.hasTestSuperA = NO;
+    }
+    return self;
+}
 
 -(void)testSuper
 {
+    self.hasTestSuperA = YES;
     NSLog(@" === print test A ====");
 }
 

@@ -10,6 +10,8 @@
 
 
 @interface SuperTestA : NSObject
+
+@property (nonatomic,assign) BOOL hasTestSuperA;
 -(void)testSuper;
 @end
 
