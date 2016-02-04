@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import JSPatch
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -37,14 +36,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let path = NSBundle.mainBundle().pathForResource("demo", ofType: "js")
         do {
             let patch = try String(contentsOfFile: path!)
-            print(patch)
-            
             
             JPEngine.startEngine()
-            
-//            let script = "var alertView = require('UIAlertView').alloc().init();alertView.setTitle('Alert'); alertView.setMessage('AlertView from js'); alertView.addButtonWithTitle('OK'); alertView.show();"
-//            JPEngine.evaluateScript(script)
-            
             JPEngine.evaluateScript(patch)
             
         } catch {}

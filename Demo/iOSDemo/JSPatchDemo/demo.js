@@ -1,5 +1,6 @@
 defineClass('JPViewController', {
   handleBtn: function(sender) {
+            require('UINavigationBar').appearance().setBackgroundImage_forBarMetrics(null, 0);
     var tableViewCtrl = JPTableViewController.alloc().init()
     self.navigationController().pushViewController_animated(tableViewCtrl, YES)
   }

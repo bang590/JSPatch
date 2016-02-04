@@ -53,7 +53,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("TableViewCell", forIndexPath: indexPath)
-        cell.backgroundColor = UIColor.redColor()
+        cell.textLabel?.text = NSString(format: "cell%d", indexPath.row) as String;
         return cell
     }
 }

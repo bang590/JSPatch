@@ -25,6 +25,7 @@
     self.window.rootViewController = navigationController;
     [self.window makeKeyAndVisible];
     
+    [[UINavigationBar appearance] setBackgroundImage:nil forBarMetrics:UIBarMetricsCompact];
     return YES;
 }
 @end
