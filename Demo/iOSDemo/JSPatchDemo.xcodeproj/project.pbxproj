@@ -38,6 +38,7 @@
 		3613C38D1C6329F300E915CB /* RSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3721C6329F300E915CB /* RSA.m */; };
 		3613C38E1C6329F300E915CB /* ZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3741C6329F300E915CB /* ZipArchive.m */; };
 		3613C38F1C6329F300E915CB /* packer.php in Resources */ = {isa = PBXBuildFile; fileRef = 3613C3761C6329F300E915CB /* packer.php */; };
+		3613C3AF1C6346F500E915CB /* JPCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3AE1C6346F500E915CB /* JPCleaner.m */; };
 		36F0DCC61BFAF41C0090EA4A /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */; };
 		6C6CAC741C5F0BCA00444348 /* superTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C6CAC721C5F0BCA00444348 /* superTest.js */; };
 		6C6CAC751C5F0BCA00444348 /* SuperTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6CAC731C5F0BCA00444348 /* SuperTestObject.m */; };
@@ -124,6 +125,8 @@
 		3613C3731C6329F300E915CB /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
 		3613C3741C6329F300E915CB /* ZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZipArchive.m; sourceTree = "<group>"; };
 		3613C3761C6329F300E915CB /* packer.php */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.php; path = packer.php; sourceTree = "<group>"; };
+		3613C3AD1C6346F500E915CB /* JPCleaner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCleaner.h; sourceTree = "<group>"; };
+		3613C3AE1C6346F500E915CB /* JPCleaner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCleaner.m; sourceTree = "<group>"; };
 		36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = ../../../../../../usr/lib/libz.1.dylib; sourceTree = "<group>"; };
 		6C6CAC711C5F0BCA00444348 /* SuperTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperTestObject.h; sourceTree = "<group>"; };
 		6C6CAC721C5F0BCA00444348 /* superTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = superTest.js; sourceTree = "<group>"; };
@@ -196,6 +199,7 @@
 		3613C33E1C6329F300E915CB /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				3613C3561C6329F300E915CB /* UIKit */,
 				3613C33F1C6329F300E915CB /* CoreGraphics */,
 				3613C3501C6329F300E915CB /* JPInclude.h */,
 				3613C3511C6329F300E915CB /* JPInclude.m */,
@@ -203,7 +207,8 @@
 				3613C3531C6329F300E915CB /* JPMemory.m */,
 				3613C3541C6329F300E915CB /* JPStructPointer.h */,
 				3613C3551C6329F300E915CB /* JPStructPointer.m */,
-				3613C3561C6329F300E915CB /* UIKit */,
+				3613C3AD1C6346F500E915CB /* JPCleaner.h */,
+				3613C3AE1C6346F500E915CB /* JPCleaner.m */,
 			);
 			name = Extensions;
 			path = ../../../Extensions;
@@ -468,6 +473,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3613C3AF1C6346F500E915CB /* JPCleaner.m in Sources */,
 				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
 				3613C38E1C6329F300E915CB /* ZipArchive.m in Sources */,
 				3613C3861C6329F300E915CB /* JPEngine.m in Sources */,

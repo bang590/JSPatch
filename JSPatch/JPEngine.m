@@ -57,17 +57,23 @@ JPBOXING_GEN(boxAssignObj, assignObj, id)
 }
 @end
 
-
-
-@implementation JPEngine
-
 static JSContext *_context;
 static NSString *_regexStr = @"(?<!\\\\)\\.\\s*(\\w+)\\s*\\(";
 static NSString *_replaceStr = @".__c(\"$1\")(";
 static NSRegularExpression* _regex;
 static NSObject *_nullObj;
 static NSObject *_nilObj;
-static NSMutableDictionary *registeredStruct;
+static NSMutableDictionary *_registeredStruct;
+
+static NSMutableDictionary *_JSOverideMethods;
+static NSMutableDictionary *_TMPMemoryPool;
+static NSMutableDictionary *_propKeys;
+static NSMutableDictionary *_JSMethodSignatureCache;
+static NSLock              *_JSMethodSignatureLock;
+static NSRecursiveLock     *_JSMethodForwardCallLock;
+static NSMutableDictionary *_protocolTypeEncodeDict;
+
+@implementation JPEngine
 
 #pragma mark - APIS
 
@@ -187,7 +193,7 @@ static NSMutableDictionary *registeredStruct;
     _nilObj = [[NSObject alloc] init];
     _JSMethodSignatureLock = [[NSLock alloc] init];
     _JSMethodForwardCallLock = [[NSRecursiveLock alloc] init];
-    registeredStruct = [[NSMutableDictionary alloc] init];
+    _registeredStruct = [[NSMutableDictionary alloc] init];
     
 #if TARGET_OS_IPHONE
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
@@ -261,13 +267,8 @@ static NSMutableDictionary *registeredStruct;
 + (void)defineStruct:(NSDictionary *)defineDict
 {
     @synchronized (_context) {
-        [registeredStruct setObject:defineDict forKey:defineDict[@"name"]];
+        [_registeredStruct setObject:defineDict forKey:defineDict[@"name"]];
     }
-}
-
-+ (NSMutableDictionary *)registeredStruct
-{
-    return registeredStruct;
 }
 
 + (void)handleMemoryWarning {
@@ -277,14 +278,6 @@ static NSMutableDictionary *registeredStruct;
 }
 
 #pragma mark - Implements
-
-static NSMutableDictionary *_JSOverideMethods;
-static NSMutableDictionary *_TMPMemoryPool;
-static NSMutableDictionary *_propKeys;
-static NSMutableDictionary *_JSMethodSignatureCache;
-static NSLock              *_JSMethodSignatureLock;
-static NSRecursiveLock     *_JSMethodForwardCallLock;
-static NSMutableDictionary *_protocolTypeEncodeDict;
 
 static const void *propKey(NSString *propName) {
     if (!_propKeys) _propKeys = [[NSMutableDictionary alloc] init];
@@ -596,7 +589,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
                 JP_FWD_ARG_STRUCT(NSRange, valueWithRange)
                 
                 @synchronized (_context) {
-                    NSDictionary *structDefine = registeredStruct[typeString];
+                    NSDictionary *structDefine = _registeredStruct[typeString];
                     if (structDefine) {
                         size_t size = sizeOfStructTypes(structDefine[@"types"]);
                         if (size) {
@@ -738,7 +731,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
             JP_FWD_RET_STRUCT(NSRange, toRange)
             
             @synchronized (_context) {
-                NSDictionary *structDefine = registeredStruct[typeString];
+                NSDictionary *structDefine = _registeredStruct[typeString];
                 if (structDefine) {
                     size_t size = sizeOfStructTypes(structDefine[@"types"]);
                     JP_FWD_RET_CALL_JS
@@ -960,7 +953,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 JP_CALL_ARG_STRUCT(CGSize, toSize)
                 JP_CALL_ARG_STRUCT(NSRange, toRange)
                 @synchronized (_context) {
-                    NSDictionary *structDefine = registeredStruct[typeString];
+                    NSDictionary *structDefine = _registeredStruct[typeString];
                     if (structDefine) {
                         size_t size = sizeOfStructTypes(structDefine[@"types"]);
                         void *ret = malloc(size);
@@ -1088,7 +1081,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     JP_CALL_RET_STRUCT(CGSize, valueWithSize)
                     JP_CALL_RET_STRUCT(NSRange, valueWithRange)
                     @synchronized (_context) {
-                        NSDictionary *structDefine = registeredStruct[typeString];
+                        NSDictionary *structDefine = _registeredStruct[typeString];
                         if (structDefine) {
                             size_t size = sizeOfStructTypes(structDefine[@"types"]);
                             void *ret = malloc(size);
@@ -1505,4 +1498,15 @@ static id _unboxOCObjectToJS(id obj)
 {
     return getDictOfStruct(structData, structDefine);
 }
+
++ (NSMutableDictionary *)registeredStruct
+{
+    return _registeredStruct;
+}
+
++ (NSDictionary *)overideMethods
+{
+    return _JSOverideMethods;
+}
+
 @end

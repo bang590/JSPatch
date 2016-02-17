@@ -71,7 +71,7 @@
         if ([typeName isEqualToString:@"NSRange"]) return sizeof(NSRange);
         
         @synchronized (weakCtx) {
-            NSDictionary *structDefine = [JPEngine registeredStruct][typeName];
+            NSDictionary *structDefine = [JPExtension registeredStruct][typeName];
             if (structDefine) {
                 return [self sizeOfStructTypes:structDefine[@"types"]];
             }

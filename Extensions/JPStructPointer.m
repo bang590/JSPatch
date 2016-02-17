@@ -26,7 +26,7 @@
         JP_NEW_STRUCT(NSRange, toRange)
         
         @synchronized (weakCtx) {
-            NSDictionary *structDefine = [JPEngine registeredStruct][structName];
+            NSDictionary *structDefine = [JPExtension registeredStruct][structName];
             if (structDefine) {
                 int size = [self sizeOfStructTypes:structDefine[@"types"]];
                 void *ret = malloc(size);
@@ -59,7 +59,7 @@
             
             JSContext *context = [JPEngine context];
             @synchronized (context) {
-                NSDictionary *structDefine = [JPEngine registeredStruct][structName];
+                NSDictionary *structDefine = [JPExtension registeredStruct][structName];
                 if (structDefine) {
                     return [self getDictOfStruct:[self formatPointerJSToOC:structPointer] structDefine:structDefine];
                 }
