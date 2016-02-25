@@ -180,6 +180,7 @@
     [self loadPatch:@"superTest"];
     SuperTestC *testobject = [[SuperTestC alloc]init];
     [testobject testSuper];
+    XCTAssert(testobject.hasTestSuperA);
 }
 
 - (void)testInheritance

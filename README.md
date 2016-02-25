@@ -149,9 +149,9 @@ require('JPObject').request(block("NSString *, BOOL", function(ctn, succ) {
 }));
 
 // GCD
-dispatch_after(function(1.0, function(){
+dispatch_after(1.0, function(){
   // do something
-}))
+})
 dispatch_async_main(function(){
   // do something
 })

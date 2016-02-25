@@ -7,24 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3613C3941C632A3E00E915CB /* JPEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3921C632A3E00E915CB /* JPEngine.m */; };
+		3613C3951C632A3E00E915CB /* JSPatch.js in Resources */ = {isa = PBXBuildFile; fileRef = 3613C3931C632A3E00E915CB /* JSPatch.js */; };
 		E7E413DB1B14853E008E10DC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E7E413DA1B14853E008E10DC /* AppDelegate.m */; };
 		E7E413DD1B14853E008E10DC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E7E413DC1B14853E008E10DC /* main.m */; };
 		E7E413E21B14853E008E10DC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E7E413E01B14853E008E10DC /* MainMenu.xib */; };
-		E7E413F91B148563008E10DC /* JSPatch.js in Resources */ = {isa = PBXBuildFile; fileRef = E7E413F81B148563008E10DC /* JSPatch.js */; };
-		E7E413FC1B148573008E10DC /* JPEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = E7E413FB1B148573008E10DC /* JPEngine.m */; };
 		E7E413FE1B1486AD008E10DC /* demo.js in Resources */ = {isa = PBXBuildFile; fileRef = E7E413FD1B1486AD008E10DC /* demo.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3613C3911C632A3E00E915CB /* JPEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPEngine.h; sourceTree = "<group>"; };
+		3613C3921C632A3E00E915CB /* JPEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPEngine.m; sourceTree = "<group>"; };
+		3613C3931C632A3E00E915CB /* JSPatch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = JSPatch.js; sourceTree = "<group>"; };
 		E7E413D41B14853E008E10DC /* JSPatchOSXDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSPatchOSXDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7E413D81B14853E008E10DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E7E413D91B14853E008E10DC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		E7E413DA1B14853E008E10DC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		E7E413DC1B14853E008E10DC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		E7E413E11B14853E008E10DC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		E7E413F81B148563008E10DC /* JSPatch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = JSPatch.js; path = ../../JSPatch/JSPatch.js; sourceTree = "<group>"; };
-		E7E413FA1B148573008E10DC /* JPEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JPEngine.h; path = ../../JSPatch/JPEngine.h; sourceTree = "<group>"; };
-		E7E413FB1B148573008E10DC /* JPEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JPEngine.m; path = ../../JSPatch/JPEngine.m; sourceTree = "<group>"; };
 		E7E413FD1B1486AD008E10DC /* demo.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = demo.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -39,6 +39,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3613C3901C632A3E00E915CB /* JSPatch */ = {
+			isa = PBXGroup;
+			children = (
+				3613C3911C632A3E00E915CB /* JPEngine.h */,
+				3613C3921C632A3E00E915CB /* JPEngine.m */,
+				3613C3931C632A3E00E915CB /* JSPatch.js */,
+			);
+			name = JSPatch;
+			path = ../../../JSPatch;
+			sourceTree = "<group>";
+		};
 		E7E413CB1B14853E008E10DC = {
 			isa = PBXGroup;
 			children = (
@@ -58,7 +69,7 @@
 		E7E413D61B14853E008E10DC /* JSPatchOSXDemo */ = {
 			isa = PBXGroup;
 			children = (
-				E7E413F71B148556008E10DC /* JSPatch */,
+				3613C3901C632A3E00E915CB /* JSPatch */,
 				E7E413D91B14853E008E10DC /* AppDelegate.h */,
 				E7E413DA1B14853E008E10DC /* AppDelegate.m */,
 				E7E413FD1B1486AD008E10DC /* demo.js */,
@@ -75,16 +86,6 @@
 				E7E413DC1B14853E008E10DC /* main.m */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		E7E413F71B148556008E10DC /* JSPatch */ = {
-			isa = PBXGroup;
-			children = (
-				E7E413FA1B148573008E10DC /* JPEngine.h */,
-				E7E413FB1B148573008E10DC /* JPEngine.m */,
-				E7E413F81B148563008E10DC /* JSPatch.js */,
-			);
-			name = JSPatch;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -144,7 +145,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E7E413F91B148563008E10DC /* JSPatch.js in Resources */,
+				3613C3951C632A3E00E915CB /* JSPatch.js in Resources */,
 				E7E413E21B14853E008E10DC /* MainMenu.xib in Resources */,
 				E7E413FE1B1486AD008E10DC /* demo.js in Resources */,
 			);
@@ -157,7 +158,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E7E413FC1B148573008E10DC /* JPEngine.m in Sources */,
+				3613C3941C632A3E00E915CB /* JPEngine.m in Sources */,
 				E7E413DD1B14853E008E10DC /* main.m in Sources */,
 				E7E413DB1B14853E008E10DC /* AppDelegate.m in Sources */,
 			);

@@ -75,6 +75,9 @@ var global = this
     var self = this
     if (methodName == 'super') {
       return function() {
+        if (self.__obj) {
+          self.__obj.__clsDeclaration = self.__clsDeclaration;
+        }
         return {__obj: self.__obj, __clsName: self.__clsName, __isSuper: 1}
       }
     }
@@ -125,8 +128,8 @@ var global = this
           var ret;
           try {
             global.self = args[0]
-            if (global.self.__obj) {
-              global.self.__obj.__clsDeclaration = declaration
+            if (global.self) {
+              global.self.__clsDeclaration = declaration
             }
             args.splice(0,1)
             ret = originMethod.apply(originMethod, args)
