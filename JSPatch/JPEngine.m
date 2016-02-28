@@ -513,21 +513,8 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
     SEL JPSelector = NSSelectorFromString(JPSelectorName);
     
     if (!class_respondsToSelector(object_getClass(slf), JPSelector)) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wundeclared-selector"
-        SEL origForwardSelector = @selector(ORIGforwardInvocation:);
-        NSMethodSignature *methodSignature = [slf methodSignatureForSelector:origForwardSelector];
-        if (!methodSignature) {
-            NSCAssert(methodSignature, @"unrecognized selector -ORIGforwardInvocation: for instance %@", slf);
-            return;
-        }
-        NSInvocation *forwardInv= [NSInvocation invocationWithMethodSignature:methodSignature];
-        [forwardInv setTarget:slf];
-        [forwardInv setSelector:origForwardSelector];
-        [forwardInv setArgument:&invocation atIndex:2];
-        [forwardInv invoke];
+        JPExcuteORIGForwardInvocation(slf, selector, invocation);
         return;
-#pragma clang diagnostic pop
     }
     
     NSMutableArray *argList = [[NSMutableArray alloc] init];
@@ -755,6 +742,46 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
         Method deallocMethod = class_getInstanceMethod(instClass, NSSelectorFromString(@"ORIGdealloc"));
         void (*originalDealloc)(__unsafe_unretained id, SEL) = (__typeof__(originalDealloc))method_getImplementation(deallocMethod);
         originalDealloc(assignSlf, NSSelectorFromString(@"dealloc"));
+    }
+}
+
+static void JPExcuteORIGForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    SEL origForwardSelector = @selector(ORIGforwardInvocation:);
+#pragma clang diagnostic pop
+    
+    if ([slf respondsToSelector:origForwardSelector]) {
+        
+        NSMethodSignature *methodSignature = [slf methodSignatureForSelector:origForwardSelector];
+        if (!methodSignature) {
+            NSCAssert(methodSignature, @"unrecognized selector -ORIGforwardInvocation: for instance %@", slf);
+            return;
+        }
+        NSInvocation *forwardInv= [NSInvocation invocationWithMethodSignature:methodSignature];
+        [forwardInv setTarget:slf];
+        [forwardInv setSelector:origForwardSelector];
+        [forwardInv setArgument:&invocation atIndex:2];
+        [forwardInv invoke];
+        
+    } else {
+        NSString *superForwardName = @"JPSUPER_ForwardInvocation";
+        SEL superForwardSelector = NSSelectorFromString(superForwardName);
+        
+        if (![slf respondsToSelector:superForwardSelector]) {
+            Class superCls = [[slf class] superclass];
+            Method superForwardMethod = class_getInstanceMethod(superCls, @selector(forwardInvocation:));
+            IMP superForwardIMP = method_getImplementation(superForwardMethod);
+            class_addMethod([slf class], superForwardSelector, superForwardIMP, method_getTypeEncoding(superForwardMethod));
+        }
+        
+        NSMethodSignature *methodSignature = [slf methodSignatureForSelector:@selector(forwardInvocation:)];
+        NSInvocation *forwardInv= [NSInvocation invocationWithMethodSignature:methodSignature];
+        [forwardInv setTarget:slf];
+        [forwardInv setSelector:superForwardSelector];
+        [forwardInv setArgument:&invocation atIndex:2];
+        [forwardInv invoke];
     }
 }
 
