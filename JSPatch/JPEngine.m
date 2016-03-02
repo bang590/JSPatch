@@ -653,7 +653,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
             JP_FWD_RET_CASE_RET(_typeChar, _type, _type ret = [[jsval toObject] _typeSelector];)   \
 
         #define JP_FWD_RET_CODE_ID \
-            id __autoreleasing ret = formatJSToOC(jsval); \
+            id ret = formatJSToOC(jsval); \
             if (ret == _nilObj ||   \
                 ([ret isKindOfClass:[NSNumber class]] && strcmp([ret objCType], "c") == 0 && ![ret boolValue])) ret = nil;  \
 
@@ -1144,28 +1144,60 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
 
 static id genCallbackBlock(JSValue *jsVal)
 {
-    #define BLK_TRAITS_ARG(_idx, _paramName) \
-    if (_idx < argTypes.count) { \
-        if (blockTypeIsObject(trim(argTypes[_idx]))) {  \
-            [list addObject:formatOCToJS((__bridge id)_paramName)]; \
-        } else {  \
-            [list addObject:formatOCToJS([NSNumber numberWithLongLong:(long long)_paramName])]; \
-        }   \
-    }
+#define BLK_DEFINE_1 cb = ^id(void *p0) {
+#define BLK_DEFINE_2 cb = ^id(void *p0, void *p1) {
+#define BLK_DEFINE_3 cb = ^id(void *p0, void *p1, void *p2) {
+#define BLK_DEFINE_4 cb = ^id(void *p0, void *p1, void *p2, void *p3) {
+#define BLK_INIT_PARAMETERS NSMutableArray *list = [[NSMutableArray alloc] init];
+    
+#define BLK_ADD_OBJ(_paramName) [list addObject:formatOCToJS((__bridge id)_paramName)];
+#define BLK_ADD_INT(_paramName) [list addObject:formatOCToJS([NSNumber numberWithLongLong:(long long)_paramName])];
+
+#define BLK_TRAITS_ARG(_idx, _paramName) \
+    if (blockTypeIsObject(trim(argTypes[_idx]))) {  \
+        BLK_ADD_OBJ(_paramName) \
+    } else {  \
+        BLK_ADD_INT(_paramName) \
+    }   \
+
+#define BLK_END \
+    JSValue *ret = [jsVal[@"cb"] callWithArguments:list];    \
+    return formatJSToOC(ret); \
+};
 
     NSArray *argTypes = [[jsVal[@"args"] toString] componentsSeparatedByString:@","];
-    id cb = ^id(void *p0, void *p1, void *p2, void *p3, void *p4, void *p5) {
-        NSMutableArray *list = [[NSMutableArray alloc] init];
+    NSInteger count = argTypes.count;
+    id cb;
+    if (count == 1) {
+        BLK_DEFINE_1
+        BLK_INIT_PARAMETERS
+        BLK_TRAITS_ARG(0, p0)
+        BLK_END
+    }
+    if (count == 2) {
+        BLK_DEFINE_2
+        BLK_INIT_PARAMETERS
+        BLK_TRAITS_ARG(0, p0)
+        BLK_TRAITS_ARG(1, p1)
+        BLK_END
+    }
+    if (count == 3) {
+        BLK_DEFINE_3
+        BLK_INIT_PARAMETERS
+        BLK_TRAITS_ARG(0, p0)
+        BLK_TRAITS_ARG(1, p1)
+        BLK_TRAITS_ARG(2, p2)
+        BLK_END
+    }
+    if (count == 4) {
+        BLK_DEFINE_4
+        BLK_INIT_PARAMETERS
         BLK_TRAITS_ARG(0, p0)
         BLK_TRAITS_ARG(1, p1)
         BLK_TRAITS_ARG(2, p2)
         BLK_TRAITS_ARG(3, p3)
-        BLK_TRAITS_ARG(4, p4)
-        BLK_TRAITS_ARG(5, p5)
-        JSValue *ret = [jsVal[@"cb"] callWithArguments:list];
-        return formatJSToOC(ret);
-    };
-    
+        BLK_END
+    }
     return cb;
 }
 
@@ -1486,11 +1518,6 @@ static id _unboxOCObjectToJS(id obj)
     } else{
         return [((JPBoxing *)[val toObject]) unboxPointer];
     }
-}
-
-+ (id)formatRetainedCFTypeOCToJS:(CFTypeRef)CF_CONSUMED type
-{
-    return formatOCToJS([JPBoxing boxPointer:(void *)type]);
 }
 
 + (id)formatPointerOCToJS:(void *)pointer
