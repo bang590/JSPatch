@@ -161,6 +161,9 @@
     
     XCTAssertEqualObjects(@"overrided",[subObj funcOverrideParentMethod]);
     
+    XCTAssert(obj.variableParameterMethodPassed, @"variableParameterMethodPassed");
+    
+    
     JPTestProtocolObject *testProtocolObj = [[JPTestProtocolObject alloc] init];
     XCTAssert([testProtocolObj testProtocolMethods], @"testProtocolMethodsPassed");
     

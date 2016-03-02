@@ -437,4 +437,9 @@ require('JPEngine').defineStruct({
   obj.setFuncWithTransformPointerPassed(obj.funcWithTransformPointerPassed() && transform.tx == 42)
   free(pTransform);
 
+    
+//variable parameter method
+  var strWithFormat = require('NSString').stringWithFormat("%@ %@", "a", "b");
+  obj.setVariableParameterMethodPassed(strWithFormat.toJS() == "a b");
+    
 })();

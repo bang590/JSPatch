@@ -933,10 +933,10 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     
     NSUInteger numberOfArguments = methodSignature.numberOfArguments;
     NSInteger inputArguments = [(NSArray *)argumentsObj count];
-    // 可变参数目前只支持 全id参数 id返回值
     if (inputArguments > numberOfArguments - 2) {
+        // calling variable argument method, only support parameter type `id` and return type `id`
         id sender = instance != nil ? instance : cls;
-        id result = variableParameterInvokeMethod(argumentsObj, methodSignature, sender, selector);
+        id result = invokeVariableParameterMethod(argumentsObj, methodSignature, sender, selector);
         return formatOCToJS(result);
     }
     
@@ -1148,201 +1148,70 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     return nil;
 }
 
-static id variableParameterInvokeMethod(NSMutableArray *origArgumentsList, NSMethodSignature *methodSignature, id sender, SEL selector) {
+id (*new_msgSend1)(id, SEL, id,...) = (id (*)(id, SEL, id,...)) objc_msgSend;
+id (*new_msgSend2)(id, SEL, id, id,...) = (id (*)(id, SEL, id, id,...)) objc_msgSend;
+id (*new_msgSend3)(id, SEL, id, id, id,...) = (id (*)(id, SEL, id, id, id,...)) objc_msgSend;
+id (*new_msgSend4)(id, SEL, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id,...)) objc_msgSend;
+id (*new_msgSend5)(id, SEL, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id,...)) objc_msgSend;
+id (*new_msgSend6)(id, SEL, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id,...)) objc_msgSend;
+id (*new_msgSend7)(id, SEL, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id,id,...)) objc_msgSend;
+id (*new_msgSend8)(id, SEL, id, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id, id, id,...)) objc_msgSend;
+id (*new_msgSend9)(id, SEL, id, id, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id, id, id, id, ...)) objc_msgSend;
+id (*new_msgSend10)(id, SEL, id, id, id, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id, id, id, id, id,...)) objc_msgSend;
+
+static id invokeVariableParameterMethod(NSMutableArray *origArgumentsList, NSMethodSignature *methodSignature, id sender, SEL selector) {
     
     NSInteger inputArguments = [(NSArray *)origArgumentsList count];
     NSUInteger numberOfArguments = methodSignature.numberOfArguments;
-    
     
     NSMutableArray *argumentsList = [[NSMutableArray alloc] init];
     for (NSUInteger j = 0; j < inputArguments; j++) {
         NSInteger index = MIN(j + 2, numberOfArguments - 1);
         const char *argumentType = [methodSignature getArgumentTypeAtIndex:index];
         id valObj = origArgumentsList[j];
-        switch (argumentType[0] == 'r' ? argumentType[1] : argumentType[0]) {
-                
-                //干掉了 基础类型CASE 因为64位 msgsend 后面限定为Id
-                //干掉了 : sel类型 因为64位 msgsend 后面限定为Id
-                //干掉了 ^ 指针类型
-                //干掉了 * char* 类型
-                //干掉了 # class 类型
-                //只保留 @
-            case '@': {
-                [argumentsList addObject:valObj];
-                //                if (valObj == _nullObj) {
-                //                    valObj = [NSNull null];
-                //                    [argumentsList addObject:valObj];
-                //                    break;
-                //                }
-                //                if (valObj == _nilObj ||
-                //                    ([valObj isKindOfClass:[NSNumber class]] && strcmp([valObj objCType], "c") == 0 && ![valObj boolValue])) {
-                //                    valObj = nil;
-                //                    [argumentsList addObject:_nilObj];
-                //                    break;
-                //                }
-                //                if ([(JSValue *)arguments[j] hasProperty:@"__isBlock"]) {
-                //                    __autoreleasing id cb = genCallbackBlock(arguments[j]);
-                //                    [argumentsList addObject:cb];
-                //                } else {
-                //                    [argumentsList addObject:valObj];
-                //                }
-            }
-                break;
-            default:
-            {
-                return nil;
-            }
-                break;
-                
+        char argumentTypeChar = argumentType[0] == 'r' ? argumentType[1] : argumentType[0];
+        if (argumentTypeChar == '@') {
+            [argumentsList addObject:valObj];
+        } else {
+            return nil;
         }
     }
-    
-    
     
     id results = nil;
-    
-    id (*new_msgSend1)(id, SEL, id,...) = (id (*)(id, SEL, id,...)) objc_msgSend;
-    id (*new_msgSend2)(id, SEL, id, id,...) = (id (*)(id, SEL, id, id,...)) objc_msgSend;
-    id (*new_msgSend3)(id, SEL, id, id, id,...) = (id (*)(id, SEL, id, id, id,...)) objc_msgSend;
-    id (*new_msgSend4)(id, SEL, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id,...)) objc_msgSend;
-    id (*new_msgSend5)(id, SEL, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id,...)) objc_msgSend;
-    id (*new_msgSend6)(id, SEL, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id,...)) objc_msgSend;
-    id (*new_msgSend7)(id, SEL, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id,id,...)) objc_msgSend;
-    id (*new_msgSend8)(id, SEL, id, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id, id, id,...)) objc_msgSend;
-    id (*new_msgSend9)(id, SEL, id, id, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id, id, id, id, ...)) objc_msgSend;
-    id (*new_msgSend10)(id, SEL, id, id, id, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id, id, id, id, id,...)) objc_msgSend;
     numberOfArguments = numberOfArguments - 2;
     
-    //TODO need clean up below code to support more union arguments and use elegant method 😊
-    if([argumentsList count] == 1) {
-        results = new_msgSend1(sender, selector, getArgument([argumentsList objectAtIndex:0]));
-    } else if([argumentsList count] == 2) {
-        if(numberOfArguments == 1) {
-            results = new_msgSend1(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]));
-        } else if(numberOfArguments == 2){
-            results = new_msgSend2(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]));
+    //If you want to debug the macro code below, replace it to the expanded code:
+    //https://gist.github.com/bang590/ca3720ae1da594252a2e
+    #define JP_G_ARG(_idx) getArgument(argumentsList[_idx])
+    #define JP_CALL_MSGSEND_ARG1(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0));
+    #define JP_CALL_MSGSEND_ARG2(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1));
+    #define JP_CALL_MSGSEND_ARG3(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2));
+    #define JP_CALL_MSGSEND_ARG4(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3));
+    #define JP_CALL_MSGSEND_ARG5(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4));
+    #define JP_CALL_MSGSEND_ARG6(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5));
+    #define JP_CALL_MSGSEND_ARG7(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5), JP_G_ARG(6));
+    #define JP_CALL_MSGSEND_ARG8(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5), JP_G_ARG(6), JP_G_ARG(7));
+    #define JP_CALL_MSGSEND_ARG9(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5), JP_G_ARG(6), JP_G_ARG(7), JP_G_ARG(8));
+    #define JP_CALL_MSGSEND_ARG10(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5), JP_G_ARG(6), JP_G_ARG(7), JP_G_ARG(8), JP_G_ARG(9));
+    #define JP_CALL_MSGSEND_ARG11(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5), JP_G_ARG(6), JP_G_ARG(7), JP_G_ARG(8), JP_G_ARG(9), JP_G_ARG(10));
+        
+    #define JP_IF_REAL_ARG_COUNT(_num) if([argumentsList count] == _num)
+
+    #define JP_DEAL_MSGSEND(_realArgCount, _defineArgCount) \
+        if(numberOfArguments == _defineArgCount) { \
+            JP_CALL_MSGSEND_ARG##_realArgCount(_defineArgCount) \
         }
-    } else if([argumentsList count] == 3) {
-        if(numberOfArguments == 1) {
-            results = new_msgSend1(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]));
-        } else if(numberOfArguments == 2){
-            results = new_msgSend2(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]));
-        } else if(numberOfArguments == 3){
-            results = new_msgSend3(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]));
-        }
-    } else if([argumentsList count] == 4) {
-        if(numberOfArguments == 1) {
-            results = new_msgSend1(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]));
-        } else if(numberOfArguments == 2){
-            results = new_msgSend2(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]));
-        } else if(numberOfArguments == 3){
-            results = new_msgSend3(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]));
-        } else if(numberOfArguments == 4){
-            results = new_msgSend4(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]));
-        }
-    } else if([argumentsList count] == 5) {
-        if(numberOfArguments == 1) {
-            results = new_msgSend1(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]));
-        } else if(numberOfArguments == 2){
-            results = new_msgSend2(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]));
-        } else if(numberOfArguments == 3){
-            results = new_msgSend3(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]));
-        } else if(numberOfArguments == 4){
-            results = new_msgSend4(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]));
-        } else if(numberOfArguments == 5){
-            results = new_msgSend5(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]));
-        }
-    } else if([argumentsList count] == 6) {
-        if(numberOfArguments == 1) {
-            results = new_msgSend1(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]));
-        } else if(numberOfArguments == 2){
-            results = new_msgSend2(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]));
-        } else if(numberOfArguments == 3){
-            results = new_msgSend3(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]));
-        } else if(numberOfArguments == 4){
-            results = new_msgSend4(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]));
-        } else if(numberOfArguments == 5){
-            results = new_msgSend5(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]));
-        } else if(numberOfArguments == 6){
-            results = new_msgSend6(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]));
-        }
-    } else if([argumentsList count] == 7) {
-        if(numberOfArguments == 1) {
-            results = new_msgSend1(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]));
-        } else if(numberOfArguments == 2){
-            results = new_msgSend2(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]));
-        } else if(numberOfArguments == 3){
-            results = new_msgSend3(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]));
-        } else if(numberOfArguments == 4){
-            results = new_msgSend4(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]));
-        } else if(numberOfArguments == 5){
-            results = new_msgSend5(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]));
-        } else if(numberOfArguments == 6){
-            results = new_msgSend6(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]));
-        } else if(numberOfArguments == 7){
-            results = new_msgSend7(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]));
-        }
-    } else if([argumentsList count] == 8) {
-        if(numberOfArguments == 1) {
-            results = new_msgSend1(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]));
-        } else if(numberOfArguments == 2){
-            results = new_msgSend2(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]));
-        } else if(numberOfArguments == 3){
-            results = new_msgSend3(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]));
-        } else if(numberOfArguments == 4){
-            results = new_msgSend4(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]));
-        } else if(numberOfArguments == 5){
-            results = new_msgSend5(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]));
-        } else if(numberOfArguments == 6){
-            results = new_msgSend6(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]));
-        } else if(numberOfArguments == 7){
-            results = new_msgSend7(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]));
-        } else if(numberOfArguments == 8){
-            results = new_msgSend8(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]));
-        }
-    } else if([argumentsList count] == 9) {
-        if(numberOfArguments == 1) {
-            results = new_msgSend1(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]));
-        } else if(numberOfArguments == 2){
-            results = new_msgSend2(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]));
-        } else if(numberOfArguments == 3){
-            results = new_msgSend3(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]));
-        } else if(numberOfArguments == 4){
-            results = new_msgSend4(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]));
-        } else if(numberOfArguments == 5){
-            results = new_msgSend5(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]));
-        } else if(numberOfArguments == 6){
-            results = new_msgSend6(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]));
-        } else if(numberOfArguments == 7){
-            results = new_msgSend7(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]));
-        } else if(numberOfArguments == 8){
-            results = new_msgSend8(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]));
-        } else if(numberOfArguments == 9){
-            results = new_msgSend9(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]));
-        }
-    } else if([argumentsList count] == 10) {
-        if(numberOfArguments == 1) {
-            results = new_msgSend1(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]), getArgument([argumentsList objectAtIndex:9]));
-        } else if(numberOfArguments == 2){
-            results = new_msgSend2(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]), getArgument([argumentsList objectAtIndex:9]));
-        } else if(numberOfArguments == 3){
-            results = new_msgSend3(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]), getArgument([argumentsList objectAtIndex:9]));
-        } else if(numberOfArguments == 4){
-            results = new_msgSend4(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]), getArgument([argumentsList objectAtIndex:9]));
-        } else if(numberOfArguments == 5){
-            results = new_msgSend5(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]), getArgument([argumentsList objectAtIndex:9]));
-        } else if(numberOfArguments == 6){
-            results = new_msgSend6(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]), getArgument([argumentsList objectAtIndex:9]));
-        } else if(numberOfArguments == 7){
-            results = new_msgSend7(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]), getArgument([argumentsList objectAtIndex:9]));
-        } else if(numberOfArguments == 8){
-            results = new_msgSend8(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]), getArgument([argumentsList objectAtIndex:9]));
-        } else if(numberOfArguments == 9){
-            results = new_msgSend9(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]), getArgument([argumentsList objectAtIndex:9]));
-        } else if(numberOfArguments == 10){
-            results = new_msgSend10(sender, selector, getArgument([argumentsList objectAtIndex:0]), getArgument([argumentsList objectAtIndex:1]), getArgument([argumentsList objectAtIndex:2]), getArgument([argumentsList objectAtIndex:3]), getArgument([argumentsList objectAtIndex:4]), getArgument([argumentsList objectAtIndex:5]), getArgument([argumentsList objectAtIndex:6]), getArgument([argumentsList objectAtIndex:7]), getArgument([argumentsList objectAtIndex:8]), getArgument([argumentsList objectAtIndex:9]));
-        }
-    }
+    
+    JP_IF_REAL_ARG_COUNT(1) { JP_CALL_MSGSEND_ARG1(1) }
+    JP_IF_REAL_ARG_COUNT(2) { JP_DEAL_MSGSEND(2, 1) JP_DEAL_MSGSEND(2, 2) }
+    JP_IF_REAL_ARG_COUNT(3) { JP_DEAL_MSGSEND(3, 1) JP_DEAL_MSGSEND(3, 2) JP_DEAL_MSGSEND(3, 3) }
+    JP_IF_REAL_ARG_COUNT(4) { JP_DEAL_MSGSEND(4, 1) JP_DEAL_MSGSEND(4, 2) JP_DEAL_MSGSEND(4, 3) JP_DEAL_MSGSEND(4, 4) }
+    JP_IF_REAL_ARG_COUNT(5) { JP_DEAL_MSGSEND(5, 1) JP_DEAL_MSGSEND(5, 2) JP_DEAL_MSGSEND(5, 3) JP_DEAL_MSGSEND(5, 4) JP_DEAL_MSGSEND(5, 5) }
+    JP_IF_REAL_ARG_COUNT(6) { JP_DEAL_MSGSEND(6, 1) JP_DEAL_MSGSEND(6, 2) JP_DEAL_MSGSEND(6, 3) JP_DEAL_MSGSEND(6, 4) JP_DEAL_MSGSEND(6, 5) JP_DEAL_MSGSEND(6, 6) }
+    JP_IF_REAL_ARG_COUNT(7) { JP_DEAL_MSGSEND(7, 1) JP_DEAL_MSGSEND(7, 2) JP_DEAL_MSGSEND(7, 3) JP_DEAL_MSGSEND(7, 4) JP_DEAL_MSGSEND(7, 5) JP_DEAL_MSGSEND(7, 6) JP_DEAL_MSGSEND(7, 7) }
+    JP_IF_REAL_ARG_COUNT(8) { JP_DEAL_MSGSEND(8, 1) JP_DEAL_MSGSEND(8, 2) JP_DEAL_MSGSEND(8, 3) JP_DEAL_MSGSEND(8, 4) JP_DEAL_MSGSEND(8, 5) JP_DEAL_MSGSEND(8, 6) JP_DEAL_MSGSEND(8, 7) JP_DEAL_MSGSEND(8, 8) }
+    JP_IF_REAL_ARG_COUNT(9) { JP_DEAL_MSGSEND(10, 1) JP_DEAL_MSGSEND(10, 2) JP_DEAL_MSGSEND(10, 3) JP_DEAL_MSGSEND(10, 4) JP_DEAL_MSGSEND(10, 5) JP_DEAL_MSGSEND(10, 6) JP_DEAL_MSGSEND(10, 7) JP_DEAL_MSGSEND(10, 8) JP_DEAL_MSGSEND(10, 9) JP_DEAL_MSGSEND(10, 10) }
+    
     return results;
 }
 
