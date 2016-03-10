@@ -107,6 +107,8 @@
 @property (nonatomic, assign) BOOL consoleLogPassed;
 @property (nonatomic, assign) BOOL overrideParentMethodPassed;
 
+@property (nonatomic, assign) BOOL variableParameterMethodPassed;
+
 - (NSString*)funcOverrideParentMethod;
 - (void)funcToSwizzleTestGCD:(void(^)())block;
 

@@ -21,7 +21,6 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "6.0"
   s.source       = { :git => "https://github.com/bang590/JSPatch.git", :tag => s.version }
 
-  s.resources    = "JSPatch/*.js"
   s.frameworks   = "Foundation"
   s.weak_framework = "JavaScriptCore"
   s.default_subspec = 'Core'
@@ -35,6 +34,6 @@ Pod::Spec.new do |s|
   s.subspec 'Extensions' do |ss|
     ss.source_files = "Extensions/**/*.{h,m}"
     ss.public_header_files = "Extensions/**/*.h"
-	ss.dependency 'JSPatch/Core'
+    ss.dependency 'JSPatch/Core'
   end
 end
