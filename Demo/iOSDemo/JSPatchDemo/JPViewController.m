@@ -7,20 +7,143 @@
 //
 
 #import "JPViewController.h"
+#import "JPTableViewCell.h"
 
-@implementation JPViewController
+#define windowFrame  [UIScreen mainScreen].applicationFrame
+
+static NSString  *JPCellIdentifier = @"JPCell";
+
+static const CGFloat kJPTableViewCellHeight = 180.0f;
+
+typedef int (^JPBlock) (BOOL flag, int value);
+
+typedef NS_ENUM(NSUInteger, JPEnumType) {
+    JPEnumTypeOne   = 0,
+    JPEnumTypeTwo   = 1,
+};
+
+
+@interface JPViewController ()
+{
+    NSString *_protectedStr;
+}
+@end
+
+@implementation JPViewController {
+    NSString *_privateString;
+}
+
+- (NSString *)JPCellIdentifier {
+    return JPCellIdentifier;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 100, [UIScreen mainScreen].bounds.size.width, 50)];
-    [btn setTitle:@"Push JPTableViewController" forState:UIControlStateNormal];
-    [btn addTarget:self action:@selector(handleBtn:) forControlEvents:UIControlEventTouchUpInside];
-    [btn setBackgroundColor:[UIColor grayColor]];
-    [self.view addSubview:btn];
+    
+    self.JPString = @"JP String Value";
+    
+    _protectedStr = @"JP Protected String Value";
+    
+   _privateString = @"JP Private String Value";
+    
+    self.JPArray = [[NSMutableArray alloc]initWithCapacity:10];
+    for (int i = 0; i<3; i++) {
+        NSString *imageName = [NSString stringWithFormat:@"Ysmd%d",i%3];
+        [self.JPArray addObject:imageName];
+    }
+    
+    self.JPDictionary = @{@"0":@"Variable Test",@"1":@"Target Test",@"2":@"Block Test"};
+    
+    self.JPTableView = [[UITableView alloc]initWithFrame:windowFrame style:UITableViewStylePlain];
+    self.JPTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.JPTableView.delegate = self;
+    self.JPTableView.dataSource = self;
+    [self.view addSubview:_JPTableView];
 }
 
-- (void)handleBtn:(id)sender
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+    NSArray *visibleCells = [self.JPTableView visibleCells];
+    for (JPTableViewCell *cell in visibleCells) {
+        if ([cell isKindOfClass:[JPTableViewCell class]]) {
+        [cell cellOnTableView:self.JPTableView didScrollOnView:self.view];
+        }
+    }
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return kJPTableViewCellHeight;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.JPArray.count;
+}
+
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    JPTableViewCell *cell = (JPTableViewCell*)[tableView dequeueReusableCellWithIdentifier:JPCellIdentifier];
+    if (!cell) {
+        cell = (JPTableViewCell*)[[JPTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:JPCellIdentifier];
+    }
+    cell.titleLabel.text = [_JPDictionary objectForKey:[NSString stringWithFormat:@"%ld",indexPath.row]];
+    cell.subtitleLabel.text = @"Please Selected This row";
+    [self sd_setImageWithIndexPath:indexPath];
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    switch (indexPath.row+1) {
+        case 1:
+        {
+            NSLog(@"Property >>>> %@",_JPString);
+            NSLog(@"Private >>>>%@",_privateString);
+            NSLog(@"Protected >>> %@",_protectedStr);
+        }
+            break;
+        case 2:
+        {
+            UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"Test Alert" message:@"Test Message" delegate:self cancelButtonTitle:@"cancel" otherButtonTitles:nil, nil];
+            [alertView show];
+        }
+            break;
+        case 3:
+        {
+            [self testBlock];
+        }
+            break;
+    }
+}
+
++ (JPBlock)ocBlock
+{
+    JPBlock block = ^(BOOL flag,  int value){
+        if(flag){
+            return value;
+        }
+        return 0;
+    };
+    return block;
+}
++ (void)execBlock:(JPBlock)blk
+{
+}
+- (void)testBlock
+{
+    
+    JPBlock block = [JPViewController ocBlock];
+    NSLog(@"Test Block >>>>> Value:%d",block(0,1));
+}
+
+- (void)sd_setImageWithIndexPath:(NSIndexPath*)indexPath {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                JPTableViewCell *cell = (JPTableViewCell*)[self.JPTableView cellForRowAtIndexPath:indexPath];
+                UIImage * image = [UIImage imageNamed:[self.JPArray objectAtIndex:indexPath.row]];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                        cell.parallaxImage.image = image;
+                });
+            });
+    });
 }
 
 @end
