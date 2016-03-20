@@ -65,17 +65,29 @@ static NSObject *_nullObj;
 static NSObject *_nilObj;
 static NSMutableDictionary *_registeredStruct;
 
-static NSMutableDictionary *_JSOverideMethods;
-static NSMutableDictionary *_TMPMemoryPool;
-static NSMutableDictionary *_propKeys;
-static NSMutableDictionary *_JSMethodSignatureCache;
-static NSLock              *_JSMethodSignatureLock;
-static NSRecursiveLock     *_JSMethodForwardCallLock;
-static NSMutableDictionary *_protocolTypeEncodeDict;
+static NSMutableDictionary   *_JSOverideMethods;
+static NSMutableDictionary   *_TMPMemoryPool;
+static NSMutableDictionary   *_propKeys;
+static NSMutableDictionary   *_JSMethodSignatureCache;
+static NSLock                *_JSMethodSignatureLock;
+static NSRecursiveLock       *_JSMethodForwardCallLock;
+static NSMutableDictionary   *_protocolTypeEncodeDict;
+static exceptionHandlerBlock _exceptionHandler;
+
 
 @implementation JPEngine
 
 #pragma mark - APIS
+
++ (void)startEngineWithExceptionHandlerBlock:(exceptionHandlerBlock) exceptionHandler
+{
+    if (![JSContext class] || _context) {
+        return;
+    }
+    
+    _exceptionHandler = exceptionHandler;
+    [JPEngine startEngine];
+}
 
 + (void)startEngine
 {
@@ -849,303 +861,311 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 
 static id callSelector(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper)
 {
-    NSString *clsDeclaration = [[instance valueForProperty:@"__clsDeclaration"] toString];
-   
-    if (instance) {
-        instance = formatJSToOC(instance);
-        if (!instance || instance == _nilObj) return @{@"__isNil": @(YES)};
-    }
-    id argumentsObj = formatJSToOC(arguments);
-    
-    if (instance && [selectorName isEqualToString:@"toJS"]) {
-        if ([instance isKindOfClass:[NSString class]] || [instance isKindOfClass:[NSDictionary class]] || [instance isKindOfClass:[NSArray class]] || [instance isKindOfClass:[NSDate class]]) {
-            return _unboxOCObjectToJS(instance);
-        }
-    }
-
-    Class cls = instance ? [instance class] : NSClassFromString(className);
-    SEL selector = NSSelectorFromString(selectorName);
-    
-    if (isSuper) {
-        NSString *superSelectorName = [NSString stringWithFormat:@"SUPER_%@", selectorName];
-        SEL superSelector = NSSelectorFromString(superSelectorName);
+    @try {
         
-        Class superCls;
-        if (clsDeclaration.length) {
-            NSDictionary *declarationDict = convertJPDeclarationString(clsDeclaration);
-            NSString *defineClsName = declarationDict[@"className"];
-
-            Class defineClass = NSClassFromString(defineClsName);
-            superCls = defineClass ? [defineClass superclass] : [cls superclass];
-        } else {
-            superCls = [cls superclass];
+        NSString *clsDeclaration = [[instance valueForProperty:@"__clsDeclaration"] toString];
+        
+        if (instance) {
+            instance = formatJSToOC(instance);
+            if (!instance || instance == _nilObj) return @{@"__isNil": @(YES)};
+        }
+        id argumentsObj = formatJSToOC(arguments);
+        
+        if (instance && [selectorName isEqualToString:@"toJS"]) {
+            if ([instance isKindOfClass:[NSString class]] || [instance isKindOfClass:[NSDictionary class]] || [instance isKindOfClass:[NSArray class]] || [instance isKindOfClass:[NSDate class]]) {
+                return _unboxOCObjectToJS(instance);
+            }
         }
         
-        Method superMethod = class_getInstanceMethod(superCls, selector);
-        IMP superIMP = method_getImplementation(superMethod);
+        Class cls = instance ? [instance class] : NSClassFromString(className);
+        SEL selector = NSSelectorFromString(selectorName);
         
-        class_addMethod(cls, superSelector, superIMP, method_getTypeEncoding(superMethod));
-        
-        NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
-        JSValue *overideFunction = _JSOverideMethods[superCls][JPSelectorName];
-        if (overideFunction) {
-            overrideMethod(cls, superSelectorName, overideFunction, NO, NULL);
-        }
-        
-        selector = superSelector;
-    }
-    
-    
-    NSMutableArray *_markArray;
-    
-    NSInvocation *invocation;
-    NSMethodSignature *methodSignature;
-    if (!_JSMethodSignatureCache) {
-        _JSMethodSignatureCache = [[NSMutableDictionary alloc]init];
-    }
-    if (instance) {
-        [_JSMethodSignatureLock lock];
-        if (!_JSMethodSignatureCache[cls]) {
-            _JSMethodSignatureCache[(id<NSCopying>)cls] = [[NSMutableDictionary alloc]init];
-        }
-        methodSignature = _JSMethodSignatureCache[cls][selectorName];
-        if (!methodSignature) {
-            methodSignature = [cls instanceMethodSignatureForSelector:selector];
-            _JSMethodSignatureCache[cls][selectorName] = methodSignature;
-        }
-        [_JSMethodSignatureLock unlock];
-        if (!methodSignature) {
-            NSCAssert(methodSignature, @"unrecognized selector %@ for instance %@", selectorName, instance);
-            return nil;
-        }
-        invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-        [invocation setTarget:instance];
-    } else {
-        methodSignature = [cls methodSignatureForSelector:selector];
-        if (!methodSignature) {
-            NSCAssert(methodSignature, @"unrecognized selector %@ for class %@", selectorName, className);
-            return nil;
-        }
-        invocation= [NSInvocation invocationWithMethodSignature:methodSignature];
-        [invocation setTarget:cls];
-    }
-    [invocation setSelector:selector];
-    
-    NSUInteger numberOfArguments = methodSignature.numberOfArguments;
-    NSInteger inputArguments = [(NSArray *)argumentsObj count];
-    if (inputArguments > numberOfArguments - 2) {
-        // calling variable argument method, only support parameter type `id` and return type `id`
-        id sender = instance != nil ? instance : cls;
-        id result = invokeVariableParameterMethod(argumentsObj, methodSignature, sender, selector);
-        return formatOCToJS(result);
-    }
-    
-    for (NSUInteger i = 2; i < numberOfArguments; i++) {
-        const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];
-        id valObj = argumentsObj[i-2];
-        switch (argumentType[0] == 'r' ? argumentType[1] : argumentType[0]) {
-                
-                #define JP_CALL_ARG_CASE(_typeString, _type, _selector) \
-                case _typeString: {                              \
-                    _type value = [valObj _selector];                     \
-                    [invocation setArgument:&value atIndex:i];\
-                    break; \
-                }
-                
-                JP_CALL_ARG_CASE('c', char, charValue)
-                JP_CALL_ARG_CASE('C', unsigned char, unsignedCharValue)
-                JP_CALL_ARG_CASE('s', short, shortValue)
-                JP_CALL_ARG_CASE('S', unsigned short, unsignedShortValue)
-                JP_CALL_ARG_CASE('i', int, intValue)
-                JP_CALL_ARG_CASE('I', unsigned int, unsignedIntValue)
-                JP_CALL_ARG_CASE('l', long, longValue)
-                JP_CALL_ARG_CASE('L', unsigned long, unsignedLongValue)
-                JP_CALL_ARG_CASE('q', long long, longLongValue)
-                JP_CALL_ARG_CASE('Q', unsigned long long, unsignedLongLongValue)
-                JP_CALL_ARG_CASE('f', float, floatValue)
-                JP_CALL_ARG_CASE('d', double, doubleValue)
-                JP_CALL_ARG_CASE('B', BOOL, boolValue)
-                
-            case ':': {
-                SEL value = nil;
-                if (valObj != _nilObj) {
-                    value = NSSelectorFromString(valObj);
-                }
-                [invocation setArgument:&value atIndex:i];
-                break;
-            }
-            case '{': {
-                NSString *typeString = extractStructName([NSString stringWithUTF8String:argumentType]);
-                JSValue *val = arguments[i-2];
-                #define JP_CALL_ARG_STRUCT(_type, _methodName) \
-                if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
-                    _type value = [val _methodName];  \
-                    [invocation setArgument:&value atIndex:i];  \
-                    break; \
-                }
-                JP_CALL_ARG_STRUCT(CGRect, toRect)
-                JP_CALL_ARG_STRUCT(CGPoint, toPoint)
-                JP_CALL_ARG_STRUCT(CGSize, toSize)
-                JP_CALL_ARG_STRUCT(NSRange, toRange)
-                @synchronized (_context) {
-                    NSDictionary *structDefine = _registeredStruct[typeString];
-                    if (structDefine) {
-                        size_t size = sizeOfStructTypes(structDefine[@"types"]);
-                        void *ret = malloc(size);
-                        getStructDataWithDict(ret, valObj, structDefine);
-                        [invocation setArgument:ret atIndex:i];
-                        free(ret);
-                        break;
-                    }
-                }
-                
-                break;
-            }
-            case '*':
-            case '^': {
-                if ([valObj isKindOfClass:[JPBoxing class]]) {
-                    void *value = [((JPBoxing *)valObj) unboxPointer];
-                    
-                    if (argumentType[1] == '@') {
-                        if (!_TMPMemoryPool) {
-                            _TMPMemoryPool = [[NSMutableDictionary alloc] init];
-                        }
-                        if (!_markArray) {
-                            _markArray = [[NSMutableArray alloc] init];
-                        }
-                        memset(value, 0, sizeof(id));
-                        [_markArray addObject:valObj];
-                    }
-                    
-                    [invocation setArgument:&value atIndex:i];
-                    break;
-                }
-            }
-            case '#': {
-                if ([valObj isKindOfClass:[JPBoxing class]]) {
-                    Class value = [((JPBoxing *)valObj) unboxClass];
-                    [invocation setArgument:&value atIndex:i];
-                    break;
-                }
-            }
-            default: {
-                if (valObj == _nullObj) {
-                    valObj = [NSNull null];
-                    [invocation setArgument:&valObj atIndex:i];
-                    break;
-                }
-                if (valObj == _nilObj ||
-                    ([valObj isKindOfClass:[NSNumber class]] && strcmp([valObj objCType], "c") == 0 && ![valObj boolValue])) {
-                    valObj = nil;
-                    [invocation setArgument:&valObj atIndex:i];
-                    break;
-                }
-                if ([(JSValue *)arguments[i-2] hasProperty:@"__isBlock"]) {
-                    __autoreleasing id cb = genCallbackBlock(arguments[i-2]);
-                    [invocation setArgument:&cb atIndex:i];
-                } else {
-                    [invocation setArgument:&valObj atIndex:i];
-                }
-            }
-        }
-    }
-    
-    [invocation invoke];
-    if ([_markArray count] > 0) {
-        for (JPBoxing *box in _markArray) {
-            void *pointer = [box unboxPointer];
-            id obj = *((__unsafe_unretained id *)pointer);
-            if (obj) {
-                @synchronized(_TMPMemoryPool) {
-                    [_TMPMemoryPool setObject:obj forKey:[NSNumber numberWithInteger:[(NSObject*)obj hash]]];
-                }
-            }
-        }
-    }
-    const char *returnType = [methodSignature methodReturnType];
-    id returnValue;
-    if (strncmp(returnType, "v", 1) != 0) {
-        if (strncmp(returnType, "@", 1) == 0) {
-            void *result;
-            [invocation getReturnValue:&result];
+        if (isSuper) {
+            NSString *superSelectorName = [NSString stringWithFormat:@"SUPER_%@", selectorName];
+            SEL superSelector = NSSelectorFromString(superSelectorName);
             
-            //For performance, ignore the other methods prefix with alloc/new/copy/mutableCopy
-            if ([selectorName isEqualToString:@"alloc"] || [selectorName isEqualToString:@"new"] ||
-                [selectorName isEqualToString:@"copy"] || [selectorName isEqualToString:@"mutableCopy"]) {
-                returnValue = (__bridge_transfer id)result;
+            Class superCls;
+            if (clsDeclaration.length) {
+                NSDictionary *declarationDict = convertJPDeclarationString(clsDeclaration);
+                NSString *defineClsName = declarationDict[@"className"];
+                
+                Class defineClass = NSClassFromString(defineClsName);
+                superCls = defineClass ? [defineClass superclass] : [cls superclass];
             } else {
-                returnValue = (__bridge id)result;
+                superCls = [cls superclass];
             }
-            return formatOCToJS(returnValue);
             
+            Method superMethod = class_getInstanceMethod(superCls, selector);
+            IMP superIMP = method_getImplementation(superMethod);
+            
+            class_addMethod(cls, superSelector, superIMP, method_getTypeEncoding(superMethod));
+            
+            NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
+            JSValue *overideFunction = _JSOverideMethods[superCls][JPSelectorName];
+            if (overideFunction) {
+                overrideMethod(cls, superSelectorName, overideFunction, NO, NULL);
+            }
+            
+            selector = superSelector;
+        }
+        
+        
+        NSMutableArray *_markArray;
+        
+        NSInvocation *invocation;
+        NSMethodSignature *methodSignature;
+        if (!_JSMethodSignatureCache) {
+            _JSMethodSignatureCache = [[NSMutableDictionary alloc]init];
+        }
+        if (instance) {
+            [_JSMethodSignatureLock lock];
+            if (!_JSMethodSignatureCache[cls]) {
+                _JSMethodSignatureCache[(id<NSCopying>)cls] = [[NSMutableDictionary alloc]init];
+            }
+            methodSignature = _JSMethodSignatureCache[cls][selectorName];
+            if (!methodSignature) {
+                methodSignature = [cls instanceMethodSignatureForSelector:selector];
+                _JSMethodSignatureCache[cls][selectorName] = methodSignature;
+            }
+            [_JSMethodSignatureLock unlock];
+            if (!methodSignature) {
+                NSCAssert(methodSignature, @"unrecognized selector %@ for instance %@", selectorName, instance);
+                return nil;
+            }
+            invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+            [invocation setTarget:instance];
         } else {
-            switch (returnType[0] == 'r' ? returnType[1] : returnType[0]) {
+            methodSignature = [cls methodSignatureForSelector:selector];
+            if (!methodSignature) {
+                NSCAssert(methodSignature, @"unrecognized selector %@ for class %@", selectorName, className);
+                return nil;
+            }
+            invocation= [NSInvocation invocationWithMethodSignature:methodSignature];
+            [invocation setTarget:cls];
+        }
+        [invocation setSelector:selector];
+        
+        NSUInteger numberOfArguments = methodSignature.numberOfArguments;
+        NSInteger inputArguments = [(NSArray *)argumentsObj count];
+        if (inputArguments > numberOfArguments - 2) {
+            // calling variable argument method, only support parameter type `id` and return type `id`
+            id sender = instance != nil ? instance : cls;
+            id result = invokeVariableParameterMethod(argumentsObj, methodSignature, sender, selector);
+            return formatOCToJS(result);
+        }
+        
+        for (NSUInteger i = 2; i < numberOfArguments; i++) {
+            const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];
+            id valObj = argumentsObj[i-2];
+            switch (argumentType[0] == 'r' ? argumentType[1] : argumentType[0]) {
                     
-                #define JP_CALL_RET_CASE(_typeString, _type) \
-                case _typeString: {                              \
-                    _type tempResultSet; \
-                    [invocation getReturnValue:&tempResultSet];\
-                    returnValue = @(tempResultSet); \
-                    break; \
-                }
+#define JP_CALL_ARG_CASE(_typeString, _type, _selector) \
+case _typeString: {                              \
+_type value = [valObj _selector];                     \
+[invocation setArgument:&value atIndex:i];\
+break; \
+}
                     
-                JP_CALL_RET_CASE('c', char)
-                JP_CALL_RET_CASE('C', unsigned char)
-                JP_CALL_RET_CASE('s', short)
-                JP_CALL_RET_CASE('S', unsigned short)
-                JP_CALL_RET_CASE('i', int)
-                JP_CALL_RET_CASE('I', unsigned int)
-                JP_CALL_RET_CASE('l', long)
-                JP_CALL_RET_CASE('L', unsigned long)
-                JP_CALL_RET_CASE('q', long long)
-                JP_CALL_RET_CASE('Q', unsigned long long)
-                JP_CALL_RET_CASE('f', float)
-                JP_CALL_RET_CASE('d', double)
-                JP_CALL_RET_CASE('B', BOOL)
-
-                case '{': {
-                    NSString *typeString = extractStructName([NSString stringWithUTF8String:returnType]);
-                    #define JP_CALL_RET_STRUCT(_type, _methodName) \
-                    if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
-                        _type result;   \
-                        [invocation getReturnValue:&result];    \
-                        return [JSValue _methodName:result inContext:_context];    \
+                    JP_CALL_ARG_CASE('c', char, charValue)
+                    JP_CALL_ARG_CASE('C', unsigned char, unsignedCharValue)
+                    JP_CALL_ARG_CASE('s', short, shortValue)
+                    JP_CALL_ARG_CASE('S', unsigned short, unsignedShortValue)
+                    JP_CALL_ARG_CASE('i', int, intValue)
+                    JP_CALL_ARG_CASE('I', unsigned int, unsignedIntValue)
+                    JP_CALL_ARG_CASE('l', long, longValue)
+                    JP_CALL_ARG_CASE('L', unsigned long, unsignedLongValue)
+                    JP_CALL_ARG_CASE('q', long long, longLongValue)
+                    JP_CALL_ARG_CASE('Q', unsigned long long, unsignedLongLongValue)
+                    JP_CALL_ARG_CASE('f', float, floatValue)
+                    JP_CALL_ARG_CASE('d', double, doubleValue)
+                    JP_CALL_ARG_CASE('B', BOOL, boolValue)
+                    
+                case ':': {
+                    SEL value = nil;
+                    if (valObj != _nilObj) {
+                        value = NSSelectorFromString(valObj);
                     }
-                    JP_CALL_RET_STRUCT(CGRect, valueWithRect)
-                    JP_CALL_RET_STRUCT(CGPoint, valueWithPoint)
-                    JP_CALL_RET_STRUCT(CGSize, valueWithSize)
-                    JP_CALL_RET_STRUCT(NSRange, valueWithRange)
+                    [invocation setArgument:&value atIndex:i];
+                    break;
+                }
+                case '{': {
+                    NSString *typeString = extractStructName([NSString stringWithUTF8String:argumentType]);
+                    JSValue *val = arguments[i-2];
+#define JP_CALL_ARG_STRUCT(_type, _methodName) \
+if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
+_type value = [val _methodName];  \
+[invocation setArgument:&value atIndex:i];  \
+break; \
+}
+                    JP_CALL_ARG_STRUCT(CGRect, toRect)
+                    JP_CALL_ARG_STRUCT(CGPoint, toPoint)
+                    JP_CALL_ARG_STRUCT(CGSize, toSize)
+                    JP_CALL_ARG_STRUCT(NSRange, toRange)
                     @synchronized (_context) {
                         NSDictionary *structDefine = _registeredStruct[typeString];
                         if (structDefine) {
                             size_t size = sizeOfStructTypes(structDefine[@"types"]);
                             void *ret = malloc(size);
-                            [invocation getReturnValue:ret];
-                            NSDictionary *dict = getDictOfStruct(ret, structDefine);
+                            getStructDataWithDict(ret, valObj, structDefine);
+                            [invocation setArgument:ret atIndex:i];
                             free(ret);
-                            return dict;
+                            break;
                         }
                     }
+                    
                     break;
                 }
                 case '*':
                 case '^': {
-                    void *result;
-                    [invocation getReturnValue:&result];
-                    returnValue = formatOCToJS([JPBoxing boxPointer:result]);
-                    break;
+                    if ([valObj isKindOfClass:[JPBoxing class]]) {
+                        void *value = [((JPBoxing *)valObj) unboxPointer];
+                        
+                        if (argumentType[1] == '@') {
+                            if (!_TMPMemoryPool) {
+                                _TMPMemoryPool = [[NSMutableDictionary alloc] init];
+                            }
+                            if (!_markArray) {
+                                _markArray = [[NSMutableArray alloc] init];
+                            }
+                            memset(value, 0, sizeof(id));
+                            [_markArray addObject:valObj];
+                        }
+                        
+                        [invocation setArgument:&value atIndex:i];
+                        break;
+                    }
                 }
                 case '#': {
-                    Class result;
-                    [invocation getReturnValue:&result];
-                    returnValue = formatOCToJS([JPBoxing boxClass:result]);
-                    break;
+                    if ([valObj isKindOfClass:[JPBoxing class]]) {
+                        Class value = [((JPBoxing *)valObj) unboxClass];
+                        [invocation setArgument:&value atIndex:i];
+                        break;
+                    }
+                }
+                default: {
+                    if (valObj == _nullObj) {
+                        valObj = [NSNull null];
+                        [invocation setArgument:&valObj atIndex:i];
+                        break;
+                    }
+                    if (valObj == _nilObj ||
+                        ([valObj isKindOfClass:[NSNumber class]] && strcmp([valObj objCType], "c") == 0 && ![valObj boolValue])) {
+                        valObj = nil;
+                        [invocation setArgument:&valObj atIndex:i];
+                        break;
+                    }
+                    if ([(JSValue *)arguments[i-2] hasProperty:@"__isBlock"]) {
+                        __autoreleasing id cb = genCallbackBlock(arguments[i-2]);
+                        [invocation setArgument:&cb atIndex:i];
+                    } else {
+                        [invocation setArgument:&valObj atIndex:i];
+                    }
                 }
             }
-            return returnValue;
         }
+        
+        [invocation invoke];
+        if ([_markArray count] > 0) {
+            for (JPBoxing *box in _markArray) {
+                void *pointer = [box unboxPointer];
+                id obj = *((__unsafe_unretained id *)pointer);
+                if (obj) {
+                    @synchronized(_TMPMemoryPool) {
+                        [_TMPMemoryPool setObject:obj forKey:[NSNumber numberWithInteger:[(NSObject*)obj hash]]];
+                    }
+                }
+            }
+        }
+        const char *returnType = [methodSignature methodReturnType];
+        id returnValue;
+        if (strncmp(returnType, "v", 1) != 0) {
+            if (strncmp(returnType, "@", 1) == 0) {
+                void *result;
+                [invocation getReturnValue:&result];
+                
+                //For performance, ignore the other methods prefix with alloc/new/copy/mutableCopy
+                if ([selectorName isEqualToString:@"alloc"] || [selectorName isEqualToString:@"new"] ||
+                    [selectorName isEqualToString:@"copy"] || [selectorName isEqualToString:@"mutableCopy"]) {
+                    returnValue = (__bridge_transfer id)result;
+                } else {
+                    returnValue = (__bridge id)result;
+                }
+                return formatOCToJS(returnValue);
+                
+            } else {
+                switch (returnType[0] == 'r' ? returnType[1] : returnType[0]) {
+                        
+#define JP_CALL_RET_CASE(_typeString, _type) \
+case _typeString: {                              \
+_type tempResultSet; \
+[invocation getReturnValue:&tempResultSet];\
+returnValue = @(tempResultSet); \
+break; \
+}
+                        
+                        JP_CALL_RET_CASE('c', char)
+                        JP_CALL_RET_CASE('C', unsigned char)
+                        JP_CALL_RET_CASE('s', short)
+                        JP_CALL_RET_CASE('S', unsigned short)
+                        JP_CALL_RET_CASE('i', int)
+                        JP_CALL_RET_CASE('I', unsigned int)
+                        JP_CALL_RET_CASE('l', long)
+                        JP_CALL_RET_CASE('L', unsigned long)
+                        JP_CALL_RET_CASE('q', long long)
+                        JP_CALL_RET_CASE('Q', unsigned long long)
+                        JP_CALL_RET_CASE('f', float)
+                        JP_CALL_RET_CASE('d', double)
+                        JP_CALL_RET_CASE('B', BOOL)
+                        
+                    case '{': {
+                        NSString *typeString = extractStructName([NSString stringWithUTF8String:returnType]);
+#define JP_CALL_RET_STRUCT(_type, _methodName) \
+if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
+_type result;   \
+[invocation getReturnValue:&result];    \
+return [JSValue _methodName:result inContext:_context];    \
+}
+                        JP_CALL_RET_STRUCT(CGRect, valueWithRect)
+                        JP_CALL_RET_STRUCT(CGPoint, valueWithPoint)
+                        JP_CALL_RET_STRUCT(CGSize, valueWithSize)
+                        JP_CALL_RET_STRUCT(NSRange, valueWithRange)
+                        @synchronized (_context) {
+                            NSDictionary *structDefine = _registeredStruct[typeString];
+                            if (structDefine) {
+                                size_t size = sizeOfStructTypes(structDefine[@"types"]);
+                                void *ret = malloc(size);
+                                [invocation getReturnValue:ret];
+                                NSDictionary *dict = getDictOfStruct(ret, structDefine);
+                                free(ret);
+                                return dict;
+                            }
+                        }
+                        break;
+                    }
+                    case '*':
+                    case '^': {
+                        void *result;
+                        [invocation getReturnValue:&result];
+                        returnValue = formatOCToJS([JPBoxing boxPointer:result]);
+                        break;
+                    }
+                    case '#': {
+                        Class result;
+                        [invocation getReturnValue:&result];
+                        returnValue = formatOCToJS([JPBoxing boxClass:result]);
+                        break;
+                    }
+                }
+                return returnValue;
+            }
+        }
+        return nil;
+    } @catch (NSException *exception) {
+        if (_exceptionHandler){
+            _exceptionHandler(exception);
+        }
+        return nil;
     }
-    return nil;
 }
 
 id (*new_msgSend1)(id, SEL, id,...) = (id (*)(id, SEL, id,...)) objc_msgSend;
