@@ -7,20 +7,32 @@
 //
 
 #import "JPViewController.h"
+#import "JPFullDemoViewController.h"
 
 @implementation JPViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 100, [UIScreen mainScreen].bounds.size.width, 50)];
-    [btn setTitle:@"Push JPTableViewController" forState:UIControlStateNormal];
-    [btn addTarget:self action:@selector(handleBtn:) forControlEvents:UIControlEventTouchUpInside];
-    [btn setBackgroundColor:[UIColor grayColor]];
-    [self.view addSubview:btn];
+    UIButton *demoBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 80, [UIScreen mainScreen].bounds.size.width, 50)];
+    [demoBtn setTitle:@"Push JPTableViewController" forState:UIControlStateNormal];
+    [demoBtn addTarget:self action:@selector(demoBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [demoBtn setBackgroundColor:[UIColor grayColor]];
+    [self.view addSubview:demoBtn];
+    
+    UIButton *fullDemoBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 150, [UIScreen mainScreen].bounds.size.width, 50)];
+    [fullDemoBtn setTitle:@"Push JPFullDemoViewController" forState:UIControlStateNormal];
+    [fullDemoBtn addTarget:self action:@selector(fullDemoBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [fullDemoBtn setBackgroundColor:[UIColor grayColor]];
+    [self.view addSubview:fullDemoBtn];
 }
 
-- (void)handleBtn:(id)sender
-{
+- (void)demoBtn:(id)sender {
+    NSLog(@"Not use JSpatch,Objcetive C demoBtn Click Event");
+}
+- (void)fullDemoBtn:(id)sender {
+    NSLog(@"Not use JSpatch,Objcetive C fullDemoBtn Click Event");
+    JPFullDemoViewController *vc = [[JPFullDemoViewController alloc]init];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 @end

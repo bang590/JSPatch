@@ -1,8 +1,16 @@
+require('fullDemo,JPFullDemoViewController')
 defineClass('JPViewController', {
-  handleBtn: function(sender) {
+    demoBtn: function(sender) {
+    console.log('JSPatch demoBtnClick Event');
     var tableViewCtrl = JPTableViewController.alloc().init()
     self.navigationController().pushViewController_animated(tableViewCtrl, YES)
-  }
+  },
+    fullDemoBtn: function(sender) {
+    console.log('JSPatch fullDemoBtnClick Event');
+    var tableViewCtrl = JPFullDemoViewController.alloc().init()
+    self.navigationController().pushViewController_animated(tableViewCtrl, YES)
+    },
+            
 })
 
 defineClass('JPTableViewController : UITableViewController <UIAlertViewDelegate>', {
