@@ -22,7 +22,6 @@ typedef NS_ENUM(NSUInteger, JPEnumType) {
     JPEnumTypeTwo   = 1,
 };
 
-
 @implementation JPFullDemoViewController {
     NSString *_privateString;
 }
@@ -126,7 +125,7 @@ typedef NS_ENUM(NSUInteger, JPEnumType) {
 }
 
 - (void)sd_setImageWithIndexPath:(NSIndexPath*)indexPath {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 JPTableViewCell *cell = (JPTableViewCell*)[self.jpTableView cellForRowAtIndexPath:indexPath];
                 UIImage * image = [UIImage imageNamed:[self.jpArray objectAtIndex:indexPath.row]];

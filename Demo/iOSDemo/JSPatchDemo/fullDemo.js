@@ -4,7 +4,6 @@ defineClass('JPViewController', {
     viewDidLoad:function(){
         self.super().viewDidLoad();
         self.setJPString('JP String Value');
-        self.setValue_forKey('JP Protected String Value', '_protectedStr');
         self.setValue_forKey('JP Private String Value', '_privateString');
         self.setJPArray(NSMutableArray.alloc().initWithCapacity(10));
         for (var i = 0; i < 3; i++) {
@@ -81,7 +80,7 @@ defineClass('JPViewController', {
     },
             
     sd__setImageWithIndexPath: function(indexPath) {
-    dispatch_after(0.1, function() {
+    dispatch_after(0.2, function() {
           dispatch_async_global_queue(function() {
                var cell = self.JPTableView().cellForRowAtIndexPath(indexPath);
                var image = UIImage.imageNamed(self.JPArray().objectAtIndex(indexPath.row()));
