@@ -2,7 +2,7 @@
 //  JPTableViewCell.m
 //  JSPatchDemo
 //
-//  Created by Hao on 16/3/20.
+//  Created by RainbowColor on 16/3/20.
 //  Copyright © 2016年 bang. All rights reserved.
 //
 

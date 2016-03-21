@@ -20,6 +20,8 @@
         [self useJSPatch];
     }
     
+    NSLog(@"You are Using :%@",(useJSPatch?@"Jspatch":@"Objective"));
+    
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     JPViewController *rootViewController = [[JPViewController alloc] init];
     rootViewController.title = useJSPatch ? @"Use JSPath" : @"Use Objective-C";
@@ -33,7 +35,7 @@
 - (void)useJSPatch {
     
     [JPEngine startEngine];
-    NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"PatchFile" ofType:@"js"];
+    NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"js"];
     NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8StringEncoding error:nil];
     [JPEngine evaluateScript:script];
     
