@@ -329,7 +329,7 @@ static void addGroupMethodsToProtocol(Protocol* protocol,JSValue *groupMethods,B
     for (NSString *jpSelector in groupDic.allKeys) {
         NSDictionary *methodDict = groupDic[jpSelector];
         NSString *paraString = methodDict[@"paramsType"];
-        NSString *returnString = methodDict[@"returnType"] ?: @"void";
+        NSString *returnString = methodDict[@"returnType"] && [methodDict[@"returnType"] length] > 0 ? methodDict[@"returnType"] : @"void";
         NSString *typeEncode = methodDict[@"typeEncode"];
         
         NSArray *argStrArr = [paraString componentsSeparatedByString:@","];

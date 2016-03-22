@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 /**
  handle the Init of some Special Class
@@ -17,5 +18,5 @@
 @interface JPSpecialInit : NSObject
 
 + (NSCalendar *)calendarWithCalendarIdentifier:(NSString *)iden;
-
++ (UIWebView *)newWebView;
 @end
