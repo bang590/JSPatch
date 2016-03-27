@@ -5,15 +5,15 @@ defineClass('JPViewController', {
   }
 })
 
-defineClass('JPTableViewController : UITableViewController <UIAlertViewDelegate>', {
+defineClass('JPTableViewController : UITableViewController <UIAlertViewDelegate>', ['data'], {
   dataSource: function() {
-    var data = self.getProp('data')
+    var data = self.data();
     if (data) return data;
     var data = [];
     for (var i = 0; i < 20; i ++) {
       data.push("cell from js " + i);
     }
-    self.setProp_forKey(data, 'data')
+    self.setData(data)
     return data;
   },
   numberOfSectionsInTableView: function(tableView) {

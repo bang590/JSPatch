@@ -279,6 +279,16 @@ static NSMutableDictionary *_protocolTypeEncodeDict;
 
 #pragma mark - Implements
 
+static char *kPropAssociatedObjectKey;
+static id JPGetPropIMP(id slf, SEL selector) {
+    JSValue *val = objc_getAssociatedObject(slf, kPropAssociatedObjectKey);
+    if (!val) {
+        val = [JSValue valueWithNewObjectInContext:_context];
+        objc_setAssociatedObject(slf, kPropAssociatedObjectKey, val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return val;
+}
+
 static const void *propKey(NSString *propName) {
     if (!_propKeys) _propKeys = [[NSMutableDictionary alloc] init];
     id key = _propKeys[propName];
@@ -477,6 +487,7 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
     
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
+    class_addMethod(cls, @selector(JPGetProp), (IMP)JPGetPropIMP, "@@:");
     class_addMethod(cls, @selector(getProp:), (IMP)getPropIMP, "@@:@");
     class_addMethod(cls, @selector(setProp:forKey:), (IMP)setPropIMP, "v@:@@");
 #pragma clang diagnostic pop
@@ -1525,7 +1536,7 @@ static NSDictionary *_wrapObj(id obj)
     if (!obj || obj == _nilObj) {
         return @{@"__isNil": @(YES)};
     }
-    return @{@"__obj": obj};
+    return @{@"__obj": obj, @"__clsName": NSStringFromClass([obj isKindOfClass:[JPBoxing class]] ? [[((JPBoxing *)obj) unbox] class]: [obj class])};
 }
 
 static id _unboxOCObjectToJS(id obj)

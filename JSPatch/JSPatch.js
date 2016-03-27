@@ -2,8 +2,7 @@ var global = this
 
 ;(function() {
 
-  var callbacks = {}
-  var callbackID = 0
+  var _propertyCache = {};
 
   var _formatOCToJS = function(obj) {
     if (obj === undefined || obj === null) return false
@@ -58,48 +57,73 @@ var global = this
     return _formatOCToJS(ret)
   }
 
-  Object.defineProperty(Object.prototype, "__c", {value: function(methodName) {
-    if (this instanceof Boolean) {
-      return function() {
-        return false
-      }
-    }
-    
-    if (!this.__obj && !this.__clsName) {
-      if (!this[methodName]) {
-        throw new Error(this + '.' + methodName + ' is undefined')
-      }
-      return this[methodName].bind(this);
-    }
+  var _customMethods = {
+    __c: function(methodName) {
+      var slf = this
 
-    var self = this
-    if (methodName == 'super') {
-      return function() {
-        if (self.__obj) {
-          self.__obj.__clsDeclaration = self.__clsDeclaration;
+      if (slf instanceof Boolean) {
+        return function() {
+          return false
         }
-        return {__obj: self.__obj, __clsName: self.__clsName, __isSuper: 1}
       }
-    }
+      if (slf[methodName]) {
+        return slf[methodName].bind(slf);
+      }
 
-    if (methodName.indexOf('performSelector') > -1) {
-      if (methodName == 'performSelector') {
-        return function(){
-          var args = Array.prototype.slice.call(arguments)
-          return _methodFunc(self.__obj, self.__clsName, args[0], args.splice(1), self.__isSuper, true)
-        }
-      } else if (methodName == 'performSelectorInOC') {
-        return function(){
-          var args = Array.prototype.slice.call(arguments)
-          return {__isPerformInOC:1, obj:self.__obj, clsName:self.__clsName, sel: args[0], args: args[1], cb: args[2]}
+      if (!slf.__obj && !slf.__clsName) {
+        throw new Error(slf + '.' + methodName + ' is undefined')
+      }
+
+      if (this.__obj && this.__clsName) {
+        if (_propertyCache[this.__clsName] && _propertyCache[this.__clsName][methodName]) {
+          if (!this.__ocProps) {
+            this.__ocProps = this.__c('JPGetProp')()
+          }
+          if (methodName.length > 3 && methodName.charCodeAt(3) >= 65 && methodName.charCodeAt(3) <= 90) {
+            return function(val) {
+              var propName = '_' + methodName[3].toLowerCase() + methodName.substr(4)
+              slf.__ocProps[propName] = val
+            }
+          } else {
+            return function(){ 
+              return slf.__ocProps['_' + methodName]
+            }
+          }
         }
       }
-    }
-    return function(){
+
+      return function(){
+        var args = Array.prototype.slice.call(arguments)
+        return _methodFunc(slf.__obj, slf.__clsName, methodName, args, slf.__isSuper)
+      }
+    },
+
+    super: function() {
+      var slf = this
+      if (slf.__obj) {
+        slf.__obj.__clsDeclaration = slf.__clsDeclaration;
+      }
+      return {__obj: slf.__obj, __clsName: slf.__clsName, __isSuper: 1}
+    },
+
+    performSelectorInOC: function() {
+      var slf = this
       var args = Array.prototype.slice.call(arguments)
-      return _methodFunc(self.__obj, self.__clsName, methodName, args, self.__isSuper)
+      return {__isPerformInOC:1, obj:slf.__obj, clsName:slf.__clsName, sel: args[0], args: args[1], cb: args[2]}
+    },
+
+    performSelector: function() {
+      var slf = this
+      var args = Array.prototype.slice.call(arguments)
+      return _methodFunc(slf.__obj, slf.__clsName, args[0], args.splice(1), slf.__isSuper, true)
     }
-  }, configurable:false, enumerable: false})
+  }
+
+  for (var method in _customMethods) {
+    if (_customMethods.hasOwnProperty(method)) {
+      Object.defineProperty(Object.prototype, method, {value: _customMethods[method], configurable:false, enumerable: false})
+    }
+  }
 
   var _require = function(clsName) {
     if (!global[clsName]) {
@@ -143,14 +167,30 @@ var global = this
     }
   }
 
-  global.defineClass = function(declaration, instMethods, clsMethods) {
+  global.defineClass = function(declaration, properties, instMethods, clsMethods) {
     var newInstMethods = {}, newClsMethods = {}
-    _formatDefineMethods(instMethods, newInstMethods,declaration)
-    _formatDefineMethods(clsMethods, newClsMethods,declaration)
+    if (!(properties instanceof Array)) {
+      clsMethods = instMethods
+      instMethods = properties
+      properties = null
+    }
+
+    _formatDefineMethods(instMethods, newInstMethods, declaration)
+    _formatDefineMethods(clsMethods, newClsMethods, declaration)
 
     var ret = _OC_defineClass(declaration, newInstMethods, newClsMethods)
+    var className = ret['cls']
 
-    return require(ret["cls"])
+    if (properties) {
+      if (!_propertyCache[className]) {
+        _propertyCache[className] = {}
+        properties.forEach(function(o){
+          _propertyCache[className][o] = 1
+          _propertyCache[className]['set' + o.substr(0,1).toUpperCase() + o.substr(1)] = 1
+        })
+      }
+    }
+    return require(className)
   }
 
   global.defineProtocol = function(declaration, instProtos , clsProtos) {
