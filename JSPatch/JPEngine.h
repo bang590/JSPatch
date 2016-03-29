@@ -12,11 +12,22 @@
 
 @interface JPEngine : NSObject
 
+typedef void(^exceptionHandlerBlock)(NSException *exception);
+
 /*!
  @method
  @discussion start the JSPatch engine, execute only once.
  */
 + (void)startEngine;
+
+/*!
+ @method
+ @description Start the JSPatch engine with a generic exception handler block.
+ The block will be called if any exception will raise during execution of an ObjC code
+ as a result of evaluating a js script. Execute only once.
+ @param exceptionHandler: A block to be called in case of an ObjC exception.
+ */
++ (void)startEngineWithExceptionHandlerBlock:(exceptionHandlerBlock) exceptionHandler;
 
 /*!
  @method
