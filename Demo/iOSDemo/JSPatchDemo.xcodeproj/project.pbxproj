@@ -41,9 +41,11 @@
 		3613C3AF1C6346F500E915CB /* JPCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3AE1C6346F500E915CB /* JPCleaner.m */; };
 		3646F8B41CA0F89C00E10774 /* JPLocker.m in Sources */ = {isa = PBXBuildFile; fileRef = 3646F8B31CA0F89C00E10774 /* JPLocker.m */; };
 		369EC2971C9925A400334A64 /* JPSpecialInit.m in Sources */ = {isa = PBXBuildFile; fileRef = 369EC2961C9925A400334A64 /* JPSpecialInit.m */; };
+		36CE191B1CAEA179007D73AC /* jsClassTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 36CE191A1CAEA179007D73AC /* jsClassTest.js */; };
+		36CE191E1CAEA1DE007D73AC /* JPJSClassTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 36CE191D1CAEA1DE007D73AC /* JPJSClassTest.m */; };
 		36F0DCC61BFAF41C0090EA4A /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */; };
 		6C6CAC741C5F0BCA00444348 /* superTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C6CAC721C5F0BCA00444348 /* superTest.js */; };
-		6C6CAC751C5F0BCA00444348 /* SuperTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6CAC731C5F0BCA00444348 /* SuperTestObject.m */; };
+		6C6CAC751C5F0BCA00444348 /* JPSuperTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6CAC731C5F0BCA00444348 /* JPSuperTestObject.m */; };
 		6C72B7961C352BA80086C98D /* newProtocolTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C72B7951C352BA80086C98D /* newProtocolTest.m */; };
 		6C9C0EE41C25A7C700FCAAC5 /* newProtocolTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */; };
 		6C9C0EE51C25A7DA00FCAAC5 /* newProtocolTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */; };
@@ -133,10 +135,13 @@
 		3646F8B31CA0F89C00E10774 /* JPLocker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPLocker.m; sourceTree = "<group>"; };
 		369EC2951C9925A400334A64 /* JPSpecialInit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPSpecialInit.h; sourceTree = "<group>"; };
 		369EC2961C9925A400334A64 /* JPSpecialInit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPSpecialInit.m; sourceTree = "<group>"; };
+		36CE191A1CAEA179007D73AC /* jsClassTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = jsClassTest.js; sourceTree = "<group>"; };
+		36CE191C1CAEA1DE007D73AC /* JPJSClassTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPJSClassTest.h; sourceTree = "<group>"; };
+		36CE191D1CAEA1DE007D73AC /* JPJSClassTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPJSClassTest.m; sourceTree = "<group>"; };
 		36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = ../../../../../../usr/lib/libz.1.dylib; sourceTree = "<group>"; };
-		6C6CAC711C5F0BCA00444348 /* SuperTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperTestObject.h; sourceTree = "<group>"; };
+		6C6CAC711C5F0BCA00444348 /* JPSuperTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPSuperTestObject.h; sourceTree = "<group>"; };
 		6C6CAC721C5F0BCA00444348 /* superTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = superTest.js; sourceTree = "<group>"; };
-		6C6CAC731C5F0BCA00444348 /* SuperTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SuperTestObject.m; sourceTree = "<group>"; };
+		6C6CAC731C5F0BCA00444348 /* JPSuperTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPSuperTestObject.m; sourceTree = "<group>"; };
 		6C72B7941C352BA80086C98D /* newProtocolTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = newProtocolTest.h; sourceTree = "<group>"; };
 		6C72B7951C352BA80086C98D /* newProtocolTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = newProtocolTest.m; sourceTree = "<group>"; };
 		6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = newProtocolTest.js; sourceTree = "<group>"; };
@@ -344,9 +349,12 @@
 		DE94AE271AF246C000E461D4 /* JSPatchTests */ = {
 			isa = PBXGroup;
 			children = (
-				6C6CAC711C5F0BCA00444348 /* SuperTestObject.h */,
+				36CE191C1CAEA1DE007D73AC /* JPJSClassTest.h */,
+				36CE191D1CAEA1DE007D73AC /* JPJSClassTest.m */,
+				36CE191A1CAEA179007D73AC /* jsClassTest.js */,
+				6C6CAC711C5F0BCA00444348 /* JPSuperTestObject.h */,
+				6C6CAC731C5F0BCA00444348 /* JPSuperTestObject.m */,
 				6C6CAC721C5F0BCA00444348 /* superTest.js */,
-				6C6CAC731C5F0BCA00444348 /* SuperTestObject.m */,
 				6C72B7941C352BA80086C98D /* newProtocolTest.h */,
 				6C72B7951C352BA80086C98D /* newProtocolTest.m */,
 				6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */,
@@ -471,6 +479,7 @@
 				2D0DF7071B22F75C005695DA /* inheritTest.js in Resources */,
 				6C6CAC741C5F0BCA00444348 /* superTest.js in Resources */,
 				DE94AE471AF2480000E461D4 /* test.js in Resources */,
+				36CE191B1CAEA179007D73AC /* jsClassTest.js in Resources */,
 				6C9C0EE41C25A7C700FCAAC5 /* newProtocolTest.js in Resources */,
 				E1B89EAE1B228818000645C2 /* multithreadTest.js in Resources */,
 			);
@@ -520,9 +529,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6C6CAC751C5F0BCA00444348 /* SuperTestObject.m in Sources */,
+				6C6CAC751C5F0BCA00444348 /* JPSuperTestObject.m in Sources */,
 				6C72B7961C352BA80086C98D /* newProtocolTest.m in Sources */,
 				DE94AE461AF2480000E461D4 /* JPTestObject.m in Sources */,
+				36CE191E1CAEA1DE007D73AC /* JPJSClassTest.m in Sources */,
 				E1B89EA31B218986000645C2 /* JPInheritanceTestObjects.m in Sources */,
 				DE94AE2B1AF246C000E461D4 /* JSPatchTests.m in Sources */,
 			);

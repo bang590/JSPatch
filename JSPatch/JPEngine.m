@@ -64,6 +64,9 @@ static NSRegularExpression* _regex;
 static NSObject *_nullObj;
 static NSObject *_nilObj;
 static NSMutableDictionary *_registeredStruct;
+static NSString *_currInvokeSuperClsName;
+static char *kPropAssociatedObjectKey;
+static BOOL _autoConvert;
 
 static NSMutableDictionary *_JSOverideMethods;
 static NSMutableDictionary *_TMPMemoryPool;
@@ -107,6 +110,16 @@ static NSMutableDictionary *_protocolTypeEncodeDict;
         return formatOCToJS([obj toObject]);
     };
     
+    context[@"_OC_getCustomProps"] = ^id(JSValue *obj) {
+        id realObj = formatJSToOC(obj);
+        return objc_getAssociatedObject(realObj, kPropAssociatedObjectKey);
+    };
+    
+    context[@"_OC_setCustomProps"] = ^(JSValue *obj, JSValue *val) {
+        id realObj = formatJSToOC(obj);
+        objc_setAssociatedObject(realObj, kPropAssociatedObjectKey, val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    };
+    
     context[@"__weak"] = ^id(JSValue *jsval) {
         id obj = formatJSToOC(jsval);
         return [[JSContext currentContext][@"_formatOCToJS"] callWithArguments:@[formatOCToJS([JPBoxing boxWeakObj:obj])]];
@@ -116,25 +129,25 @@ static NSMutableDictionary *_protocolTypeEncodeDict;
         id obj = formatJSToOC(jsval);
         return [[JSContext currentContext][@"_formatOCToJS"] callWithArguments:@[formatOCToJS(obj)]];
     };
+    
+    context[@"_OC_superClsName"] = ^(NSString *clsName) {
+        Class cls = NSClassFromString(clsName);
+        return NSStringFromClass([cls superclass]);
+    };
+    
+    context[@"autoConvertOCType"] = ^(BOOL autoConvert) {
+        _autoConvert = autoConvert;
+    };
 
-    __weak JSContext *weakCtx = context;
     context[@"dispatch_after"] = ^(double time, JSValue *func) {
-        id currSelf = formatJSToOC(weakCtx[@"self"]);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            JSValue *prevSelf = weakCtx[@"self"];
-            weakCtx[@"self"] = formatOCToJS([JPBoxing boxWeakObj:currSelf]);
             [func callWithArguments:nil];
-            weakCtx[@"self"] = prevSelf;
         });
     };
     
     context[@"dispatch_async_main"] = ^(JSValue *func) {
-        id currSelf = formatJSToOC(weakCtx[@"self"]);
         dispatch_async(dispatch_get_main_queue(), ^{
-            JSValue *prevSelf = weakCtx[@"self"];
-            weakCtx[@"self"] = formatOCToJS([JPBoxing boxWeakObj:currSelf]);
             [func callWithArguments:nil];
-            weakCtx[@"self"] = prevSelf;
         });
     };
     
@@ -149,12 +162,8 @@ static NSMutableDictionary *_protocolTypeEncodeDict;
     };
     
     context[@"dispatch_async_global_queue"] = ^(JSValue *func) {
-        id currSelf = formatJSToOC(weakCtx[@"self"]);
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            JSValue *prevSelf = weakCtx[@"self"];
-            weakCtx[@"self"] = formatOCToJS([JPBoxing boxWeakObj:currSelf]);
             [func callWithArguments:nil];
-            weakCtx[@"self"] = prevSelf;
         });
     };
     
@@ -278,16 +287,6 @@ static NSMutableDictionary *_protocolTypeEncodeDict;
 }
 
 #pragma mark - Implements
-
-static char *kPropAssociatedObjectKey;
-static id JPGetPropIMP(id slf, SEL selector) {
-    JSValue *val = objc_getAssociatedObject(slf, kPropAssociatedObjectKey);
-    if (!val) {
-        val = [JSValue valueWithNewObjectInContext:_context];
-        objc_setAssociatedObject(slf, kPropAssociatedObjectKey, val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    }
-    return val;
-}
 
 static const void *propKey(NSString *propName) {
     if (!_propKeys) _propKeys = [[NSMutableDictionary alloc] init];
@@ -420,11 +419,26 @@ static void addMethodToProtocol(Protocol* protocol, NSString *selectorName, NSSt
 
 static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods)
 {
-    NSDictionary *declarationDict = convertJPDeclarationString(classDeclaration);
+    NSScanner *scanner = [NSScanner scannerWithString:classDeclaration];
     
-    NSString *className = declarationDict[@"className"];
-    NSString *superClassName = declarationDict[@"superClassName"];
-    NSArray *protocols = [declarationDict[@"protocolNames"] length] ? [declarationDict[@"protocolNames"] componentsSeparatedByString:@","] : nil;
+    NSString *className;
+    NSString *superClassName;
+    NSString *protocolNames;
+    [scanner scanUpToString:@":" intoString:&className];
+    if (!scanner.isAtEnd) {
+        scanner.scanLocation = scanner.scanLocation + 1;
+        [scanner scanUpToString:@"<" intoString:&superClassName];
+        if (!scanner.isAtEnd) {
+            scanner.scanLocation = scanner.scanLocation + 1;
+            [scanner scanUpToString:@">" intoString:&protocolNames];
+        }
+    }
+    
+    if (!superClassName) superClassName = @"NSObject";
+    className = trim(className);
+    superClassName = trim(superClassName);
+    
+    NSArray *protocols = [protocolNames length] ? [protocolNames componentsSeparatedByString:@","] : nil;
     
     Class cls = NSClassFromString(className);
     if (!cls) {
@@ -475,11 +489,13 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
                     }
                 }
                 if (!overrided) {
-                    NSMutableString *typeDescStr = [@"@@:" mutableCopy];
-                    for (int i = 0; i < numberOfArg; i ++) {
-                        [typeDescStr appendString:@"@"];
+                    if (![[jsMethodName substringToIndex:1] isEqualToString:@"_"]) {
+                        NSMutableString *typeDescStr = [@"@@:" mutableCopy];
+                        for (int i = 0; i < numberOfArg; i ++) {
+                            [typeDescStr appendString:@"@"];
+                        }
+                        overrideMethod(currCls, selectorName, jsMethod, !isInstance, [typeDescStr cStringUsingEncoding:NSUTF8StringEncoding]);
                     }
-                    overrideMethod(currCls, selectorName, jsMethod, !isInstance, [typeDescStr cStringUsingEncoding:NSUTF8StringEncoding]);
                 }
             }
         }
@@ -487,17 +503,20 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
     
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-    class_addMethod(cls, @selector(JPGetProp), (IMP)JPGetPropIMP, "@@:");
     class_addMethod(cls, @selector(getProp:), (IMP)getPropIMP, "@@:@");
     class_addMethod(cls, @selector(setProp:forKey:), (IMP)setPropIMP, "v@:@@");
 #pragma clang diagnostic pop
 
-    return @{@"cls": className};
+    return @{@"cls": className, @"superCls": superClassName};
 }
 
 static JSValue* getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
 {
     Class cls = object_getClass(slf);
+    if (_currInvokeSuperClsName) {
+        cls = NSClassFromString(_currInvokeSuperClsName);
+        selectorName = [selectorName stringByReplacingOccurrencesOfString:@"_JPSUPER_" withString:@"_JP"];
+    }
     JSValue *func = _JSOverideMethods[cls][selectorName];
     while (!func) {
         cls = class_getSuperclass(cls);
@@ -627,6 +646,19 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
                 NSLog(@"error type %s", argumentType);
                 break;
             }
+        }
+    }
+    
+    if (_currInvokeSuperClsName) {
+        Class cls = NSClassFromString(_currInvokeSuperClsName);
+        NSString *tmpSelectorName = [[selectorName stringByReplacingOccurrencesOfString:@"_JPSUPER_" withString:@"_JP"] stringByReplacingOccurrencesOfString:@"SUPER_" withString:@"_JP"];
+        if (!_JSOverideMethods[cls][tmpSelectorName]) {
+            NSString *ORIGSelectorName = [selectorName stringByReplacingOccurrencesOfString:@"SUPER_" withString:@"ORIG"];
+            [argList removeObjectAtIndex:0];
+            id retObj = callSelector(_currInvokeSuperClsName, ORIGSelectorName, [JSValue valueWithObject:argList inContext:_context], [JSValue valueWithObject:@{@"__obj": slf, @"__realClsName": @""} inContext:_context], NO);
+            id __autoreleasing ret = formatJSToOC([JSValue valueWithObject:retObj inContext:_context]);
+            [invocation setReturnValue:&ret];
+            return;
         }
     }
     
@@ -860,11 +892,11 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 
 static id callSelector(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper)
 {
-    NSString *clsDeclaration = [[instance valueForProperty:@"__clsDeclaration"] toString];
+    NSString *realClsName = [[instance valueForProperty:@"__realClsName"] toString];
    
     if (instance) {
         instance = formatJSToOC(instance);
-        if (!instance || instance == _nilObj) return @{@"__isNil": @(YES)};
+        if (!instance || instance == _nilObj || [instance isKindOfClass:[JPBoxing class]]) return @{@"__isNil": @(YES)};
     }
     id argumentsObj = formatJSToOC(arguments);
     
@@ -877,16 +909,14 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     Class cls = instance ? [instance class] : NSClassFromString(className);
     SEL selector = NSSelectorFromString(selectorName);
     
+    NSString *superClassName = nil;
     if (isSuper) {
         NSString *superSelectorName = [NSString stringWithFormat:@"SUPER_%@", selectorName];
         SEL superSelector = NSSelectorFromString(superSelectorName);
         
         Class superCls;
-        if (clsDeclaration.length) {
-            NSDictionary *declarationDict = convertJPDeclarationString(clsDeclaration);
-            NSString *defineClsName = declarationDict[@"className"];
-
-            Class defineClass = NSClassFromString(defineClsName);
+        if (realClsName.length) {
+            Class defineClass = NSClassFromString(realClsName);
             superCls = defineClass ? [defineClass superclass] : [cls superclass];
         } else {
             superCls = [cls superclass];
@@ -904,6 +934,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         }
         
         selector = superSelector;
+        superClassName = NSStringFromClass(superCls);
     }
     
     
@@ -1061,7 +1092,9 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         }
     }
     
+    if (superClassName) _currInvokeSuperClsName = superClassName;
     [invocation invoke];
+    if (superClassName) _currInvokeSuperClsName = nil;
     if ([_markArray count] > 0) {
         for (JPBoxing *box in _markArray) {
             void *pointer = [box unboxPointer];
@@ -1448,42 +1481,12 @@ static NSString *convertJPSelectorString(NSString *selectorString)
     return [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
 }
 
-static NSDictionary *convertJPDeclarationString(NSString *declaration){
-    
-    NSScanner *scanner = [NSScanner scannerWithString:declaration];
-    
-    NSString *className;
-    NSString *superClassName;
-    NSString *protocolNames;
-    [scanner scanUpToString:@":" intoString:&className];
-    if (!scanner.isAtEnd) {
-        scanner.scanLocation = scanner.scanLocation + 1;
-        [scanner scanUpToString:@"<" intoString:&superClassName];
-        if (!scanner.isAtEnd) {
-            scanner.scanLocation = scanner.scanLocation + 1;
-            [scanner scanUpToString:@">" intoString:&protocolNames];
-        }
-    }
-    
-    if (!superClassName) superClassName = @"NSObject";
-    className = trim(className);
-    superClassName = trim(superClassName);
-    
-    NSDictionary *ret = @{
-                          @"className": className ?: @"",
-                          @"superClassName": superClassName ?: @"",
-                          @"protocolNames": protocolNames ?: @""
-                        };
-    return ret;
-}
-
-
 #pragma mark - Object format
 
 static id formatOCToJS(id obj)
 {
     if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSDictionary class]] || [obj isKindOfClass:[NSArray class]] || [obj isKindOfClass:[NSDate class]]) {
-        return _wrapObj([JPBoxing boxObj:obj]);
+        return _autoConvert ? obj: _wrapObj([JPBoxing boxObj:obj]);
     }
     if ([obj isKindOfClass:[NSNumber class]] || [obj isKindOfClass:NSClassFromString(@"NSBlock")] || [obj isKindOfClass:[JSValue class]]) {
         return obj;

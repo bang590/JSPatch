@@ -16,7 +16,8 @@
 #import "newProtocolTest.h"
 //#import "JPCoreGraphics.h"
 //#import "JPUIKit.h"
-#import "SuperTestObject.h"
+#import "JPSuperTestObject.h"
+#import "JPJSClassTest.h"
 #import "JPMemory.h"
 @interface JSPatchTests : XCTestCase
 
@@ -178,12 +179,20 @@
                                  beforeDate:[NSDate dateWithTimeIntervalSinceNow:10]];
 }
 
+- (void)testJSClass
+{
+    [self loadPatch:@"jsClassTest"];
+    XCTAssert([JPJSClassTest isPassA]);
+    XCTAssert([JPJSClassTest isPassB]);
+    XCTAssert([JPJSClassTest isPassC]);
+}
+
 - (void)testSuperClass
 {
     [self loadPatch:@"superTest"];
-    SuperTestC *testobject = [[SuperTestC alloc]init];
-    [testobject testSuper];
-    XCTAssert(testobject.hasTestSuperA);
+    XCTAssert([JPSuperTestResult isPassA]);
+    XCTAssert([JPSuperTestResult isPassB]);
+    XCTAssert([JPSuperTestResult isPassC]);
 }
 
 - (void)testInheritance
@@ -323,7 +332,6 @@ void thread(void* context)
 
 
 #pragma mark - performance
-
 - (void)testJSCallEmptyMethodPerformance
 {
     [self loadPatch:@"test"];
@@ -441,4 +449,5 @@ void thread(void* context)
     XCTAssertTrue(CGSizeEqualToSize(retClassTest3, CGSizeMake(100, 100)));
     NSLog(@"new protocol object test end");
 }
+
 @end
