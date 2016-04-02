@@ -2,7 +2,8 @@ var global = this
 
 ;(function() {
 
-  var _propertyCache = {};
+  var _ocCls = {};
+  var _jsCls = {};
 
   var _formatOCToJS = function(obj) {
     if (obj === undefined || obj === null) return false
@@ -73,20 +74,35 @@ var global = this
       if (!slf.__obj && !slf.__clsName) {
         throw new Error(slf + '.' + methodName + ' is undefined')
       }
+      if (slf.__isSuper && slf.__clsName) {
+          slf.__clsName = _OC_superClsName(slf.__obj.__realClsName ? slf.__obj.__realClsName: slf.__clsName);
+      }
+      var clsName = slf.__clsName
+      if (clsName && _ocCls[clsName]) {
+        var methodType = slf.__obj ? 'instMethods': 'clsMethods'
+        if (_ocCls[clsName][methodType][methodName]) {
+          slf.__isSuper = 0;
+          return _ocCls[clsName][methodType][methodName].bind(slf)
+        }
 
-      if (this.__obj && this.__clsName) {
-        if (_propertyCache[this.__clsName] && _propertyCache[this.__clsName][methodName]) {
-          if (!this.__ocProps) {
-            this.__ocProps = this.__c('JPGetProp')()
+        if (slf.__obj && _ocCls[clsName]['props'][methodName]) {
+          if (!slf.__ocProps) {
+            var props = _OC_getCustomProps(slf.__obj)
+            if (!props) {
+              props = {}
+              _OC_setCustomProps(slf.__obj, props)
+            }
+            slf.__ocProps = props;
           }
-          if (methodName.length > 3 && methodName.charCodeAt(3) >= 65 && methodName.charCodeAt(3) <= 90) {
+          var c = methodName.charCodeAt(3);
+          if (methodName.length > 3 && methodName.substr(0,3) == 'set' && c >= 65 && c <= 90) {
             return function(val) {
-              var propName = '_' + methodName[3].toLowerCase() + methodName.substr(4)
+              var propName = methodName[3].toLowerCase() + methodName.substr(4)
               slf.__ocProps[propName] = val
             }
           } else {
             return function(){ 
-              return slf.__ocProps['_' + methodName]
+              return slf.__ocProps[methodName]
             }
           }
         }
@@ -101,7 +117,7 @@ var global = this
     super: function() {
       var slf = this
       if (slf.__obj) {
-        slf.__obj.__clsDeclaration = slf.__clsDeclaration;
+        slf.__obj.__realClsName = slf.__realClsName;
       }
       return {__obj: slf.__obj, __clsName: slf.__clsName, __isSuper: 1}
     },
@@ -142,28 +158,45 @@ var global = this
     return lastRequire
   }
 
-  var _formatDefineMethods = function(methods, newMethods, declaration) {
+  var _formatDefineMethods = function(methods, newMethods, realClsName) {
     for (var methodName in methods) {
+      if (!(methods[methodName] instanceof Function)) return;
       (function(){
-       var originMethod = methods[methodName]
+        var originMethod = methods[methodName]
         newMethods[methodName] = [originMethod.length, function() {
-          var args = _formatOCToJS(Array.prototype.slice.call(arguments))
-          var lastSelf = global.self
-          var ret;
           try {
+            var args = _formatOCToJS(Array.prototype.slice.call(arguments))
+            var lastSelf = global.self
             global.self = args[0]
-            if (global.self) {
-              global.self.__clsDeclaration = declaration
-            }
+            if (global.self) global.self.__realClsName = realClsName
             args.splice(0,1)
-            ret = originMethod.apply(originMethod, args)
+            var ret = originMethod.apply(originMethod, args)
             global.self = lastSelf
+            return ret
           } catch(e) {
             _OC_catch(e.message, e.stack)
           }
-          return ret
         }]
       })()
+    }
+  }
+
+  var _wrapLocalMethod = function(methodName, func, realClsName) {
+    return function() {
+      var lastSelf = global.self
+      global.self = this
+      this.__realClsName = realClsName
+      var ret = func.apply(this, arguments)
+      global.self = lastSelf
+      return ret
+    }
+  }
+
+  var _setupJSMethod = function(className, methods, isInst, realClsName) {
+    for (var name in methods) {
+      var key = isInst ? 'instMethods': 'clsMethods',
+          func = methods[name]
+      _ocCls[className][key][name] = _wrapLocalMethod(name, func, realClsName)
     }
   }
 
@@ -175,20 +208,41 @@ var global = this
       properties = null
     }
 
-    _formatDefineMethods(instMethods, newInstMethods, declaration)
-    _formatDefineMethods(clsMethods, newClsMethods, declaration)
+    var realClsName = declaration.split(':')[0].trim()
+
+    _formatDefineMethods(instMethods, newInstMethods, realClsName)
+    _formatDefineMethods(clsMethods, newClsMethods, realClsName)
 
     var ret = _OC_defineClass(declaration, newInstMethods, newClsMethods)
     var className = ret['cls']
+    var superCls = ret['superCls']
+
+    _ocCls[className] = {
+      instMethods: {},
+      clsMethods: {},
+      props: {}
+    }
+
+    if (superCls.length && _ocCls[superCls]) {
+      for (var funcName in _ocCls[superCls]['instMethods']) {
+        _ocCls[className]['instMethods'][funcName] = _ocCls[superCls]['instMethods'][funcName]
+      }
+      for (var funcName in _ocCls[superCls]['clsMethods']) {
+        _ocCls[className]['clsMethods'][funcName] = _ocCls[superCls]['clsMethods'][funcName]
+      }
+      if (_ocCls[superCls]['props']) {
+        _ocCls[className]['props'] = JSON.parse(JSON.stringify(_ocCls[superCls]['props']));
+      }
+    }
+
+    _setupJSMethod(className, instMethods, 1, realClsName)
+    _setupJSMethod(className, clsMethods, 0, realClsName)
 
     if (properties) {
-      if (!_propertyCache[className]) {
-        _propertyCache[className] = {}
-        properties.forEach(function(o){
-          _propertyCache[className][o] = 1
-          _propertyCache[className]['set' + o.substr(0,1).toUpperCase() + o.substr(1)] = 1
-        })
-      }
+      properties.forEach(function(o){
+        _ocCls[className]['props'][o] = 1
+        _ocCls[className]['props']['set' + o.substr(0,1).toUpperCase() + o.substr(1)] = 1
+      })
     }
     return require(className)
   }
@@ -223,6 +277,35 @@ var global = this
     global.console = {
       log: global._OC_log
     }
+  }
+
+  global.defineJSClass = function(declaration, instMethods, clsMethods) {
+    var o = function() {},
+        a = declaration.split(':'),
+        clsName = a[0].trim(),
+        superClsName = a[1] ? a[1].trim() : null
+    o.prototype = {
+      init: function() {
+        if (this.super()) this.super().init()
+        return this;
+      },
+      super: function() {
+        return superClsName ? _jsCls[superClsName].prototype : null
+      }
+    }
+    var cls = {
+      alloc: function() {
+        return new o;
+      }
+    }
+    for (var methodName in instMethods) {
+      o.prototype[methodName] = instMethods[methodName];
+    }
+    for (var methodName in clsMethods) {
+      cls[methodName] = clsMethods[methodName];
+    }
+    global[clsName] = cls
+    _jsCls[clsName] = o
   }
   
   global.YES = 1

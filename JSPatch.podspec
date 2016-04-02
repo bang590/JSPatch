@@ -18,7 +18,8 @@ Pod::Spec.new do |s|
   s.author             = { "bang" => "bang590@gmail.com" }
   s.social_media_url   = "http://twitter.com/bang590"
 
-  s.platform     = :ios, "6.0"
+  s.ios.deployment_target = '6.0'
+  s.osx.deployment_target = '10.7'
   s.source       = { :git => "https://github.com/bang590/JSPatch.git", :tag => s.version }
 
   s.frameworks   = "Foundation"

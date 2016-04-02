@@ -67,9 +67,10 @@ require('JPEngine').defineStruct({
     },
     funcToSwizzleTestGCD: function(completeBlock) {
       var execCount = 0
+      var slf = self
       var dispatchExecBlock = function() {
         if (++execCount >= 4) {
-          self.setFuncToSwizzleTestGCDPassed(1)
+          slf.setFuncToSwizzleTestGCDPassed(1)
           completeBlock()
         }
       }
@@ -286,7 +287,7 @@ require('JPEngine').defineStruct({
     }: {}), view)
     obj.setCallBlockWithObjectAndBlockReturnValuePassed(ret.toJS() == "succ")
   }))
-
+    
   //////super
   var subObj = require("JPTestSubObject").alloc().init() 
   global.subObj = subObj.__obj;
@@ -441,5 +442,5 @@ require('JPEngine').defineStruct({
 //variable parameter method
   var strWithFormat = require('NSString').stringWithFormat("%@ %@", "a", "b");
   obj.setVariableParameterMethodPassed(strWithFormat.toJS() == "a b");
-    
+   
 })();
