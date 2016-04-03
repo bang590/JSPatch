@@ -12,7 +12,6 @@
 #import "JPTestObject.h"
 #import "JPInheritanceTestObjects.h"
 #import "JPMultithreadTestObject.h"
-#import "JPInclude.h"
 #import "newProtocolTest.h"
 //#import "JPCoreGraphics.h"
 //#import "JPUIKit.h"
@@ -27,14 +26,13 @@
 - (void)loadPatch:(NSString *)patchName
 {
     NSString *jsPath = [[NSBundle bundleForClass:[self class]] pathForResource:patchName ofType:@"js"];
-    NSString *jsScript = [NSString stringWithContentsOfFile:jsPath encoding:NSUTF8StringEncoding error:nil];
-    [JPEngine evaluateScript:jsScript];
+    [JPEngine evaluateScriptWithPath:jsPath];
 }
 
 - (void)setUp {
     [super setUp];
     [JPEngine startEngine];
-    [JPEngine addExtensions:@[@"JPInclude", @"JPMemory", @"JPStructPointer", @"JPCoreGraphics", @"JPUIKit"]];
+    [JPEngine addExtensions:@[@"JPMemory", @"JPStructPointer", @"JPCoreGraphics", @"JPUIKit"]];
 }
 
 - (void)tearDown {

@@ -67,6 +67,8 @@ static NSMutableDictionary *_registeredStruct;
 static NSString *_currInvokeSuperClsName;
 static char *kPropAssociatedObjectKey;
 static BOOL _autoConvert;
+static NSString *_scriptRootDir;
+static NSMutableSet *_runnedScript;
 
 static NSMutableDictionary *_JSOverideMethods;
 static NSMutableDictionary *_TMPMemoryPool;
@@ -137,6 +139,21 @@ static NSMutableDictionary *_protocolTypeEncodeDict;
     
     context[@"autoConvertOCType"] = ^(BOOL autoConvert) {
         _autoConvert = autoConvert;
+    };
+    
+    context[@"include"] = ^(NSString *filePath) {
+        NSString *absolutePath = [_scriptRootDir stringByAppendingPathComponent:filePath];
+        if (!_runnedScript) {
+            _runnedScript = [[NSMutableSet alloc] init];
+        }
+        if (absolutePath && ![_runnedScript containsObject:absolutePath]) {
+            [JPEngine _evaluateScriptWithPath:absolutePath];
+            [_runnedScript addObject:absolutePath];
+        }
+    };
+    
+    context[@"resourcePath"] = ^(NSString *filePath) {
+        return [_scriptRootDir stringByAppendingPathComponent:filePath];
     };
 
     context[@"dispatch_after"] = ^(double time, JSValue *func) {
@@ -221,18 +238,22 @@ static NSMutableDictionary *_protocolTypeEncodeDict;
 
 + (JSValue *)evaluateScript:(NSString *)script
 {
-    return [self evaluateScript:script withSourceURL:[NSURL URLWithString:@"main.js"]];
+    return [self _evaluateScript:script withSourceURL:[NSURL URLWithString:@"main.js"]];
 }
 
 + (JSValue *)evaluateScriptWithPath:(NSString *)filePath
 {
-    NSArray *components = [filePath componentsSeparatedByString:@"/"];
-    NSString *fileName = [components lastObject];
-    NSString *script = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
-    return [self evaluateScript:script withSourceURL:[NSURL URLWithString:fileName]];
+    _scriptRootDir = [filePath stringByDeletingLastPathComponent];
+    return [self _evaluateScriptWithPath:filePath];
 }
 
-+ (JSValue *)evaluateScript:(NSString *)script withSourceURL:(NSURL *)resourceURL
++ (JSValue *)_evaluateScriptWithPath:(NSString *)filePath
+{
+    NSString *script = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
+    return [self _evaluateScript:script withSourceURL:[NSURL URLWithString:[filePath lastPathComponent]]];
+}
+
++ (JSValue *)_evaluateScript:(NSString *)script withSourceURL:(NSURL *)resourceURL
 {
     if (!script || ![JSContext class]) {
         NSAssert(script, @"script is nil");
@@ -242,7 +263,7 @@ static NSMutableDictionary *_protocolTypeEncodeDict;
     if (!_regex) {
         _regex = [NSRegularExpression regularExpressionWithPattern:_regexStr options:0 error:nil];
     }
-    NSString *formatedScript = [NSString stringWithFormat:@"try{%@}catch(e){_OC_catch(e.message, e.stack)}", [_regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:_replaceStr]];
+    NSString *formatedScript = [NSString stringWithFormat:@";(function(){try{%@}catch(e){_OC_catch(e.message, e.stack)}})();", [_regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:_replaceStr]];
     @try {
         if ([_context respondsToSelector:@selector(evaluateScript:withSourceURL:)]) {
             return [_context evaluateScript:formatedScript withSourceURL:resourceURL];

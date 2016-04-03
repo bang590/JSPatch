@@ -21,7 +21,6 @@
 		3613C37C1C6329F300E915CB /* JPCGPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C34B1C6329F300E915CB /* JPCGPath.m */; };
 		3613C37D1C6329F300E915CB /* JPCGTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C34D1C6329F300E915CB /* JPCGTransform.m */; };
 		3613C37E1C6329F300E915CB /* JPCoreGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C34F1C6329F300E915CB /* JPCoreGraphics.m */; };
-		3613C37F1C6329F300E915CB /* JPInclude.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3511C6329F300E915CB /* JPInclude.m */; };
 		3613C3801C6329F300E915CB /* JPMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3531C6329F300E915CB /* JPMemory.m */; };
 		3613C3811C6329F300E915CB /* JPStructPointer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3551C6329F300E915CB /* JPStructPointer.m */; };
 		3613C3821C6329F300E915CB /* JPUIGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3581C6329F300E915CB /* JPUIGeometry.m */; };
@@ -96,8 +95,6 @@
 		3613C34D1C6329F300E915CB /* JPCGTransform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCGTransform.m; sourceTree = "<group>"; };
 		3613C34E1C6329F300E915CB /* JPCoreGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCoreGraphics.h; sourceTree = "<group>"; };
 		3613C34F1C6329F300E915CB /* JPCoreGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCoreGraphics.m; sourceTree = "<group>"; };
-		3613C3501C6329F300E915CB /* JPInclude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPInclude.h; sourceTree = "<group>"; };
-		3613C3511C6329F300E915CB /* JPInclude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPInclude.m; sourceTree = "<group>"; };
 		3613C3521C6329F300E915CB /* JPMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPMemory.h; sourceTree = "<group>"; };
 		3613C3531C6329F300E915CB /* JPMemory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPMemory.m; sourceTree = "<group>"; };
 		3613C3541C6329F300E915CB /* JPStructPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPStructPointer.h; sourceTree = "<group>"; };
@@ -212,8 +209,6 @@
 			children = (
 				3613C3561C6329F300E915CB /* UIKit */,
 				3613C33F1C6329F300E915CB /* CoreGraphics */,
-				3613C3501C6329F300E915CB /* JPInclude.h */,
-				3613C3511C6329F300E915CB /* JPInclude.m */,
 				3613C3521C6329F300E915CB /* JPMemory.h */,
 				3613C3531C6329F300E915CB /* JPMemory.m */,
 				3613C3541C6329F300E915CB /* JPStructPointer.h */,
@@ -496,7 +491,6 @@
 				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
 				3613C38E1C6329F300E915CB /* ZipArchive.m in Sources */,
 				3613C3861C6329F300E915CB /* JPEngine.m in Sources */,
-				3613C37F1C6329F300E915CB /* JPInclude.m in Sources */,
 				3613C3881C6329F300E915CB /* JPLoader.m in Sources */,
 				3613C37A1C6329F300E915CB /* JPCGGeometry.m in Sources */,
 				E1B89EA01B203482000645C2 /* JPMultithreadTestObject.m in Sources */,
