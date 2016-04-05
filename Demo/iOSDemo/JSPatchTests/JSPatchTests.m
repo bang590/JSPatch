@@ -13,11 +13,11 @@
 #import "JPInheritanceTestObjects.h"
 #import "JPMultithreadTestObject.h"
 #import "newProtocolTest.h"
-//#import "JPCoreGraphics.h"
-//#import "JPUIKit.h"
 #import "JPSuperTestObject.h"
 #import "JPJSClassTest.h"
 #import "JPMemory.h"
+#import "JPPerformanceTest.h"
+
 @interface JSPatchTests : XCTestCase
 
 @end
@@ -332,60 +332,89 @@ void thread(void* context)
 #pragma mark - performance
 - (void)testJSCallEmptyMethodPerformance
 {
-    [self loadPatch:@"test"];
-    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
     [self measureBlock:^{
-        [obj jsCallEmptyMethod];
+        [obj testJSCallOCEmptyMethod];
     }];
 }
 
 - (void)testJSCallMethodWithParamObjectPerformance
 {
-    [self loadPatch:@"test"];
-    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
     [self measureBlock:^{
-        [obj jsCallMethodWithParamObject];
+        [obj testJSCallOCMethodWithParamObject];
     }];
 }
 - (void)testJSCallMethodReturnObjectPerformance
 {
-    [self loadPatch:@"test"];
-    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
     [self measureBlock:^{
-        [obj jsCallMethodReturnObject];
+        [obj testJSCallOCMethodReturnObject];
     }];
 }
 - (void)testOCCallJSEmptyMethodPerformance
 {
-    [self loadPatch:@"test"];
-    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
     [self measureBlock:^{
-        for (int i = 0; i < 10000; i ++) {
-            [obj emptyMethodToOverride];
-        }
+        [obj testOCCallEmptyMethod];
     }];
 }
 - (void)testOCCallJSMethodWithParamObjectPerformance
 {
-    [self loadPatch:@"test"];
-    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
     [self measureBlock:^{
-        for (int i = 0; i < 10000; i ++) {
-            [obj methodWithParamObjectToOverride:obj];
-        }
+        [obj testOCCallMethodWithParamObject];
     }];
 }
 - (void)testOCCallJSMethodReturnObjectPerformance
 {
-    [self loadPatch:@"test"];
-    JPTestObject *obj = [[JPTestObject alloc] init];
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
     [self measureBlock:^{
-        for (int i = 0; i < 10000; i ++) {
-            [obj methodReturnObjectToOverride];
-        }
+        [obj testOCCallMethodReturnObject];
     }];
 }
 
+- (void)testJSCallJSEmptyMethod
+{
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
+    [self measureBlock:^{
+        [obj testJSCallJSEmptyMethod];
+    }];
+}
+
+- (void)testJSCallJSMethodWithParam
+{
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
+    [self measureBlock:^{
+        [obj testJSCallJSMethodWithParam];
+    }];
+}
+
+- (void)testJSCallJSMethodWithLargeDictionaryParam
+{
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
+    [self measureBlock:^{
+        [obj testJSCallJSMethodWithLargeDictionaryParam];
+    }];
+}
+
+- (void)testJSCallJSMethodWithLargeDictionaryParamAutoConvert
+{
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
+    [self measureBlock:^{
+        [obj testJSCallJSMethodWithLargeDictionaryParamAutoConvert];
+    }];
+}
 
 - (void)testNewProtocol{
     [self loadPatch:@"newProtocolTest"];

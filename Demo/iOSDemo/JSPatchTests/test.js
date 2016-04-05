@@ -9,7 +9,6 @@ require('JPEngine').defineStruct({
 });
 
 (function() {
-  var performanceTestObj = require('NSObject').alloc().init();
   defineClass("JPTestObject", {
     funcToSwizzle_view: function(num, view) {
       self.ORIGfuncToSwizzle_view(num, view) 
@@ -91,35 +90,6 @@ require('JPEngine').defineStruct({
     funcToSwizzleTestPointer: function(pointer) {
       return pointer
     },
-    
-    //performance
-    emptyMethodToOverride: function() {
-
-    },
-    jsCallEmptyMethod: function() {
-      var obj = JPTestObject.alloc().init()
-      for (var i = 0; i < 10000; i ++) {
-        obj.emptyMethod();
-      }
-    },
-    jsCallMethodWithParamObject: function() {
-      var obj = JPTestObject.alloc().init()
-      for (var i = 0; i < 10000; i ++) {
-        obj.methodWithParamObject(performanceTestObj);
-      }
-    },
-    jsCallMethodReturnObject: function() {
-      var obj = JPTestObject.alloc().init()
-      for (var i = 0; i < 10000; i ++) {
-        obj.methodReturnObject();
-      }
-    },
-    methodWithParamObjectToOverride: function(obj) {
-
-    },
-    methodReturnObjectToOverride: function() {
-      return performanceTestObj;
-    }
   },
   {
     classFuncToSwizzle_int: function(o, num) {

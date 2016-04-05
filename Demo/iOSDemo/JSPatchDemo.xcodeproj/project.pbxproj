@@ -42,6 +42,8 @@
 		369EC2971C9925A400334A64 /* JPSpecialInit.m in Sources */ = {isa = PBXBuildFile; fileRef = 369EC2961C9925A400334A64 /* JPSpecialInit.m */; };
 		36CE191B1CAEA179007D73AC /* jsClassTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 36CE191A1CAEA179007D73AC /* jsClassTest.js */; };
 		36CE191E1CAEA1DE007D73AC /* JPJSClassTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 36CE191D1CAEA1DE007D73AC /* JPJSClassTest.m */; };
+		36CE19251CB3E709007D73AC /* JPPerformanceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 36CE19241CB3E709007D73AC /* JPPerformanceTest.m */; };
+		36CE19271CB3E72B007D73AC /* performanceTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 36CE19261CB3E72B007D73AC /* performanceTest.js */; };
 		36F0DCC61BFAF41C0090EA4A /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */; };
 		6C6CAC741C5F0BCA00444348 /* superTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C6CAC721C5F0BCA00444348 /* superTest.js */; };
 		6C6CAC751C5F0BCA00444348 /* JPSuperTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6CAC731C5F0BCA00444348 /* JPSuperTestObject.m */; };
@@ -135,6 +137,9 @@
 		36CE191A1CAEA179007D73AC /* jsClassTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = jsClassTest.js; sourceTree = "<group>"; };
 		36CE191C1CAEA1DE007D73AC /* JPJSClassTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPJSClassTest.h; sourceTree = "<group>"; };
 		36CE191D1CAEA1DE007D73AC /* JPJSClassTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPJSClassTest.m; sourceTree = "<group>"; };
+		36CE19231CB3E709007D73AC /* JPPerformanceTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPPerformanceTest.h; sourceTree = "<group>"; };
+		36CE19241CB3E709007D73AC /* JPPerformanceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPPerformanceTest.m; sourceTree = "<group>"; };
+		36CE19261CB3E72B007D73AC /* performanceTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = performanceTest.js; sourceTree = "<group>"; };
 		36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = ../../../../../../usr/lib/libz.1.dylib; sourceTree = "<group>"; };
 		6C6CAC711C5F0BCA00444348 /* JPSuperTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPSuperTestObject.h; sourceTree = "<group>"; };
 		6C6CAC721C5F0BCA00444348 /* superTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = superTest.js; sourceTree = "<group>"; };
@@ -350,6 +355,9 @@
 				6C6CAC711C5F0BCA00444348 /* JPSuperTestObject.h */,
 				6C6CAC731C5F0BCA00444348 /* JPSuperTestObject.m */,
 				6C6CAC721C5F0BCA00444348 /* superTest.js */,
+				36CE19231CB3E709007D73AC /* JPPerformanceTest.h */,
+				36CE19241CB3E709007D73AC /* JPPerformanceTest.m */,
+				36CE19261CB3E72B007D73AC /* performanceTest.js */,
 				6C72B7941C352BA80086C98D /* newProtocolTest.h */,
 				6C72B7951C352BA80086C98D /* newProtocolTest.m */,
 				6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */,
@@ -477,6 +485,7 @@
 				36CE191B1CAEA179007D73AC /* jsClassTest.js in Resources */,
 				6C9C0EE41C25A7C700FCAAC5 /* newProtocolTest.js in Resources */,
 				E1B89EAE1B228818000645C2 /* multithreadTest.js in Resources */,
+				36CE19271CB3E72B007D73AC /* performanceTest.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -527,6 +536,7 @@
 				6C72B7961C352BA80086C98D /* newProtocolTest.m in Sources */,
 				DE94AE461AF2480000E461D4 /* JPTestObject.m in Sources */,
 				36CE191E1CAEA1DE007D73AC /* JPJSClassTest.m in Sources */,
+				36CE19251CB3E709007D73AC /* JPPerformanceTest.m in Sources */,
 				E1B89EA31B218986000645C2 /* JPInheritanceTestObjects.m in Sources */,
 				DE94AE2B1AF246C000E461D4 /* JSPatchTests.m in Sources */,
 			);
