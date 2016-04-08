@@ -397,11 +397,15 @@ static void addGroupMethodsToProtocol(Protocol* protocol,JSValue *groupMethods,B
                 JP_DEFINE_TYPE_ENCODE_CASE(CGPoint);
                 JP_DEFINE_TYPE_ENCODE_CASE(CGVector);
                 JP_DEFINE_TYPE_ENCODE_CASE(NSRange);
-                JP_DEFINE_TYPE_ENCODE_CASE(UIEdgeInsets);
                 JP_DEFINE_TYPE_ENCODE_CASE(NSInteger);
                 JP_DEFINE_TYPE_ENCODE_CASE(Class);
                 JP_DEFINE_TYPE_ENCODE_CASE(SEL);
                 JP_DEFINE_TYPE_ENCODE_CASE(void*);
+#if TARGET_OS_IPHONE
+                JP_DEFINE_TYPE_ENCODE_CASE(UIEdgeInsets);
+#else
+                JP_DEFINE_TYPE_ENCODE_CASE(NSEdgeInsets);
+#endif
 
                 [_protocolTypeEncodeDict setObject:@"@?" forKey:@"block"];
                 [_protocolTypeEncodeDict setObject:@"^@" forKey:@"id*"];
