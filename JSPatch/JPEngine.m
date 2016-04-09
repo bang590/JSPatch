@@ -77,6 +77,7 @@ static NSMutableDictionary *_JSMethodSignatureCache;
 static NSLock              *_JSMethodSignatureLock;
 static NSRecursiveLock     *_JSMethodForwardCallLock;
 static NSMutableDictionary *_protocolTypeEncodeDict;
+static NSMutableArray      *_pointersToRelease;
 
 @implementation JPEngine
 
@@ -804,6 +805,15 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
         }
     }
     
+    if (_pointersToRelease) {
+        for (NSValue *val in _pointersToRelease) {
+            void *pointer = NULL;
+            [val getValue:&pointer];
+            CFRelease(pointer);
+        }
+        _pointersToRelease = nil;
+    }
+    
     if (deallocFlag) {
         slf = nil;
         Class instClass = object_getClass(assignSlf);
@@ -1202,7 +1212,11 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     void *result;
                     [invocation getReturnValue:&result];
                     returnValue = formatOCToJS([JPBoxing boxPointer:result]);
-                    if (strncmp(returnType, "^{CGImage=}", 11) == 0) {
+                    if (strncmp(returnType, "^{CG", 4) == 0) {
+                        if (!_pointersToRelease) {
+                            _pointersToRelease = [[NSMutableArray alloc] init];
+                        }
+                        [_pointersToRelease addObject:[NSValue valueWithPointer:result]];
                         CFRetain(result);
                     }
                     break;
