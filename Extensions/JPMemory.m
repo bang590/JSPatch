@@ -88,6 +88,10 @@
     context[@"CFRelease"] = ^void(JSValue *jsVal) {
         CFRelease([self formatPointerJSToOC:jsVal]);
     };
+    
+    context[@"CFRetain"] = ^void(JSValue *jsVal) {
+        CFRetain([self formatPointerJSToOC:jsVal]);
+    };
 }
 
 

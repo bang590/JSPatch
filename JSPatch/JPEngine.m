@@ -1202,6 +1202,9 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     void *result;
                     [invocation getReturnValue:&result];
                     returnValue = formatOCToJS([JPBoxing boxPointer:result]);
+                    if (strncmp(returnType, "^{CGImage=}", 11) == 0) {
+                        CFRetain(result);
+                    }
                     break;
                 }
                 case '#': {
