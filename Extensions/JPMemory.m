@@ -89,6 +89,12 @@
         CFRelease([self formatPointerJSToOC:jsVal]);
     };
     
+    context[@"assignPointer"] = ^void(JSValue *jsVal, JSValue *value) {
+        void *m = [self formatPointerJSToOC:jsVal];
+        id obj = [self formatJSToOC:value];
+        *((__unsafe_unretained id *)m) = obj;
+    };
+
     context[@"CFRetain"] = ^void(JSValue *jsVal) {
         CFRetain([self formatPointerJSToOC:jsVal]);
     };
