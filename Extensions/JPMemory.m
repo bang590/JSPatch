@@ -95,6 +95,9 @@
         *((__unsafe_unretained id *)m) = obj;
     };
 
+    context[@"CFRetain"] = ^void(JSValue *jsVal) {
+        CFRetain([self formatPointerJSToOC:jsVal]);
+    };
 }
 
 

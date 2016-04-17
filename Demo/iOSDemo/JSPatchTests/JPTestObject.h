@@ -116,13 +116,6 @@
 - (NSDictionary *)funcToSwizzleReturnJSDictionary;
 - (NSArray *)funcToSwizzleReturnArray:(NSArray *)arr;
 - (NSString *)funcToSwizzleReturnString:(NSString *)str;
-
-- (void)jsCallEmptyMethod;
-- (void)jsCallMethodWithParamObject;
-- (void)jsCallMethodReturnObject;
-- (void)emptyMethodToOverride;
-- (void)methodWithParamObjectToOverride:(NSObject *)obj;
-- (NSObject *)methodReturnObjectToOverride;
 @end
 
 

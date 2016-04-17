@@ -3,6 +3,8 @@
 ![CocoaPods Version](https://img.shields.io/cocoapods/v/JSPatch.svg?style=flat)
 [![License](https://img.shields.io/github/license/bang590/JSPatch.svg?style=flat)](https://github.com/bang590/JSPatch/blob/master/LICENSE)
 
+[中文介绍](https://github.com/bang590/JSPatch/blob/master/README-CN.md) | [文档](https://github.com/bang590/JSPatch/wiki)
+
 JSPatch bridges Objective-C and JavaScript using the Objective-C runtime. You can call any Objective-C class and method in JavaScript by just including a small engine. That makes the APP obtaining the power of script language: add modules or replacing Objective-C code to fix bugs dynamically.
 
 JSPatch is still in development, welcome to improve the project together.

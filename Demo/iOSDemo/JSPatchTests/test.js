@@ -9,7 +9,6 @@ require('JPEngine').defineStruct({
 });
 
 (function() {
-  var performanceTestObj = require('NSObject').alloc().init();
   defineClass("JPTestObject", {
     funcToSwizzle_view: function(num, view) {
       self.ORIGfuncToSwizzle_view(num, view) 
@@ -67,9 +66,10 @@ require('JPEngine').defineStruct({
     },
     funcToSwizzleTestGCD: function(completeBlock) {
       var execCount = 0
+      var slf = self
       var dispatchExecBlock = function() {
         if (++execCount >= 4) {
-          self.setFuncToSwizzleTestGCDPassed(1)
+          slf.setFuncToSwizzleTestGCDPassed(1)
           completeBlock()
         }
       }
@@ -90,35 +90,6 @@ require('JPEngine').defineStruct({
     funcToSwizzleTestPointer: function(pointer) {
       return pointer
     },
-    
-    //performance
-    emptyMethodToOverride: function() {
-
-    },
-    jsCallEmptyMethod: function() {
-      var obj = JPTestObject.alloc().init()
-      for (var i = 0; i < 10000; i ++) {
-        obj.emptyMethod();
-      }
-    },
-    jsCallMethodWithParamObject: function() {
-      var obj = JPTestObject.alloc().init()
-      for (var i = 0; i < 10000; i ++) {
-        obj.methodWithParamObject(performanceTestObj);
-      }
-    },
-    jsCallMethodReturnObject: function() {
-      var obj = JPTestObject.alloc().init()
-      for (var i = 0; i < 10000; i ++) {
-        obj.methodReturnObject();
-      }
-    },
-    methodWithParamObjectToOverride: function(obj) {
-
-    },
-    methodReturnObjectToOverride: function() {
-      return performanceTestObj;
-    }
   },
   {
     classFuncToSwizzle_int: function(o, num) {
@@ -286,7 +257,7 @@ require('JPEngine').defineStruct({
     }: {}), view)
     obj.setCallBlockWithObjectAndBlockReturnValuePassed(ret.toJS() == "succ")
   }))
-
+    
   //////super
   var subObj = require("JPTestSubObject").alloc().init() 
   global.subObj = subObj.__obj;
@@ -441,5 +412,5 @@ require('JPEngine').defineStruct({
 //variable parameter method
   var strWithFormat = require('NSString').stringWithFormat("%@ %@", "a", "b");
   obj.setVariableParameterMethodPassed(strWithFormat.toJS() == "a b");
-    
+   
 })();

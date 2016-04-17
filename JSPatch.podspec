@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "JSPatch"
-  s.version      = "0.2"
+  s.version      = "1.0"
   s.summary      = "JSPatch bridge Objective-C and JavaScript. You can call any"  \
                    " Objective-C class and method in JavaScript by just" \
                    " including a small engine."
@@ -18,7 +18,8 @@ Pod::Spec.new do |s|
   s.author             = { "bang" => "bang590@gmail.com" }
   s.social_media_url   = "http://twitter.com/bang590"
 
-  s.platform     = :ios, "6.0"
+  s.ios.deployment_target = '6.0'
+  s.osx.deployment_target = '10.9'
   s.source       = { :git => "https://github.com/bang590/JSPatch.git", :tag => s.version }
 
   s.frameworks   = "Foundation"
@@ -26,13 +27,14 @@ Pod::Spec.new do |s|
   s.default_subspec = 'Core'
 
   s.subspec 'Core' do |ss|
-    ss.source_files = "JSPatch/*.{h,m}"
+    ss.ios.source_files = "JSPatch/*.{h,m}"
+    ss.osx.source_files = "JSPatch/*.{h,m}"
     ss.public_header_files = "JSPatch/*.h"
     ss.resources    = "JSPatch/*.js"
   end
 
   s.subspec 'Extensions' do |ss|
-    ss.source_files = "Extensions/**/*.{h,m}"
+    ss.ios.source_files = "Extensions/**/*.{h,m}"
     ss.public_header_files = "Extensions/**/*.h"
     ss.dependency 'JSPatch/Core'
   end
