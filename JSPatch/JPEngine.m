@@ -9,11 +9,15 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 
-#import "JSContext+GarbageCollection.h"
-
 #if TARGET_OS_IPHONE
 #import <UIKit/UIApplication.h>
 #endif
+
+/**
+ *  JavaScript Force Garbage collention
+ *  @See: http://stackoverflow.com/questions/35689482/force-garbage-collection-of-javascriptcore-virtual-machine-on-ios
+ */
+JS_EXPORT void JSSynchronousGarbageCollectForDebugging(JSContextRef ctx);
 
 @interface JPBoxing : NSObject
 @property (nonatomic) id obj;
@@ -163,16 +167,14 @@ static NSMutableArray      *_pointersToRelease;
     context[@"dispatch_after"] = ^(double time, JSValue *func) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [func callWithArguments:nil];
-            __strong __typeof(weakCtx) strongCtx = weakCtx;
-            [strongCtx garbageCollect];
+            garbageCollect(weakCtx);
         });
     };
     
     context[@"dispatch_async_main"] = ^(JSValue *func) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [func callWithArguments:nil];
-            __strong __typeof(weakCtx) strongCtx = weakCtx;
-            [strongCtx garbageCollect];
+            garbageCollect(weakCtx);
         });
     };
     
@@ -184,15 +186,14 @@ static NSMutableArray      *_pointersToRelease;
                 [func callWithArguments:nil];
             });
         }
-        __strong __typeof(weakCtx) strongCtx = weakCtx;
-        [strongCtx garbageCollect];
+        garbageCollect(weakCtx);
     };
     
     context[@"dispatch_async_global_queue"] = ^(JSValue *func) {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [func callWithArguments:nil];
             __strong __typeof(weakCtx) strongCtx = weakCtx;
-            [strongCtx garbageCollect];
+            garbageCollect(weakCtx);
         });
     };
     
@@ -708,7 +709,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
             JSValue *jsval; \
             [_JSMethodForwardCallLock lock];   \
             jsval = [fun callWithArguments:params]; \
-            [_context garbageCollect]; \
+            garbageCollect(_context); \
             [_JSMethodForwardCallLock unlock]; \
             while (![jsval isNull] && ![jsval isUndefined] && [jsval hasProperty:@"__isPerformInOC"]) { \
                 NSArray *args = nil;  \
@@ -719,7 +720,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
                 }   \
                 [_JSMethodForwardCallLock lock];    \
                 jsval = [cb callWithArguments:args];  \
-                [_context garbageCollect]; \
+                garbageCollect(_context); \
                 [_JSMethodForwardCallLock unlock];  \
             }
 
@@ -1346,7 +1347,7 @@ static id genCallbackBlock(JSValue *jsVal)
         BLK_TRAITS_ARG(4, p4)
         BLK_TRAITS_ARG(5, p5)
         JSValue *ret = [jsVal[@"cb"] callWithArguments:list];
-        [_context garbageCollect];
+        garbageCollect(_context);
         return formatJSToOC(ret);
     };
     
@@ -1535,6 +1536,10 @@ static NSString *convertJPSelectorString(NSString *selectorString)
     NSString *tmpJSMethodName = [selectorString stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
     NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
     return [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+}
+
+static void garbageCollect(JSContext __weak *context) {
+    JSSynchronousGarbageCollectForDebugging(context.JSGlobalContextRef);
 }
 
 #pragma mark - Object format
