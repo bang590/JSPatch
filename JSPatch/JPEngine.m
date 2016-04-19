@@ -13,6 +13,12 @@
 #import <UIKit/UIApplication.h>
 #endif
 
+/**
+ *  JavaScript Force Garbage collention
+ *  @See: http://stackoverflow.com/questions/35689482/force-garbage-collection-of-javascriptcore-virtual-machine-on-ios
+ */
+JS_EXPORT void JSSynchronousGarbageCollectForDebugging(JSContextRef ctx);
+
 @interface JPBoxing : NSObject
 @property (nonatomic) id obj;
 @property (nonatomic) void *pointer;
@@ -78,6 +84,8 @@ static NSLock              *_JSMethodSignatureLock;
 static NSRecursiveLock     *_JSMethodForwardCallLock;
 static NSMutableDictionary *_protocolTypeEncodeDict;
 static NSMutableArray      *_pointersToRelease;
+
+static NSOperationQueue *_garbageCollectOperationQueue;
 
 @implementation JPEngine
 
@@ -157,15 +165,18 @@ static NSMutableArray      *_pointersToRelease;
         return [_scriptRootDir stringByAppendingPathComponent:filePath];
     };
 
+    __weak JSContext *weakCtx = context;
     context[@"dispatch_after"] = ^(double time, JSValue *func) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [func callWithArguments:nil];
+            garbageCollect(weakCtx);
         });
     };
     
     context[@"dispatch_async_main"] = ^(JSValue *func) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [func callWithArguments:nil];
+            garbageCollect(weakCtx);
         });
     };
     
@@ -177,11 +188,13 @@ static NSMutableArray      *_pointersToRelease;
                 [func callWithArguments:nil];
             });
         }
+        garbageCollect(weakCtx);
     };
     
     context[@"dispatch_async_global_queue"] = ^(JSValue *func) {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [func callWithArguments:nil];
+            garbageCollect(weakCtx);
         });
     };
     
@@ -234,6 +247,13 @@ static NSMutableArray      *_pointersToRelease;
         [_context evaluateScript:jsCore withSourceURL:[NSURL URLWithString:@"JSPatch.js"]];
     } else {
         [_context evaluateScript:jsCore];
+    }
+    
+    if (!_garbageCollectOperationQueue) {
+        _garbageCollectOperationQueue = [NSOperationQueue currentQueue];
+    }
+    else {
+        [_garbageCollectOperationQueue cancelAllOperations];
     }
 }
 
@@ -769,6 +789,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
 
         case 'v': {
             JP_FWD_RET_CALL_JS
+            garbageCollect(_context);
             break;
         }
         
@@ -1333,6 +1354,7 @@ static id genCallbackBlock(JSValue *jsVal)
         BLK_TRAITS_ARG(4, p4)
         BLK_TRAITS_ARG(5, p5)
         JSValue *ret = [jsVal[@"cb"] callWithArguments:list];
+        garbageCollect(_context);
         return formatJSToOC(ret);
     };
     
@@ -1521,6 +1543,13 @@ static NSString *convertJPSelectorString(NSString *selectorString)
     NSString *tmpJSMethodName = [selectorString stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
     NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
     return [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+}
+
+static void garbageCollect(JSContext __weak *context) {
+    [_garbageCollectOperationQueue cancelAllOperations];
+    [_garbageCollectOperationQueue addOperationWithBlock:^{
+        JSSynchronousGarbageCollectForDebugging(context.JSGlobalContextRef);
+    }];
 }
 
 #pragma mark - Object format
