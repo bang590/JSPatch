@@ -1530,6 +1530,9 @@ static id formatOCToJS(id obj)
     if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSDictionary class]] || [obj isKindOfClass:[NSArray class]] || [obj isKindOfClass:[NSDate class]]) {
         return _autoConvert ? obj: _wrapObj([JPBoxing boxObj:obj]);
     }
+    if ([obj isKindOfClass:[NSDecimalNumber class]]) {
+        return [(NSDecimalNumber*)obj stringValue];
+    }
     if ([obj isKindOfClass:[NSNumber class]] || [obj isKindOfClass:NSClassFromString(@"NSBlock")] || [obj isKindOfClass:[JSValue class]]) {
         return obj;
     }
