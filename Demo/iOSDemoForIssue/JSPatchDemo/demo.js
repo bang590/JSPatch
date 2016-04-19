@@ -2,16 +2,19 @@ defineClass('JPViewController', {
   viewDidLoad: function () {
             
     self.ORIGviewDidLoad();
+            
+    //It will release very fast.
     var fastReleaseObject = require('JPObject').alloc().init();
     fastReleaseObject.setParamOne("viewDidLoad fast object");
     console.log(fastReleaseObject.paramOne());
-    fastReleaseObject = null;   //It will release very fast.
+    fastReleaseObject = null;
             
     dispatch_after(3, function(){
-     var lazyReleaseObject = require('JPObject').alloc().init();
-     lazyReleaseObject.setParamOne("viewDidLoad async after object");
-     console.log(lazyReleaseObject.paramOne());
-     lazyReleaseObject = null;  //It will release delay until js GC!
+       //It will release delay until js GC!
+       var lazyReleaseObject = require('JPObject').alloc().init();
+       lazyReleaseObject.setParamOne("viewDidLoad async after object");
+       console.log(lazyReleaseObject.paramOne());
+       lazyReleaseObject = null;
     });
   },
             
