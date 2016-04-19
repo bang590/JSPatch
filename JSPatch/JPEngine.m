@@ -9,6 +9,8 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 
+#import "JSContext+GarbageCollection.h"
+
 #if TARGET_OS_IPHONE
 #import <UIKit/UIApplication.h>
 #endif
@@ -157,15 +159,20 @@ static NSMutableArray      *_pointersToRelease;
         return [_scriptRootDir stringByAppendingPathComponent:filePath];
     };
 
+    __weak JSContext *weakCtx = context;
     context[@"dispatch_after"] = ^(double time, JSValue *func) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [func callWithArguments:nil];
+            __strong __typeof(weakCtx) strongCtx = weakCtx;
+            [strongCtx garbageCollect];
         });
     };
     
     context[@"dispatch_async_main"] = ^(JSValue *func) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [func callWithArguments:nil];
+            __strong __typeof(weakCtx) strongCtx = weakCtx;
+            [strongCtx garbageCollect];
         });
     };
     
@@ -177,11 +184,15 @@ static NSMutableArray      *_pointersToRelease;
                 [func callWithArguments:nil];
             });
         }
+        __strong __typeof(weakCtx) strongCtx = weakCtx;
+        [strongCtx garbageCollect];
     };
     
     context[@"dispatch_async_global_queue"] = ^(JSValue *func) {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [func callWithArguments:nil];
+            __strong __typeof(weakCtx) strongCtx = weakCtx;
+            [strongCtx garbageCollect];
         });
     };
     
@@ -697,6 +708,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
             JSValue *jsval; \
             [_JSMethodForwardCallLock lock];   \
             jsval = [fun callWithArguments:params]; \
+            [_context garbageCollect]; \
             [_JSMethodForwardCallLock unlock]; \
             while (![jsval isNull] && ![jsval isUndefined] && [jsval hasProperty:@"__isPerformInOC"]) { \
                 NSArray *args = nil;  \
@@ -707,6 +719,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
                 }   \
                 [_JSMethodForwardCallLock lock];    \
                 jsval = [cb callWithArguments:args];  \
+                [_context garbageCollect]; \
                 [_JSMethodForwardCallLock unlock];  \
             }
 
@@ -1333,6 +1346,7 @@ static id genCallbackBlock(JSValue *jsVal)
         BLK_TRAITS_ARG(4, p4)
         BLK_TRAITS_ARG(5, p5)
         JSValue *ret = [jsVal[@"cb"] callWithArguments:list];
+        [_context garbageCollect];
         return formatJSToOC(ret);
     };
     
