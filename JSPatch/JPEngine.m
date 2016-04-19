@@ -85,6 +85,8 @@ static NSRecursiveLock     *_JSMethodForwardCallLock;
 static NSMutableDictionary *_protocolTypeEncodeDict;
 static NSMutableArray      *_pointersToRelease;
 
+static NSOperationQueue *_garbageCollectOperationQueue;
+
 @implementation JPEngine
 
 #pragma mark - APIS
@@ -192,7 +194,6 @@ static NSMutableArray      *_pointersToRelease;
     context[@"dispatch_async_global_queue"] = ^(JSValue *func) {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [func callWithArguments:nil];
-            __strong __typeof(weakCtx) strongCtx = weakCtx;
             garbageCollect(weakCtx);
         });
     };
@@ -246,6 +247,13 @@ static NSMutableArray      *_pointersToRelease;
         [_context evaluateScript:jsCore withSourceURL:[NSURL URLWithString:@"JSPatch.js"]];
     } else {
         [_context evaluateScript:jsCore];
+    }
+    
+    if (!_garbageCollectOperationQueue) {
+        _garbageCollectOperationQueue = [NSOperationQueue currentQueue];
+    }
+    else {
+        [_garbageCollectOperationQueue cancelAllOperations];
     }
 }
 
@@ -709,7 +717,6 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
             JSValue *jsval; \
             [_JSMethodForwardCallLock lock];   \
             jsval = [fun callWithArguments:params]; \
-            garbageCollect(_context); \
             [_JSMethodForwardCallLock unlock]; \
             while (![jsval isNull] && ![jsval isUndefined] && [jsval hasProperty:@"__isPerformInOC"]) { \
                 NSArray *args = nil;  \
@@ -720,7 +727,6 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
                 }   \
                 [_JSMethodForwardCallLock lock];    \
                 jsval = [cb callWithArguments:args];  \
-                garbageCollect(_context); \
                 [_JSMethodForwardCallLock unlock];  \
             }
 
@@ -783,6 +789,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
 
         case 'v': {
             JP_FWD_RET_CALL_JS
+            garbageCollect(_context);
             break;
         }
         
@@ -1539,7 +1546,10 @@ static NSString *convertJPSelectorString(NSString *selectorString)
 }
 
 static void garbageCollect(JSContext __weak *context) {
-    JSSynchronousGarbageCollectForDebugging(context.JSGlobalContextRef);
+    [_garbageCollectOperationQueue cancelAllOperations];
+    [_garbageCollectOperationQueue addOperationWithBlock:^{
+        JSSynchronousGarbageCollectForDebugging(context.JSGlobalContextRef);
+    }];
 }
 
 #pragma mark - Object format
