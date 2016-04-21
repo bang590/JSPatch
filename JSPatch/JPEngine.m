@@ -13,6 +13,12 @@
 #import <UIKit/UIApplication.h>
 #endif
 
+/**
+ *  JavaScript Force Garbage collention
+ *  @See: http://stackoverflow.com/questions/35689482/force-garbage-collection-of-javascriptcore-virtual-machine-on-ios
+ */
+JS_EXPORT void JSSynchronousGarbageCollectForDebugging(JSContextRef ctx);
+
 @interface JPBoxing : NSObject
 @property (nonatomic) id obj;
 @property (nonatomic) void *pointer;
@@ -78,6 +84,8 @@ static NSLock              *_JSMethodSignatureLock;
 static NSRecursiveLock     *_JSMethodForwardCallLock;
 static NSMutableDictionary *_protocolTypeEncodeDict;
 static NSMutableArray      *_pointersToRelease;
+
+static NSOperationQueue *_garbageCollectOperationQueue;
 
 @implementation JPEngine
 
@@ -194,6 +202,11 @@ static NSMutableArray      *_pointersToRelease;
             }
         }
     };
+    
+    __weak __typeof(_context) weakCtx = _context;
+    context[@"garbageCollect"] = ^void() {
+        garbageCollect(weakCtx);
+    };
 
     context[@"_OC_log"] = ^() {
         NSArray *args = [JSContext currentArguments];
@@ -234,6 +247,13 @@ static NSMutableArray      *_pointersToRelease;
         [_context evaluateScript:jsCore withSourceURL:[NSURL URLWithString:@"JSPatch.js"]];
     } else {
         [_context evaluateScript:jsCore];
+    }
+    
+    if (!_garbageCollectOperationQueue) {
+        _garbageCollectOperationQueue = [NSOperationQueue currentQueue];
+    }
+    else {
+        [_garbageCollectOperationQueue cancelAllOperations];
     }
 }
 
@@ -1521,6 +1541,13 @@ static NSString *convertJPSelectorString(NSString *selectorString)
     NSString *tmpJSMethodName = [selectorString stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
     NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
     return [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+}
+
+static void garbageCollect(JSContext __weak *context) {
+    [_garbageCollectOperationQueue cancelAllOperations];
+    [_garbageCollectOperationQueue addOperationWithBlock:^{
+        JSSynchronousGarbageCollectForDebugging(context.JSGlobalContextRef);
+    }];
 }
 
 #pragma mark - Object format
