@@ -73,6 +73,7 @@ static NSMutableDictionary *_registeredStruct;
 static NSString *_currInvokeSuperClsName;
 static char *kPropAssociatedObjectKey;
 static BOOL _autoConvert;
+static BOOL _autoConvertNumber;
 static NSString *_scriptRootDir;
 static NSMutableSet *_runnedScript;
 
@@ -148,6 +149,10 @@ static NSOperationQueue *_garbageCollectOperationQueue;
     
     context[@"autoConvertOCType"] = ^(BOOL autoConvert) {
         _autoConvert = autoConvert;
+    };
+
+    context[@"autoConvertOCTypeNumber"] = ^(BOOL autoConvertNumber) {
+        _autoConvertNumber = autoConvertNumber;
     };
     
     context[@"include"] = ^(NSString *filePath) {
@@ -1557,10 +1562,10 @@ static id formatOCToJS(id obj)
     if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSDictionary class]] || [obj isKindOfClass:[NSArray class]] || [obj isKindOfClass:[NSDate class]]) {
         return _autoConvert ? obj: _wrapObj([JPBoxing boxObj:obj]);
     }
-    if ([obj isKindOfClass:[NSDecimalNumber class]]) {
-        return [(NSDecimalNumber*)obj stringValue];
+    if ([obj isKindOfClass:[NSNumber class]]) {
+        return _autoConvertNumber ? [(NSNumber*)obj stringValue] : obj;
     }
-    if ([obj isKindOfClass:[NSNumber class]] || [obj isKindOfClass:NSClassFromString(@"NSBlock")] || [obj isKindOfClass:[JSValue class]]) {
+    if ([obj isKindOfClass:NSClassFromString(@"NSBlock")] || [obj isKindOfClass:[JSValue class]]) {
         return obj;
     }
     return _wrapObj(obj);
