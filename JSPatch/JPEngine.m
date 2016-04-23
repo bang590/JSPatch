@@ -85,8 +85,7 @@ static NSLock              *_JSMethodSignatureLock;
 static NSRecursiveLock     *_JSMethodForwardCallLock;
 static NSMutableDictionary *_protocolTypeEncodeDict;
 static NSMutableArray      *_pointersToRelease;
-
-static NSOperationQueue *_garbageCollectOperationQueue;
+static NSOperationQueue    *_garbageCollectOperationQueue;
 
 @implementation JPEngine
 
@@ -253,13 +252,6 @@ static NSOperationQueue *_garbageCollectOperationQueue;
         [_context evaluateScript:jsCore withSourceURL:[NSURL URLWithString:@"JSPatch.js"]];
     } else {
         [_context evaluateScript:jsCore];
-    }
-    
-    if (!_garbageCollectOperationQueue) {
-        _garbageCollectOperationQueue = [NSOperationQueue currentQueue];
-    }
-    else {
-        [_garbageCollectOperationQueue cancelAllOperations];
     }
 }
 
@@ -1550,7 +1542,11 @@ static NSString *convertJPSelectorString(NSString *selectorString)
 }
 
 static void garbageCollect(JSContext __weak *context) {
-    [_garbageCollectOperationQueue cancelAllOperations];
+    if (!_garbageCollectOperationQueue) {
+        _garbageCollectOperationQueue = [NSOperationQueue currentQueue];
+    } else {
+        [_garbageCollectOperationQueue cancelAllOperations];
+    }
     [_garbageCollectOperationQueue addOperationWithBlock:^{
         JSSynchronousGarbageCollectForDebugging(context.JSGlobalContextRef);
     }];
