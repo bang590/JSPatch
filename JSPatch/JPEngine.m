@@ -208,9 +208,10 @@ static NSOperationQueue *_garbageCollectOperationQueue;
         }
     };
     
-    __weak __typeof(_context) weakCtx = _context;
+    __weak __typeof(context) weakCtx = context;
     context[@"garbageCollect"] = ^void() {
-        garbageCollect(weakCtx);
+        __strong __typeof(weakCtx) strongCtx = weakCtx;
+        garbageCollect(strongCtx);
     };
 
     context[@"_OC_log"] = ^() {
