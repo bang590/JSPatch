@@ -15,8 +15,11 @@
     return [[NSCalendar alloc] initWithCalendarIdentifier:iden];
 }
 
+#if TARGET_OS_IOS
 + (UIWebView *)newWebView
 {
     return [[UIWebView alloc] init];
 }
+#endif
+
 @end

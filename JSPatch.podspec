@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
   s.social_media_url   = "http://twitter.com/bang590"
 
   s.ios.deployment_target = '6.0'
+  s.tvos.deployment_target = '9.0'
   s.osx.deployment_target = '10.9'
   s.source       = { :git => "https://github.com/bang590/JSPatch.git", :tag => s.version }
 
@@ -28,6 +29,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'Core' do |ss|
     ss.ios.source_files = "JSPatch/*.{h,m}"
+    ss.tvos.source_files = "JSPatch/*.{h,m}"
     ss.osx.source_files = "JSPatch/*.{h,m}"
     ss.public_header_files = "JSPatch/*.h"
     ss.resources    = "JSPatch/*.js"
@@ -35,6 +37,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'Extensions' do |ss|
     ss.ios.source_files = "Extensions/**/*.{h,m}"
+    ss.tvos.source_files = "Extensions/**/*.{h,m}"
     ss.public_header_files = "Extensions/**/*.h"
     ss.dependency 'JSPatch/Core'
   end

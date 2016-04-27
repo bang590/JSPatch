@@ -18,5 +18,9 @@
 @interface JPSpecialInit : NSObject
 
 + (NSCalendar *)calendarWithCalendarIdentifier:(NSString *)iden;
+
+#if TARGET_OS_IOS
 + (UIWebView *)newWebView;
+#endif
+
 @end
