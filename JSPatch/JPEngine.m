@@ -13,12 +13,6 @@
 #import <UIKit/UIApplication.h>
 #endif
 
-/**
- *  JavaScript Force Garbage collention
- *  @See: http://stackoverflow.com/questions/35689482/force-garbage-collection-of-javascriptcore-virtual-machine-on-ios
- */
-JS_EXPORT void JSSynchronousGarbageCollectForDebugging(JSContextRef ctx);
-
 @interface JPBoxing : NSObject
 @property (nonatomic) id obj;
 @property (nonatomic) void *pointer;
@@ -85,7 +79,6 @@ static NSLock              *_JSMethodSignatureLock;
 static NSRecursiveLock     *_JSMethodForwardCallLock;
 static NSMutableDictionary *_protocolTypeEncodeDict;
 static NSMutableArray      *_pointersToRelease;
-static NSOperationQueue    *_garbageCollectOperationQueue;
 
 @implementation JPEngine
 
@@ -205,12 +198,6 @@ static NSOperationQueue    *_garbageCollectOperationQueue;
                 [_TMPMemoryPool removeObjectForKey:[NSNumber numberWithInteger:[(NSObject*)obj hash]]];
             }
         }
-    };
-    
-    __weak __typeof(context) weakCtx = context;
-    context[@"garbageCollect"] = ^void() {
-        __strong __typeof(weakCtx) strongCtx = weakCtx;
-        garbageCollect(strongCtx);
     };
 
     context[@"_OC_log"] = ^() {
@@ -1539,17 +1526,6 @@ static NSString *convertJPSelectorString(NSString *selectorString)
     NSString *tmpJSMethodName = [selectorString stringByReplacingOccurrencesOfString:@"__" withString:@"-"];
     NSString *selectorName = [tmpJSMethodName stringByReplacingOccurrencesOfString:@"_" withString:@":"];
     return [selectorName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
-}
-
-static void garbageCollect(JSContext __weak *context) {
-    if (!_garbageCollectOperationQueue) {
-        _garbageCollectOperationQueue = [NSOperationQueue currentQueue];
-    } else {
-        [_garbageCollectOperationQueue cancelAllOperations];
-    }
-    [_garbageCollectOperationQueue addOperationWithBlock:^{
-        JSSynchronousGarbageCollectForDebugging(context.JSGlobalContextRef);
-    }];
 }
 
 #pragma mark - Object format
