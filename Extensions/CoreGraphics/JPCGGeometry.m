@@ -114,14 +114,20 @@
     };
 }
 
+#if CGFLOAT_IS_DOUBLE
+#define CGFloatValue doubleValue
+#else
+#define CGFloatValue floatValue
+#endif
+
 + (void)rectStruct:(CGRect *)rect ofDict:(NSDictionary *)dict
 {
     CGPoint point;
     CGSize size;
-    point.x      = [dict[@"x"] doubleValue];
-    point.y      = [dict[@"y"] doubleValue];
-    size.width   = [dict[@"width"] doubleValue];
-    size.height  = [dict[@"height"] doubleValue];
+    point.x      = [dict[@"x"] CGFloatValue];
+    point.y      = [dict[@"y"] CGFloatValue];
+    size.width   = [dict[@"width"] CGFloatValue];
+    size.height  = [dict[@"height"] CGFloatValue];
     rect->origin = point;
     rect->size   = size;
     
@@ -129,21 +135,23 @@
 
 + (void)pointStruct:(CGPoint *)point ofDict:(NSDictionary *)dict
 {
-    point->x = [dict[@"x"] doubleValue];
-    point->y = [dict[@"y"] doubleValue];
+    point->x = [dict[@"x"] CGFloatValue];
+    point->y = [dict[@"y"] CGFloatValue];
 }
 
 + (void)sizeStruct:(CGSize *)size ofDict:(NSDictionary *)dict
 {
-    size->width  = [dict[@"width"] doubleValue];
-    size->height = [dict[@"height"] doubleValue];
+    size->width  = [dict[@"width"] CGFloatValue];
+    size->height = [dict[@"height"] CGFloatValue];
 }
 
 + (void)vectorStruct:(CGVector *)vector ofDict:(NSDictionary *)dict
 {
-    vector->dx = [dict[@"dx"] doubleValue];
-    vector->dy = [dict[@"dy"] doubleValue];
+    vector->dx = [dict[@"dx"] CGFloatValue];
+    vector->dy = [dict[@"dy"] CGFloatValue];
 }
+
+#undef CGFloatValue
 
 + (NSDictionary *)rectDictOfStruct:(CGRect *)rect
 {
