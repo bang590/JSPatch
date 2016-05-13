@@ -25,16 +25,19 @@
                              @"keys": @[@"horizontal", @"vertical"]
                              }];
     
-    context[@"CGRectFromString"]   = ^CGRect(NSString *string) {
-        return CGRectFromString(string);
+    context[@"CGRectFromString"]   = ^NSDictionary *(NSString *string) {
+        CGRect rect = CGRectFromString(string);
+        return [JPCGGeometry rectDictOfStruct:&rect];
     };
     
-    context[@"CGSizeFromString"]   = ^CGSize(NSString *string) {
-        return CGSizeFromString(string);
+    context[@"CGSizeFromString"]   = ^NSDictionary *(NSString *string) {
+        CGSize size = CGSizeFromString(string);
+        return [JPCGGeometry sizeDictOfStruct:&size];
     };
     
-    context[@"CGPointFromString"]  = ^CGPoint(NSString *string) {
-        return CGPointFromString(string);
+    context[@"CGPointFromString"]  = ^NSDictionary *(NSString *string) {
+        CGPoint point = CGPointFromString(string);
+        return [JPCGGeometry pointDictOfStruct:&point];
     };
     
     context[@"CGVectorFromString"] = ^NSDictionary *(NSString *string) {
