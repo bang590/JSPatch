@@ -80,6 +80,10 @@ static NSRecursiveLock     *_JSMethodForwardCallLock;
 static NSMutableDictionary *_protocolTypeEncodeDict;
 static NSMutableArray      *_pointersToRelease;
 
+void (^_exceptionBlock)(NSString *log) = ^void(NSString *log) {
+    NSCAssert(NO, log);
+};
+
 @implementation JPEngine
 
 #pragma mark - APIS
@@ -199,7 +203,7 @@ static NSMutableArray      *_pointersToRelease;
             }
         }
     };
-
+    
     context[@"_OC_log"] = ^() {
         NSArray *args = [JSContext currentArguments];
         for (JSValue *jsVal in args) {
@@ -209,12 +213,12 @@ static NSMutableArray      *_pointersToRelease;
     };
     
     context[@"_OC_catch"] = ^(JSValue *msg, JSValue *stack) {
-        NSAssert(NO, @"js exception, \nmsg: %@, \nstack: \n %@", [msg toObject], [stack toObject]);
+        _exceptionBlock([NSString stringWithFormat:@"js exception, \nmsg: %@, \nstack: \n %@", [msg toObject], [stack toObject]]);
     };
     
     context.exceptionHandler = ^(JSContext *con, JSValue *exception) {
         NSLog(@"%@", exception);
-        NSAssert(NO, @"js exception: %@", exception);
+        _exceptionBlock([NSString stringWithFormat:@"js exception: %@", exception]);
     };
     
     _nullObj = [[NSObject alloc] init];
@@ -232,7 +236,7 @@ static NSMutableArray      *_pointersToRelease;
 #endif
     
     NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"JSPatch" ofType:@"js"];
-    NSAssert(path, @"can't find JSPatch.js");
+    if (!path) _exceptionBlock(@"can't find JSPatch.js");
     NSString *jsCore = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:path] encoding:NSUTF8StringEncoding];
     
     if ([_context respondsToSelector:@selector(evaluateScript:withSourceURL:)]) {
@@ -262,9 +266,10 @@ static NSMutableArray      *_pointersToRelease;
 + (JSValue *)_evaluateScript:(NSString *)script withSourceURL:(NSURL *)resourceURL
 {
     if (!script || ![JSContext class]) {
-        NSAssert(script, @"script is nil");
+        _exceptionBlock(@"script is nil");
         return nil;
     }
+    [self startEngine];
     
     if (!_regex) {
         _regex = [NSRegularExpression regularExpressionWithPattern:_regexStr options:0 error:nil];
@@ -278,7 +283,7 @@ static NSMutableArray      *_pointersToRelease;
         }
     }
     @catch (NSException *exception) {
-        NSAssert(NO, @"%@", exception);
+        _exceptionBlock([NSString stringWithFormat:@"%@", exception]);
     }
     return nil;
 }
@@ -293,7 +298,7 @@ static NSMutableArray      *_pointersToRelease;
     if (![JSContext class]) {
         return;
     }
-    NSAssert(_context, @"please call [JPEngine startEngine]");
+    if (!_context) _exceptionBlock(@"please call [JPEngine startEngine]");
     for (NSString *className in extensions) {
         Class extCls = NSClassFromString(className);
         [extCls main:_context];
@@ -311,6 +316,11 @@ static NSMutableArray      *_pointersToRelease;
     [_JSMethodSignatureLock lock];
     _JSMethodSignatureCache = nil;
     [_JSMethodSignatureLock unlock];
+}
+
++ (void)handleException:(void (^)(NSString *msg))exceptionBlock
+{
+    _exceptionBlock = [exceptionBlock copy];
 }
 
 #pragma mark - Implements
@@ -429,7 +439,7 @@ static void addGroupMethodsToProtocol(Protocol* protocol,JSValue *groupMethods,B
                         if (NSClassFromString(argClassName) != NULL) {
                             argEncode = @"@";
                         } else {
-                            NSCAssert(NO, @"unreconized type %@", argStr);
+                            _exceptionBlock([NSString stringWithFormat:@"unreconized type %@", argStr]);
                             return;
                         }
                     }
@@ -475,7 +485,7 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
     if (!cls) {
         Class superCls = NSClassFromString(superClassName);
         if (!superCls) {
-            NSCAssert(NO, @"can't find the super class %@", superClassName);
+            _exceptionBlock([NSString stringWithFormat:@"can't find the super class %@", superClassName]);
             return @{@"cls": className};
         }
         cls = objc_allocateClassPair(superCls, className.UTF8String, 0);
@@ -552,7 +562,7 @@ static JSValue* getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
     while (!func) {
         cls = class_getSuperclass(cls);
         if (!cls) {
-            NSCAssert(NO, @"warning can not find selector %@", selectorName);
+            _exceptionBlock([NSString stringWithFormat:@"warning can not find selector %@", selectorName]);
             return nil;
         }
         func = _JSOverideMethods[cls][selectorName];
@@ -839,7 +849,7 @@ static void JPExcuteORIGForwardInvocation(id slf, SEL selector, NSInvocation *in
         
         NSMethodSignature *methodSignature = [slf methodSignatureForSelector:origForwardSelector];
         if (!methodSignature) {
-            NSCAssert(methodSignature, @"unrecognized selector -ORIGforwardInvocation: for instance %@", slf);
+            _exceptionBlock([NSString stringWithFormat:@"unrecognized selector -ORIGforwardInvocation: for instance %@", slf]);
             return;
         }
         NSInvocation *forwardInv= [NSInvocation invocationWithMethodSignature:methodSignature];
@@ -997,7 +1007,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         }
         [_JSMethodSignatureLock unlock];
         if (!methodSignature) {
-            NSCAssert(methodSignature, @"unrecognized selector %@ for instance %@", selectorName, instance);
+            _exceptionBlock([NSString stringWithFormat:@"unrecognized selector %@ for instance %@", selectorName, instance]);
             return nil;
         }
         invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
@@ -1005,7 +1015,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     } else {
         methodSignature = [cls methodSignatureForSelector:selector];
         if (!methodSignature) {
-            NSCAssert(methodSignature, @"unrecognized selector %@ for class %@", selectorName, className);
+            _exceptionBlock([NSString stringWithFormat:@"unrecognized selector %@ for class %@", selectorName, className]);
             return nil;
         }
         invocation= [NSInvocation invocationWithMethodSignature:methodSignature];
@@ -1682,6 +1692,11 @@ static id _unboxOCObjectToJS(id obj)
 + (NSDictionary *)overideMethods
 {
     return _JSOverideMethods;
+}
+
++ (NSMutableSet *)includedScriptPaths
+{
+    return _runnedScript;
 }
 
 @end
