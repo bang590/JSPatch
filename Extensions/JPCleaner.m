@@ -16,6 +16,7 @@
 + (void)cleanAll
 {
     [self cleanClass:nil];
+    [[self includedScriptPaths] removeAllObjects];
 }
 
 + (void)cleanClass:(NSString *)className
