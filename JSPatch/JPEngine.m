@@ -552,7 +552,6 @@ static JSValue* getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
     while (!func) {
         cls = class_getSuperclass(cls);
         if (!cls) {
-            NSCAssert(NO, @"warning can not find selector %@", selectorName);
             return nil;
         }
         func = _JSOverideMethods[cls][selectorName];
@@ -571,7 +570,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
     
     NSString *selectorName = NSStringFromSelector(invocation.selector);
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
-    JSValue *jsFunc = _JSOverideMethods[object_getClass(slf)][JPSelectorName];
+    JSValue *jsFunc = getJSFunctionInObjectHierachy(slf, JPSelectorName);
     if (!jsFunc) {
         JPExcuteORIGForwardInvocation(slf, selector, invocation);
         return;
