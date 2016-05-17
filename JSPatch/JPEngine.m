@@ -581,9 +581,8 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
     
     NSString *selectorName = NSStringFromSelector(invocation.selector);
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
-    SEL JPSelector = NSSelectorFromString(JPSelectorName);
-    
-    if (!class_respondsToSelector(object_getClass(slf), JPSelector)) {
+    JSValue *jsFunc = _JSOverideMethods[object_getClass(slf)][JPSelectorName];
+    if (!jsFunc) {
         JPExcuteORIGForwardInvocation(slf, selector, invocation);
         return;
     }
@@ -930,12 +929,9 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     }
     
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
-    SEL JPSelector = NSSelectorFromString(JPSelectorName);
-
+    
     _initJPOverideMethods(cls);
     _JSOverideMethods[cls][JPSelectorName] = function;
-    
-    class_addMethod(cls, JPSelector, msgForwardIMP, typeDescription);
 }
 
 #pragma mark -
