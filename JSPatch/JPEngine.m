@@ -911,8 +911,6 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
         }
     #endif
 
-    class_replaceMethod(cls, selector, msgForwardIMP, typeDescription);
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
     if (class_getMethodImplementation(cls, @selector(forwardInvocation:)) != (IMP)JPForwardInvocation) {
@@ -936,6 +934,10 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     _JSOverideMethods[cls][JPSelectorName] = function;
     
     class_addMethod(cls, JPSelector, msgForwardIMP, typeDescription);
+
+    // Replace the original secltor at last, preventing threading issus when
+    // the selector get called during the execution of `overrideMethod`
+    class_replaceMethod(cls, selector, msgForwardIMP, typeDescription);
 }
 
 #pragma mark -
