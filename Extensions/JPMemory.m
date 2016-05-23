@@ -98,7 +98,12 @@
         id obj = [self formatJSToOC:value];
         *((__unsafe_unretained id *)m) = obj;
     };
-
+    
+    context[@"autoreleasepool"] = ^void(JSValue *cb) {
+        @autoreleasepool {
+            [cb callWithArguments:nil];
+        }
+    };
 }
 
 
