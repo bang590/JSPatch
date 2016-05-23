@@ -13,6 +13,9 @@
 #import <UIKit/UIApplication.h>
 #endif
 
+
+static NSDictionary *_wrapObj(id obj);
+
 @interface JPBoxing : NSObject
 @property (nonatomic) id obj;
 @property (nonatomic) void *pointer;
@@ -55,6 +58,12 @@ JPBOXING_GEN(boxAssignObj, assignObj, id)
 {
     return self.cls;
 }
+
+- (NSDictionary *)wrapObj
+{
+    return _wrapObj(self);
+}
+
 @end
 
 static JSContext *_context;

@@ -92,3 +92,16 @@
 + (NSMutableSet *)includedScriptPaths;
 @end
 
+
+@interface JPBoxing : NSObject
+@property (nonatomic) id obj;
+@property (nonatomic) void *pointer;
+@property (nonatomic) Class cls;
+@property (nonatomic, weak) id weakObj;
+@property (nonatomic, assign) id assignObj;
+- (id)unbox;
+- (void *)unboxPointer;
+- (Class)unboxClass;
+- (NSDictionary *)wrapObj;
+@end
+
