@@ -1,0 +1,453 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3614435C1CE8041A00B303D4 /* JPCGBitmapContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 361443361CE8041A00B303D4 /* JPCGBitmapContext.m */; };
+		3614435D1CE8041A00B303D4 /* JPCGColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 361443381CE8041A00B303D4 /* JPCGColor.m */; };
+		3614435E1CE8041A00B303D4 /* JPCGContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 3614433A1CE8041A00B303D4 /* JPCGContext.m */; };
+		3614435F1CE8041A00B303D4 /* JPCGGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 3614433C1CE8041A00B303D4 /* JPCGGeometry.m */; };
+		361443601CE8041A00B303D4 /* JPCGImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3614433E1CE8041A00B303D4 /* JPCGImage.m */; };
+		361443611CE8041A00B303D4 /* JPCGPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 361443401CE8041A00B303D4 /* JPCGPath.m */; };
+		361443621CE8041A00B303D4 /* JPCGTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = 361443421CE8041A00B303D4 /* JPCGTransform.m */; };
+		361443631CE8041A00B303D4 /* JPCoreGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = 361443441CE8041A00B303D4 /* JPCoreGraphics.m */; };
+		361443641CE8041A00B303D4 /* JPCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 361443461CE8041A00B303D4 /* JPCleaner.m */; };
+		361443651CE8041A00B303D4 /* JPLocker.m in Sources */ = {isa = PBXBuildFile; fileRef = 361443481CE8041A00B303D4 /* JPLocker.m */; };
+		361443661CE8041A00B303D4 /* JPMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3614434A1CE8041A00B303D4 /* JPMemory.m */; };
+		361443671CE8041A00B303D4 /* JPSpecialInit.m in Sources */ = {isa = PBXBuildFile; fileRef = 3614434C1CE8041A00B303D4 /* JPSpecialInit.m */; };
+		361443681CE8041A00B303D4 /* JPStructPointer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3614434E1CE8041A00B303D4 /* JPStructPointer.m */; };
+		361443691CE8041A00B303D4 /* JPUIGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 361443511CE8041A00B303D4 /* JPUIGeometry.m */; };
+		3614436A1CE8041A00B303D4 /* JPUIGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = 361443531CE8041A00B303D4 /* JPUIGraphics.m */; };
+		3614436B1CE8041A00B303D4 /* JPUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 361443551CE8041A00B303D4 /* JPUIImage.m */; };
+		3614436C1CE8041A00B303D4 /* JPUIKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 361443571CE8041A00B303D4 /* JPUIKit.m */; };
+		3614436D1CE8041A00B303D4 /* JPEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 3614435A1CE8041A00B303D4 /* JPEngine.m */; };
+		3614436E1CE8041A00B303D4 /* JSPatch.js in Resources */ = {isa = PBXBuildFile; fileRef = 3614435B1CE8041A00B303D4 /* JSPatch.js */; };
+		3660A8671CE3542A008970B4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3660A8661CE3542A008970B4 /* main.m */; };
+		3660A86A1CE3542A008970B4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3660A8691CE3542A008970B4 /* AppDelegate.m */; };
+		3660A86D1CE3542A008970B4 /* JPRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3660A86C1CE3542A008970B4 /* JPRootViewController.m */; };
+		3660A8721CE3542A008970B4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3660A8711CE3542A008970B4 /* Assets.xcassets */; };
+		3660A8B51CE365FB008970B4 /* src in Resources */ = {isa = PBXBuildFile; fileRef = 3660A8B41CE365FB008970B4 /* src */; };
+		3660A8F21CE36D05008970B4 /* SGDirWatchdog.m in Sources */ = {isa = PBXBuildFile; fileRef = 3660A8F11CE36D05008970B4 /* SGDirWatchdog.m */; };
+		3660A90D1CE4A546008970B4 /* JPErrorMsgViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3660A90C1CE4A546008970B4 /* JPErrorMsgViewController.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		361443351CE8041A00B303D4 /* JPCGBitmapContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCGBitmapContext.h; sourceTree = "<group>"; };
+		361443361CE8041A00B303D4 /* JPCGBitmapContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCGBitmapContext.m; sourceTree = "<group>"; };
+		361443371CE8041A00B303D4 /* JPCGColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCGColor.h; sourceTree = "<group>"; };
+		361443381CE8041A00B303D4 /* JPCGColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCGColor.m; sourceTree = "<group>"; };
+		361443391CE8041A00B303D4 /* JPCGContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCGContext.h; sourceTree = "<group>"; };
+		3614433A1CE8041A00B303D4 /* JPCGContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCGContext.m; sourceTree = "<group>"; };
+		3614433B1CE8041A00B303D4 /* JPCGGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCGGeometry.h; sourceTree = "<group>"; };
+		3614433C1CE8041A00B303D4 /* JPCGGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCGGeometry.m; sourceTree = "<group>"; };
+		3614433D1CE8041A00B303D4 /* JPCGImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCGImage.h; sourceTree = "<group>"; };
+		3614433E1CE8041A00B303D4 /* JPCGImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCGImage.m; sourceTree = "<group>"; };
+		3614433F1CE8041A00B303D4 /* JPCGPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCGPath.h; sourceTree = "<group>"; };
+		361443401CE8041A00B303D4 /* JPCGPath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCGPath.m; sourceTree = "<group>"; };
+		361443411CE8041A00B303D4 /* JPCGTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCGTransform.h; sourceTree = "<group>"; };
+		361443421CE8041A00B303D4 /* JPCGTransform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCGTransform.m; sourceTree = "<group>"; };
+		361443431CE8041A00B303D4 /* JPCoreGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCoreGraphics.h; sourceTree = "<group>"; };
+		361443441CE8041A00B303D4 /* JPCoreGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCoreGraphics.m; sourceTree = "<group>"; };
+		361443451CE8041A00B303D4 /* JPCleaner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPCleaner.h; sourceTree = "<group>"; };
+		361443461CE8041A00B303D4 /* JPCleaner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPCleaner.m; sourceTree = "<group>"; };
+		361443471CE8041A00B303D4 /* JPLocker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPLocker.h; sourceTree = "<group>"; };
+		361443481CE8041A00B303D4 /* JPLocker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPLocker.m; sourceTree = "<group>"; };
+		361443491CE8041A00B303D4 /* JPMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPMemory.h; sourceTree = "<group>"; };
+		3614434A1CE8041A00B303D4 /* JPMemory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPMemory.m; sourceTree = "<group>"; };
+		3614434B1CE8041A00B303D4 /* JPSpecialInit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPSpecialInit.h; sourceTree = "<group>"; };
+		3614434C1CE8041A00B303D4 /* JPSpecialInit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPSpecialInit.m; sourceTree = "<group>"; };
+		3614434D1CE8041A00B303D4 /* JPStructPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPStructPointer.h; sourceTree = "<group>"; };
+		3614434E1CE8041A00B303D4 /* JPStructPointer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPStructPointer.m; sourceTree = "<group>"; };
+		361443501CE8041A00B303D4 /* JPUIGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPUIGeometry.h; sourceTree = "<group>"; };
+		361443511CE8041A00B303D4 /* JPUIGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPUIGeometry.m; sourceTree = "<group>"; };
+		361443521CE8041A00B303D4 /* JPUIGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPUIGraphics.h; sourceTree = "<group>"; };
+		361443531CE8041A00B303D4 /* JPUIGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPUIGraphics.m; sourceTree = "<group>"; };
+		361443541CE8041A00B303D4 /* JPUIImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPUIImage.h; sourceTree = "<group>"; };
+		361443551CE8041A00B303D4 /* JPUIImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPUIImage.m; sourceTree = "<group>"; };
+		361443561CE8041A00B303D4 /* JPUIKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPUIKit.h; sourceTree = "<group>"; };
+		361443571CE8041A00B303D4 /* JPUIKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPUIKit.m; sourceTree = "<group>"; };
+		361443591CE8041A00B303D4 /* JPEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPEngine.h; sourceTree = "<group>"; };
+		3614435A1CE8041A00B303D4 /* JPEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPEngine.m; sourceTree = "<group>"; };
+		3614435B1CE8041A00B303D4 /* JSPatch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = JSPatch.js; sourceTree = "<group>"; };
+		3660A8621CE3542A008970B4 /* JSPatchPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSPatchPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3660A8661CE3542A008970B4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		3660A8681CE3542A008970B4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		3660A8691CE3542A008970B4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		3660A86B1CE3542A008970B4 /* JPRootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPRootViewController.h; sourceTree = "<group>"; };
+		3660A86C1CE3542A008970B4 /* JPRootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JPRootViewController.m; sourceTree = "<group>"; };
+		3660A8711CE3542A008970B4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3660A8761CE3542A008970B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3660A8B41CE365FB008970B4 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; name = src; path = JSPatchPlayground/src; sourceTree = SOURCE_ROOT; };
+		3660A8F01CE36D05008970B4 /* SGDirWatchdog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGDirWatchdog.h; sourceTree = "<group>"; };
+		3660A8F11CE36D05008970B4 /* SGDirWatchdog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGDirWatchdog.m; sourceTree = "<group>"; };
+		3660A90B1CE4A546008970B4 /* JPErrorMsgViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPErrorMsgViewController.h; sourceTree = "<group>"; };
+		3660A90C1CE4A546008970B4 /* JPErrorMsgViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPErrorMsgViewController.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3660A85F1CE3542A008970B4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		361443331CE8041A00B303D4 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				361443341CE8041A00B303D4 /* CoreGraphics */,
+				361443451CE8041A00B303D4 /* JPCleaner.h */,
+				361443461CE8041A00B303D4 /* JPCleaner.m */,
+				361443471CE8041A00B303D4 /* JPLocker.h */,
+				361443481CE8041A00B303D4 /* JPLocker.m */,
+				361443491CE8041A00B303D4 /* JPMemory.h */,
+				3614434A1CE8041A00B303D4 /* JPMemory.m */,
+				3614434B1CE8041A00B303D4 /* JPSpecialInit.h */,
+				3614434C1CE8041A00B303D4 /* JPSpecialInit.m */,
+				3614434D1CE8041A00B303D4 /* JPStructPointer.h */,
+				3614434E1CE8041A00B303D4 /* JPStructPointer.m */,
+				3614434F1CE8041A00B303D4 /* UIKit */,
+			);
+			name = Extensions;
+			path = ../../../Extensions;
+			sourceTree = "<group>";
+		};
+		361443341CE8041A00B303D4 /* CoreGraphics */ = {
+			isa = PBXGroup;
+			children = (
+				361443351CE8041A00B303D4 /* JPCGBitmapContext.h */,
+				361443361CE8041A00B303D4 /* JPCGBitmapContext.m */,
+				361443371CE8041A00B303D4 /* JPCGColor.h */,
+				361443381CE8041A00B303D4 /* JPCGColor.m */,
+				361443391CE8041A00B303D4 /* JPCGContext.h */,
+				3614433A1CE8041A00B303D4 /* JPCGContext.m */,
+				3614433B1CE8041A00B303D4 /* JPCGGeometry.h */,
+				3614433C1CE8041A00B303D4 /* JPCGGeometry.m */,
+				3614433D1CE8041A00B303D4 /* JPCGImage.h */,
+				3614433E1CE8041A00B303D4 /* JPCGImage.m */,
+				3614433F1CE8041A00B303D4 /* JPCGPath.h */,
+				361443401CE8041A00B303D4 /* JPCGPath.m */,
+				361443411CE8041A00B303D4 /* JPCGTransform.h */,
+				361443421CE8041A00B303D4 /* JPCGTransform.m */,
+				361443431CE8041A00B303D4 /* JPCoreGraphics.h */,
+				361443441CE8041A00B303D4 /* JPCoreGraphics.m */,
+			);
+			path = CoreGraphics;
+			sourceTree = "<group>";
+		};
+		3614434F1CE8041A00B303D4 /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				361443501CE8041A00B303D4 /* JPUIGeometry.h */,
+				361443511CE8041A00B303D4 /* JPUIGeometry.m */,
+				361443521CE8041A00B303D4 /* JPUIGraphics.h */,
+				361443531CE8041A00B303D4 /* JPUIGraphics.m */,
+				361443541CE8041A00B303D4 /* JPUIImage.h */,
+				361443551CE8041A00B303D4 /* JPUIImage.m */,
+				361443561CE8041A00B303D4 /* JPUIKit.h */,
+				361443571CE8041A00B303D4 /* JPUIKit.m */,
+			);
+			path = UIKit;
+			sourceTree = "<group>";
+		};
+		361443581CE8041A00B303D4 /* JSPatch */ = {
+			isa = PBXGroup;
+			children = (
+				361443591CE8041A00B303D4 /* JPEngine.h */,
+				3614435A1CE8041A00B303D4 /* JPEngine.m */,
+				3614435B1CE8041A00B303D4 /* JSPatch.js */,
+			);
+			name = JSPatch;
+			path = ../../../JSPatch;
+			sourceTree = "<group>";
+		};
+		3660A8591CE3542A008970B4 = {
+			isa = PBXGroup;
+			children = (
+				3660A8641CE3542A008970B4 /* JSPatchPlayground */,
+				3660A8631CE3542A008970B4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3660A8631CE3542A008970B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3660A8621CE3542A008970B4 /* JSPatchPlayground.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3660A8641CE3542A008970B4 /* JSPatchPlayground */ = {
+			isa = PBXGroup;
+			children = (
+				361443331CE8041A00B303D4 /* Extensions */,
+				361443581CE8041A00B303D4 /* JSPatch */,
+				3660A8B61CE369F0008970B4 /* libs */,
+				3660A8B41CE365FB008970B4 /* src */,
+				3660A8681CE3542A008970B4 /* AppDelegate.h */,
+				3660A8691CE3542A008970B4 /* AppDelegate.m */,
+				3660A86B1CE3542A008970B4 /* JPRootViewController.h */,
+				3660A86C1CE3542A008970B4 /* JPRootViewController.m */,
+				3660A90B1CE4A546008970B4 /* JPErrorMsgViewController.h */,
+				3660A90C1CE4A546008970B4 /* JPErrorMsgViewController.m */,
+				3660A8711CE3542A008970B4 /* Assets.xcassets */,
+				3660A8761CE3542A008970B4 /* Info.plist */,
+				3660A8651CE3542A008970B4 /* Supporting Files */,
+			);
+			path = JSPatchPlayground;
+			sourceTree = "<group>";
+		};
+		3660A8651CE3542A008970B4 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				3660A8661CE3542A008970B4 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		3660A8B61CE369F0008970B4 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				3660A8F01CE36D05008970B4 /* SGDirWatchdog.h */,
+				3660A8F11CE36D05008970B4 /* SGDirWatchdog.m */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3660A8611CE3542A008970B4 /* JSPatchPlayground */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3660A8791CE3542A008970B4 /* Build configuration list for PBXNativeTarget "JSPatchPlayground" */;
+			buildPhases = (
+				3660A85E1CE3542A008970B4 /* Sources */,
+				3660A85F1CE3542A008970B4 /* Frameworks */,
+				3660A8601CE3542A008970B4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = JSPatchPlayground;
+			productName = JSPatchPlayground;
+			productReference = 3660A8621CE3542A008970B4 /* JSPatchPlayground.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3660A85A1CE3542A008970B4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = bang;
+				TargetAttributes = {
+					3660A8611CE3542A008970B4 = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 3660A85D1CE3542A008970B4 /* Build configuration list for PBXProject "JSPatchPlayground" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3660A8591CE3542A008970B4;
+			productRefGroup = 3660A8631CE3542A008970B4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3660A8611CE3542A008970B4 /* JSPatchPlayground */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3660A8601CE3542A008970B4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3614436E1CE8041A00B303D4 /* JSPatch.js in Resources */,
+				3660A8721CE3542A008970B4 /* Assets.xcassets in Resources */,
+				3660A8B51CE365FB008970B4 /* src in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3660A85E1CE3542A008970B4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				361443611CE8041A00B303D4 /* JPCGPath.m in Sources */,
+				3614435C1CE8041A00B303D4 /* JPCGBitmapContext.m in Sources */,
+				3614436A1CE8041A00B303D4 /* JPUIGraphics.m in Sources */,
+				361443631CE8041A00B303D4 /* JPCoreGraphics.m in Sources */,
+				3614435E1CE8041A00B303D4 /* JPCGContext.m in Sources */,
+				3660A8F21CE36D05008970B4 /* SGDirWatchdog.m in Sources */,
+				3660A90D1CE4A546008970B4 /* JPErrorMsgViewController.m in Sources */,
+				361443641CE8041A00B303D4 /* JPCleaner.m in Sources */,
+				3614436C1CE8041A00B303D4 /* JPUIKit.m in Sources */,
+				3614435F1CE8041A00B303D4 /* JPCGGeometry.m in Sources */,
+				361443681CE8041A00B303D4 /* JPStructPointer.m in Sources */,
+				3614436B1CE8041A00B303D4 /* JPUIImage.m in Sources */,
+				361443661CE8041A00B303D4 /* JPMemory.m in Sources */,
+				361443621CE8041A00B303D4 /* JPCGTransform.m in Sources */,
+				361443671CE8041A00B303D4 /* JPSpecialInit.m in Sources */,
+				3614435D1CE8041A00B303D4 /* JPCGColor.m in Sources */,
+				361443651CE8041A00B303D4 /* JPLocker.m in Sources */,
+				3660A86D1CE3542A008970B4 /* JPRootViewController.m in Sources */,
+				361443691CE8041A00B303D4 /* JPUIGeometry.m in Sources */,
+				361443601CE8041A00B303D4 /* JPCGImage.m in Sources */,
+				3614436D1CE8041A00B303D4 /* JPEngine.m in Sources */,
+				3660A86A1CE3542A008970B4 /* AppDelegate.m in Sources */,
+				3660A8671CE3542A008970B4 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3660A8771CE3542A008970B4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		3660A8781CE3542A008970B4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		3660A87A1CE3542A008970B4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				INFOPLIST_FILE = JSPatchPlayground/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = net.cnbang.JSPatchPlayground;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		3660A87B1CE3542A008970B4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				INFOPLIST_FILE = JSPatchPlayground/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = net.cnbang.JSPatchPlayground;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3660A85D1CE3542A008970B4 /* Build configuration list for PBXProject "JSPatchPlayground" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3660A8771CE3542A008970B4 /* Debug */,
+				3660A8781CE3542A008970B4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3660A8791CE3542A008970B4 /* Build configuration list for PBXNativeTarget "JSPatchPlayground" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3660A87A1CE3542A008970B4 /* Debug */,
+				3660A87B1CE3542A008970B4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3660A85A1CE3542A008970B4 /* Project object */;
+}

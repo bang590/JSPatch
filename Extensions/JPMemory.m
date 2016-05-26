@@ -71,7 +71,7 @@
         if ([typeName isEqualToString:@"NSRange"]) return sizeof(NSRange);
         
         @synchronized (weakCtx) {
-            NSDictionary *structDefine = [JPEngine registeredStruct][typeName];
+            NSDictionary *structDefine = [JPExtension registeredStruct][typeName];
             if (structDefine) {
                 return [self sizeOfStructTypes:structDefine[@"types"]];
             }
@@ -87,6 +87,22 @@
     
     context[@"CFRelease"] = ^void(JSValue *jsVal) {
         CFRelease([self formatPointerJSToOC:jsVal]);
+    };
+    
+    context[@"CFRetain"] = ^void(JSValue *jsVal) {
+        CFRetain([self formatPointerJSToOC:jsVal]);
+    };
+    
+    context[@"assignPointer"] = ^void(JSValue *jsVal, JSValue *value) {
+        void *m = [self formatPointerJSToOC:jsVal];
+        id obj = [self formatJSToOC:value];
+        *((__unsafe_unretained id *)m) = obj;
+    };
+    
+    context[@"autoreleasepool"] = ^void(JSValue *cb) {
+        @autoreleasepool {
+            [cb callWithArguments:nil];
+        }
     };
 }
 

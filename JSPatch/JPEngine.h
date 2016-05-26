@@ -15,6 +15,7 @@
 /*!
  @method
  @discussion start the JSPatch engine, execute only once.
+ !Deprecated! will be call automatically before evaluate script
  */
 + (void)startEngine;
 
@@ -62,12 +63,7 @@
  */
 + (void)defineStruct:(NSDictionary *)defineDict;
 
-/*!
- @method
- @description Return the registered struct definition in JSPatch,
-              the key of dictionary is the struct name.
- */
-+ (NSMutableDictionary *)registeredStruct;
++ (void)handleException:(void (^)(NSString *msg))exceptionBlock;
 @end
 
 
@@ -84,5 +80,15 @@
 + (int)sizeOfStructTypes:(NSString *)structTypes;
 + (void)getStructDataWidthDict:(void *)structData dict:(NSDictionary *)dict structDefine:(NSDictionary *)structDefine;
 + (NSDictionary *)getDictOfStruct:(void *)structData structDefine:(NSDictionary *)structDefine;
+
+/*!
+ @method
+ @description Return the registered struct definition in JSPatch,
+ the key of dictionary is the struct name.
+ */
++ (NSMutableDictionary *)registeredStruct;
+
++ (NSDictionary *)overideMethods;
++ (NSMutableSet *)includedScriptPaths;
 @end
 
