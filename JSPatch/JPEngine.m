@@ -551,7 +551,7 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
     return @{@"cls": className, @"superCls": superClassName};
 }
 
-static JSValue* getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
+static JSValue *getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
 {
     Class cls = object_getClass(slf);
     if (_currInvokeSuperClsName) {
@@ -562,7 +562,6 @@ static JSValue* getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
     while (!func) {
         cls = class_getSuperclass(cls);
         if (!cls) {
-            _exceptionBlock([NSString stringWithFormat:@"warning can not find selector %@", selectorName]);
             return nil;
         }
         func = _JSOverideMethods[cls][selectorName];
@@ -581,9 +580,8 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
     
     NSString *selectorName = NSStringFromSelector(invocation.selector);
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
-    SEL JPSelector = NSSelectorFromString(JPSelectorName);
-    
-    if (!class_respondsToSelector(object_getClass(slf), JPSelector)) {
+    JSValue *jsFunc = getJSFunctionInObjectHierachy(slf, JPSelectorName);
+    if (!jsFunc) {
         JPExcuteORIGForwardInvocation(slf, selector, invocation);
         return;
     }
@@ -708,10 +706,9 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
 
     switch (returnType[0] == 'r' ? returnType[1] : returnType[0]) {
         #define JP_FWD_RET_CALL_JS \
-            JSValue *fun = getJSFunctionInObjectHierachy(slf, JPSelectorName); \
             JSValue *jsval; \
             [_JSMethodForwardCallLock lock];   \
-            jsval = [fun callWithArguments:params]; \
+            jsval = [jsFunc callWithArguments:params]; \
             [_JSMethodForwardCallLock unlock]; \
             while (![jsval isNull] && ![jsval isUndefined] && [jsval hasProperty:@"__isPerformInOC"]) { \
                 NSArray *args = nil;  \
@@ -928,13 +925,10 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     }
     
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
-    SEL JPSelector = NSSelectorFromString(JPSelectorName);
-
+    
     _initJPOverideMethods(cls);
     _JSOverideMethods[cls][JPSelectorName] = function;
     
-    class_addMethod(cls, JPSelector, msgForwardIMP, typeDescription);
-
     // Replace the original secltor at last, preventing threading issus when
     // the selector get called during the execution of `overrideMethod`
     class_replaceMethod(cls, selector, msgForwardIMP, typeDescription);
