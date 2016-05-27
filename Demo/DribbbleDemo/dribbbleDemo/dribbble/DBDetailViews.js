@@ -67,7 +67,7 @@ defineClass('DBDetailHeaderView: UIView', ['tapUserCallback', 'itemData'], {
     viewImageView.setImage(UIImage.imageWithContentsOfFile(resourcePath('imgs/view.png')));
     panelView.addSubview(viewImageView);
 
-    var viewLabel = self._genPanelIcon(item['views_count'], {x: UIHelper.rightX(viewImageView) + 5, y:0, width:40, height:iconSize});
+    var viewLabel = self._genPanelLabel(item['views_count'], {x: UIHelper.rightX(viewImageView) + 5, y:0, width:40, height:iconSize});
     panelView.addSubview(viewLabel);
 
 
@@ -78,7 +78,7 @@ defineClass('DBDetailHeaderView: UIView', ['tapUserCallback', 'itemData'], {
     commentImageView.setImage(UIImage.imageWithContentsOfFile(resourcePath('imgs/comment.png')));
     panelView.addSubview(commentImageView);
 
-    var commentLabel = self._genPanelIcon(item['comments_count'], {x: UIHelper.rightX(commentImageView) + 5, y:0, width:40, height:iconSize});
+    var commentLabel = self._genPanelLabel(item['comments_count'], {x: UIHelper.rightX(commentImageView) + 5, y:0, width:40, height:iconSize});
     panelView.addSubview(commentLabel);
 
 
@@ -91,26 +91,19 @@ defineClass('DBDetailHeaderView: UIView', ['tapUserCallback', 'itemData'], {
     panelView.addSubview(likeImageView);
 
 
-    var commentLabel = self._genPanelIcon(item['likes_count'], {x: UIHelper.rightX(likeImageView) + 5, y:0, width:40, height:iconSize});
+    var commentLabel = self._genPanelLabel(item['likes_count'], {x: UIHelper.rightX(likeImageView) + 5, y:0, width:40, height:iconSize});
     panelView.addSubview(commentLabel);
 
     panelView.setFrame({x:0, y:0, width:UIHelper.rightX(commentLabel), height:40});
 
     return panelView;
   },
-  _genPanelIcon: function(val, frame) {
+  _genPanelLabel: function(val, frame) {
     var viewLabel = UILabel.alloc().initWithFrame(frame)
     viewLabel.setText(val.toString());
     viewLabel.setFont(UIFont.systemFontOfSize(14));
     viewLabel.setTextColor(UIColor.colorWithWhite_alpha(.5, 1))
     viewLabel.sizeToFit();
-    return viewLabel;
-  },
-  _genPanelLabel: function(val, frame) {
-    var viewLabel = UILabel.alloc().initWithFrame(frame)
-    viewLabel.setText(val);
-    viewLabel.setFont(UIFont.systemFontOfSize(14));
-    viewLabel.setTextColor(UIColor.colorWithWhite_alpha(.5, 1))
     return viewLabel;
   }
 })
