@@ -901,7 +901,9 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 #pragma clang diagnostic ignored "-Wundeclared-selector"
     if (class_getMethodImplementation(cls, @selector(forwardInvocation:)) != (IMP)JPForwardInvocation) {
         IMP originalForwardImp = class_replaceMethod(cls, @selector(forwardInvocation:), (IMP)JPForwardInvocation, "v@:@");
-        class_addMethod(cls, @selector(ORIGforwardInvocation:), originalForwardImp, "v@:@");
+        if (originalForwardImp) {
+            class_addMethod(cls, @selector(ORIGforwardInvocation:), originalForwardImp, "v@:@");
+        }
     }
 #pragma clang diagnostic pop
 
