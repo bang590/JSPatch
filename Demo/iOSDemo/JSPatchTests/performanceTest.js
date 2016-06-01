@@ -141,5 +141,21 @@ defineClass('JPPerformanceTest', {
     
     newJSMethodWithLargeDictionaryParam: function(dict) {
         
+    },
+    
+    testJSCallMallocJPMemory: function() {
+        require('JPEngine').addExtensions(['JPMemory'])
+        for (var i = 0; i < 100000; i ++) {
+            var p = malloc(10)
+        }
+    },
+    
+    testJSCallMallocJPCFunction: function() {
+        require('JPEngine').addExtensions(['JPCFunction'])
+        for (var i = 0; i < 100000; i ++) {
+            defineCFunction("malloc", "void *, size_t")
+            var p = malloc(10)
+        }
     }
+
 })

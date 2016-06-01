@@ -17,6 +17,7 @@
 #import "JPJSClassTest.h"
 #import "JPMemory.h"
 #import "JPPerformanceTest.h"
+#import "JPCFunctionTest.h"
 
 @interface JSPatchTests : XCTestCase
 
@@ -260,6 +261,15 @@
 }
 
 
+- (void)testCFunction
+{
+    [self loadPatch:@"jsCFunctionTest"];
+    XCTAssert([JPCFunctionTest testCfuncWithId], @"testCfuncWithId");
+    XCTAssert([JPCFunctionTest testCfuncWithInt], @"testCfuncWithInt");
+    XCTAssert([JPCFunctionTest testCfuncWithCGFloat], @"testCfuncWithCGFloat");
+    XCTAssert([JPCFunctionTest testCfuncReturnPointer], @"testCfuncReturnPointer");
+    XCTAssert([JPCFunctionTest testCFunctionReturnClass], @"testCFunctionReturnClass");
+}
 
 #pragma mark - multithreadTest
 
@@ -413,6 +423,24 @@ void thread(void* context)
     JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
     [self measureBlock:^{
         [obj testJSCallJSMethodWithLargeDictionaryParamAutoConvert];
+    }];
+}
+
+- (void)testJSCallMallocJPMemory
+{
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
+    [self measureBlock:^{
+        [obj testJSCallMallocJPMemory];
+    }];
+}
+
+- (void)testJSCallMallocJPCFunction
+{
+    [self loadPatch:@"performanceTest"];
+    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
+    [self measureBlock:^{
+        [obj testJSCallMallocJPCFunction];
     }];
 }
 

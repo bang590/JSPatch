@@ -21,4 +21,7 @@
 - (void)testOCCallEmptyMethod;
 - (void)testOCCallMethodWithParamObject;
 - (void)testOCCallMethodReturnObject;
+
+- (void)testJSCallMallocJPMemory;
+- (void)testJSCallMallocJPCFunction;
 @end

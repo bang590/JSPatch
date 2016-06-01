@@ -40,6 +40,9 @@
     }
 }
 
+- (void)testJSCallMallocJPMemory{}
+- (void)testJSCallMallocJPCFunction{}
+
 #pragma mark performance
 static NSObject *testPerformanceObj;
 - (void)initTestPerformanceObj {

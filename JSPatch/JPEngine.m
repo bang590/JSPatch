@@ -13,17 +13,6 @@
 #import <UIKit/UIApplication.h>
 #endif
 
-@interface JPBoxing : NSObject
-@property (nonatomic) id obj;
-@property (nonatomic) void *pointer;
-@property (nonatomic) Class cls;
-@property (nonatomic, weak) id weakObj;
-@property (nonatomic, assign) id assignObj;
-- (id)unbox;
-- (void *)unboxPointer;
-- (Class)unboxClass;
-@end
-
 @implementation JPBoxing
 
 #define JPBOXING_GEN(_name, _prop, _type) \
