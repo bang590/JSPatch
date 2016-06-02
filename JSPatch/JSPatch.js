@@ -312,5 +312,6 @@ var global = this
   global.NO = 0
   global.nsnull = _OC_null
   global._formatOCToJS = _formatOCToJS
+  global.nil = false
   
 })()

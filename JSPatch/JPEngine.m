@@ -194,9 +194,9 @@ void (^_exceptionBlock)(NSString *log) = ^void(NSString *log) {
     };
     
     context[@"_OC_log"] = ^() {
-        NSArray *args = [JSContext currentArguments];
-        for (JSValue *jsVal in args) {
-            id obj = formatJSToOC(jsVal);
+        __unused NSArray *args = [JSContext currentArguments];
+        for (__unused JSValue *jsVal in args) {
+            __unused id obj = formatJSToOC(jsVal);
             NSLog(@"JSPatch.log: %@", obj == _nilObj ? nil : (obj == _nullObj ? [NSNull null]: obj));
         }
     };
@@ -264,17 +264,22 @@ void (^_exceptionBlock)(NSString *log) = ^void(NSString *log) {
         _regex = [NSRegularExpression regularExpressionWithPattern:_regexStr options:0 error:nil];
     }
     NSString *formatedScript = [NSString stringWithFormat:@";(function(){try{%@}catch(e){_OC_catch(e.message, e.stack)}})();", [_regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:_replaceStr]];
+    
+    JSValue *ret = nil;
     @try {
         if ([_context respondsToSelector:@selector(evaluateScript:withSourceURL:)]) {
-            return [_context evaluateScript:formatedScript withSourceURL:resourceURL];
+            ret = [_context evaluateScript:formatedScript withSourceURL:resourceURL];
         } else {
-            return [_context evaluateScript:formatedScript];
+            ret = [_context evaluateScript:formatedScript];
         }
     }
     @catch (NSException *exception) {
         _exceptionBlock([NSString stringWithFormat:@"%@", exception]);
+        ret = nil;
     }
-    return nil;
+    @finally {
+        return ret;
+    }
 }
 
 + (JSContext *)context
