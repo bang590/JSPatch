@@ -103,5 +103,4 @@
 - (id)unbox;
 - (void *)unboxPointer;
 - (Class)unboxClass;
-- (NSDictionary *)wrapObj;
 @end
