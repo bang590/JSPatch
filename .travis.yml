@@ -6,5 +6,5 @@ env:
 script:
     - xcrun instruments -s devices
     - open -a "simulator" --args -CurrentDeviceUDID $UDID
-    - xctool test -project Demo/iOSDemo/JSPatchDemo.xcodeproj -scheme JSPatchDemo -sdk iphonesimulator -destination "platform=iOS Simulator,id=$UDID"
+    - xcodebuild test -project ./Demo/iOSDemo/JSPatchDemo.xcodeproj -scheme JSPatchDemo -sdk iphonesimulator -destination "platform=iOS Simulator,id=$UDID"
     - osascript -e 'tell app "Simulator" to quit'
