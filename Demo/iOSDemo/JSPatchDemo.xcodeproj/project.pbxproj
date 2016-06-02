@@ -34,7 +34,6 @@
 		369493B41D001EAE003F44CA /* trampoline_armv7.S in Sources */ = {isa = PBXBuildFile; fileRef = 369493A11D001EAE003F44CA /* trampoline_armv7.S */; };
 		369493B51D001EAE003F44CA /* closures.c in Sources */ = {isa = PBXBuildFile; fileRef = 369493A31D001EAE003F44CA /* closures.c */; };
 		369493B61D001EAE003F44CA /* debug.c in Sources */ = {isa = PBXBuildFile; fileRef = 369493A41D001EAE003F44CA /* debug.c */; };
-		369493B71D001EAE003F44CA /* dlmalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 369493A51D001EAE003F44CA /* dlmalloc.c */; };
 		369493B81D001EAE003F44CA /* java_raw_api.c in Sources */ = {isa = PBXBuildFile; fileRef = 369493A61D001EAE003F44CA /* java_raw_api.c */; };
 		369493B91D001EAE003F44CA /* prep_cif.c in Sources */ = {isa = PBXBuildFile; fileRef = 369493A71D001EAE003F44CA /* prep_cif.c */; };
 		369493BA1D001EAE003F44CA /* raw_api.c in Sources */ = {isa = PBXBuildFile; fileRef = 369493A81D001EAE003F44CA /* raw_api.c */; };
@@ -150,7 +149,6 @@
 		369493A11D001EAE003F44CA /* trampoline_armv7.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = trampoline_armv7.S; sourceTree = "<group>"; };
 		369493A31D001EAE003F44CA /* closures.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = closures.c; sourceTree = "<group>"; };
 		369493A41D001EAE003F44CA /* debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = debug.c; sourceTree = "<group>"; };
-		369493A51D001EAE003F44CA /* dlmalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dlmalloc.c; sourceTree = "<group>"; };
 		369493A61D001EAE003F44CA /* java_raw_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = java_raw_api.c; sourceTree = "<group>"; };
 		369493A71D001EAE003F44CA /* prep_cif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = prep_cif.c; sourceTree = "<group>"; };
 		369493A81D001EAE003F44CA /* raw_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = raw_api.c; sourceTree = "<group>"; };
@@ -409,7 +407,6 @@
 			children = (
 				369493A31D001EAE003F44CA /* closures.c */,
 				369493A41D001EAE003F44CA /* debug.c */,
-				369493A51D001EAE003F44CA /* dlmalloc.c */,
 				369493A61D001EAE003F44CA /* java_raw_api.c */,
 				369493A71D001EAE003F44CA /* prep_cif.c */,
 				369493A81D001EAE003F44CA /* raw_api.c */,
@@ -671,7 +668,6 @@
 				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
 				36CC3A511CFEE6A80001465B /* JPCGContext.m in Sources */,
 				369493B21D001EAE003F44CA /* ffi_armv7.c in Sources */,
-				369493B71D001EAE003F44CA /* dlmalloc.c in Sources */,
 				3613C38E1C6329F300E915CB /* ZipArchive.m in Sources */,
 				3613C3861C6329F300E915CB /* JPEngine.m in Sources */,
 				36CC3A531CFEE6A80001465B /* JPCGImage.m in Sources */,
