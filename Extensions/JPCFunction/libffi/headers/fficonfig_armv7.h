@@ -1,4 +1,4 @@
-#ifdef __x86_64__
+#ifdef __arm__
 
 /* fficonfig.h.  Generated from fficonfig.h.in by configure.  */
 /* fficonfig.h.in.  Generated from configure.ac by autoheader.  */
@@ -21,13 +21,13 @@
 /* #undef FFI_DEBUG */
 
 /* Cannot use PROT_EXEC on this target, so, we revert to alternative means */
-/* #undef FFI_EXEC_TRAMPOLINE_TABLE */
+#define FFI_EXEC_TRAMPOLINE_TABLE 1
 
 /* Define this if you want to enable pax emulated trampolines */
 /* #undef FFI_MMAP_EXEC_EMUTRAMP_PAX */
 
 /* Cannot use malloc on this target, so, we revert to alternative means */
-#define FFI_MMAP_EXEC_WRIT 1
+/* #undef FFI_MMAP_EXEC_WRIT */
 
 /* Define this if you do not want support for the raw API. */
 /* #undef FFI_NO_RAW_API */
@@ -74,7 +74,7 @@
 #define HAVE_INTTYPES_H 1
 
 /* Define if you have the long double type and it is bigger than a double */
-#define HAVE_LONG_DOUBLE 1
+/* #undef HAVE_LONG_DOUBLE */
 
 /* Define if you support more than one size of the long double type */
 /* #undef HAVE_LONG_DOUBLE_VARIANT */
@@ -156,10 +156,10 @@
 #define SIZEOF_DOUBLE 8
 
 /* The size of `long double', as computed by sizeof. */
-#define SIZEOF_LONG_DOUBLE 16
+#define SIZEOF_LONG_DOUBLE 8
 
 /* The size of `size_t', as computed by sizeof. */
-#define SIZEOF_SIZE_T 8
+#define SIZEOF_SIZE_T 4
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be

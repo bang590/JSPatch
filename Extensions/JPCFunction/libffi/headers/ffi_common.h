@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-#include "fficonfig.h"
+#include <fficonfig.h>
 
 /* Do not move this. Some versions of AIX are very picky about where
    this is positioned. */
@@ -81,21 +81,6 @@ void ffi_type_test(ffi_type *a, char *file, int line);
 ffi_status ffi_prep_cif_machdep(ffi_cif *cif);
 ffi_status ffi_prep_cif_machdep_var(ffi_cif *cif,
 	 unsigned int nfixedargs, unsigned int ntotalargs);
-
-
-#if HAVE_LONG_DOUBLE_VARIANT
-/* Used to adjust size/alignment of ffi types.  */
-void ffi_prep_types (ffi_abi abi);
-#endif
-
-/* Used internally, but overridden by some architectures */
-ffi_status ffi_prep_cif_core(ffi_cif *cif,
-			     ffi_abi abi,
-			     unsigned int isvariadic,
-			     unsigned int nfixedargs,
-			     unsigned int ntotalargs,
-			     ffi_type *rtype,
-			     ffi_type **atypes);
 
 /* Extended cif, used in callback from assembly routine */
 typedef struct

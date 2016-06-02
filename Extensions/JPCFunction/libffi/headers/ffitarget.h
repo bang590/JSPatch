@@ -1,6 +1,6 @@
 #ifdef __arm64__
 
-#include "ffitarget_arm64.h"
+#include <ffitarget_arm64.h>
 
 
 #endif
@@ -12,13 +12,13 @@
 #endif
 #ifdef __arm__
 
-#include "ffitarget_arm.h"
+#include <ffitarget_armv7.h>
 
 
 #endif
 #ifdef __x86_64__
 
-#include "ffitarget_x86_64.h"
+#include <ffitarget_x86_64.h>
 
 
 #endif

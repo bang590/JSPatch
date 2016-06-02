@@ -1,3 +1,5 @@
+#ifdef __i386__
+
 /* fficonfig.h.  Generated from fficonfig.h.in by configure.  */
 /* fficonfig.h.in.  Generated from configure.ac by autoheader.  */
 
@@ -19,13 +21,13 @@
 /* #undef FFI_DEBUG */
 
 /* Cannot use PROT_EXEC on this target, so, we revert to alternative means */
-#define FFI_EXEC_TRAMPOLINE_TABLE 1
+/* #undef FFI_EXEC_TRAMPOLINE_TABLE */
 
 /* Define this if you want to enable pax emulated trampolines */
 /* #undef FFI_MMAP_EXEC_EMUTRAMP_PAX */
 
 /* Cannot use malloc on this target, so, we revert to alternative means */
-/* #undef FFI_MMAP_EXEC_WRIT */
+#define FFI_MMAP_EXEC_WRIT 1
 
 /* Define this if you do not want support for the raw API. */
 /* #undef FFI_NO_RAW_API */
@@ -40,18 +42,21 @@
    */
 #define HAVE_ALLOCA_H 1
 
+/* Define if your assembler supports .ascii. */
+/* #undef HAVE_AS_ASCII_PSEUDO_OP */
+
 /* Define if your assembler supports .cfi_* directives. */
 #define HAVE_AS_CFI_PSEUDO_OP 1
 
 /* Define if your assembler supports .register. */
 /* #undef HAVE_AS_REGISTER_PSEUDO_OP */
 
-/* Define if the compiler uses zarch features. */
-/* #undef HAVE_AS_S390_ZARCH */
-
 /* Define if your assembler and linker support unaligned PC relative relocs.
    */
 /* #undef HAVE_AS_SPARC_UA_PCREL */
+
+/* Define if your assembler supports .string. */
+/* #undef HAVE_AS_STRING_PSEUDO_OP */
 
 /* Define if your assembler supports unwind section type. */
 /* #undef HAVE_AS_X86_64_UNWIND_SECTION_TYPE */
@@ -69,7 +74,7 @@
 #define HAVE_INTTYPES_H 1
 
 /* Define if you have the long double type and it is bigger than a double */
-/* #undef HAVE_LONG_DOUBLE */
+#define HAVE_LONG_DOUBLE 1
 
 /* Define if you support more than one size of the long double type */
 /* #undef HAVE_LONG_DOUBLE_VARIANT */
@@ -122,7 +127,8 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
-/* Define to the sub-directory where libtool stores uninstalled libraries. */
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
 #define LT_OBJDIR ".libs/"
 
 /* Name of package */
@@ -135,7 +141,7 @@
 #define PACKAGE_NAME "libffi"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libffi 3.99999"
+#define PACKAGE_STRING "libffi 3.2.1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libffi"
@@ -144,13 +150,13 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "3.99999"
+#define PACKAGE_VERSION "3.2.1"
 
 /* The size of `double', as computed by sizeof. */
 #define SIZEOF_DOUBLE 8
 
 /* The size of `long double', as computed by sizeof. */
-#define SIZEOF_LONG_DOUBLE 8
+#define SIZEOF_LONG_DOUBLE 16
 
 /* The size of `size_t', as computed by sizeof. */
 #define SIZEOF_SIZE_T 4
@@ -174,7 +180,7 @@
 /* #undef USING_PURIFY */
 
 /* Version number of package */
-#define VERSION "3.99999"
+#define VERSION "3.2.1"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
@@ -206,3 +212,6 @@
 #endif
 #endif
 
+
+
+#endif
