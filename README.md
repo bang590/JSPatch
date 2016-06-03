@@ -1,5 +1,5 @@
 # JSPatch
-[![Travis](https://img.shields.io/travis/bang590/JSPatch.svg)](https://github.com/bang590/JSPatch)
+[![Travis](https://img.shields.io/travis/bang590/JSPatch.svg)](https://travis-ci.org/bang590/JSPatch)
 ![CocoaPods Version](https://img.shields.io/cocoapods/v/JSPatch.svg?style=flat)
 [![License](https://img.shields.io/github/license/bang590/JSPatch.svg?style=flat)](https://github.com/bang590/JSPatch/blob/master/LICENSE)
 
