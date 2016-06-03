@@ -571,7 +571,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
     JSValue *jsFunc = getJSFunctionInObjectHierachy(slf, JPSelectorName);
     if (!jsFunc) {
-        JPExcuteORIGForwardInvocation(slf, selector, invocation);
+        JPExecuteORIGForwardInvocation(slf, selector, invocation);
         return;
     }
     
@@ -824,7 +824,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
     }
 }
 
-static void JPExcuteORIGForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
+static void JPExecuteORIGForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
@@ -832,7 +832,6 @@ static void JPExcuteORIGForwardInvocation(id slf, SEL selector, NSInvocation *in
 #pragma clang diagnostic pop
     
     if ([slf respondsToSelector:origForwardSelector]) {
-        
         NSMethodSignature *methodSignature = [slf methodSignatureForSelector:origForwardSelector];
         if (!methodSignature) {
             _exceptionBlock([NSString stringWithFormat:@"unrecognized selector -ORIGforwardInvocation: for instance %@", slf]);
@@ -843,24 +842,12 @@ static void JPExcuteORIGForwardInvocation(id slf, SEL selector, NSInvocation *in
         [forwardInv setSelector:origForwardSelector];
         [forwardInv setArgument:&invocation atIndex:2];
         [forwardInv invoke];
-        
     } else {
-        NSString *superForwardName = @"JPSUPER_ForwardInvocation";
-        SEL superForwardSelector = NSSelectorFromString(superForwardName);
-        
-        if (![slf respondsToSelector:superForwardSelector]) {
-            Class superCls = [[slf class] superclass];
-            Method superForwardMethod = class_getInstanceMethod(superCls, @selector(forwardInvocation:));
-            IMP superForwardIMP = method_getImplementation(superForwardMethod);
-            class_addMethod([slf class], superForwardSelector, superForwardIMP, method_getTypeEncoding(superForwardMethod));
-        }
-        
-        NSMethodSignature *methodSignature = [slf methodSignatureForSelector:@selector(forwardInvocation:)];
-        NSInvocation *forwardInv= [NSInvocation invocationWithMethodSignature:methodSignature];
-        [forwardInv setTarget:slf];
-        [forwardInv setSelector:superForwardSelector];
-        [forwardInv setArgument:&invocation atIndex:2];
-        [forwardInv invoke];
+        Class superCls = [[slf class] superclass];
+        Method superForwardMethod = class_getInstanceMethod(superCls, @selector(forwardInvocation:));
+        void (*superForwardIMP)(id, SEL, NSInvocation *);
+        superForwardIMP = (void (*)(id, SEL, NSInvocation *))method_getImplementation(superForwardMethod);
+        superForwardIMP(slf, @selector(forwardInvocation:), invocation);
     }
 }
 
@@ -901,7 +888,9 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
 #pragma clang diagnostic ignored "-Wundeclared-selector"
     if (class_getMethodImplementation(cls, @selector(forwardInvocation:)) != (IMP)JPForwardInvocation) {
         IMP originalForwardImp = class_replaceMethod(cls, @selector(forwardInvocation:), (IMP)JPForwardInvocation, "v@:@");
-        class_addMethod(cls, @selector(ORIGforwardInvocation:), originalForwardImp, "v@:@");
+        if (originalForwardImp) {
+            class_addMethod(cls, @selector(ORIGforwardInvocation:), originalForwardImp, "v@:@");
+        }
     }
 #pragma clang diagnostic pop
 
