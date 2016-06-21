@@ -19,6 +19,10 @@
     return @"stringFromOC";
 }
 
+- (double)funcReturnDouble {
+    return 100.0;
+}
+
 - (CGRect)funcWithRectAndReturnRect:(CGRect)rect
 {
     return rect;
@@ -219,6 +223,11 @@ typedef struct {
     int retI = [JPTestObject classFuncToSwizzleReturnInt:42];
     if (retI == 42) {
         self.classFuncToSwizzleReturnIntPassed = YES;
+    }
+    
+    double retD = [JPTestObject classFuncToSwizzleReturnDouble:100.0];
+    if (fabs(retD - 100.0) < FLT_EPSILON) {
+        self.classFuncToSwizzleReturnDoublePassed = YES;
     }
     
     [self funcToSwizzleWithBlock:^(UIView *view, int num) {
@@ -446,7 +455,10 @@ typedef NSString * (^JSBlock)(NSError *);
     return 0;
 }
 
-
++ (double)classFuncToSwizzleReturnDouble:(double)d
+{
+    return 0;
+}
 
 
 #pragma mark - super

@@ -51,16 +51,8 @@ JPBOXING_GEN(boxAssignObj, assignObj, id)
 typedef struct {double d;} JPDouble;
 typedef struct {float f;} JPFloat;
 
-@interface NSObject (JPFix)
-- (NSMethodSignature *)jp_methodSignatureForSelector:(SEL)aSelector;
-+ (void)jp_fixMethodSignature;
-@end
-@implementation NSObject (JPFix)
-
-const static void *JPFixedFlagKey = &JPFixedFlagKey;
-
-- (NSMethodSignature *)jp_methodSignatureForSelector:(SEL)aSelector {
-    NSMethodSignature *signature = [self jp_methodSignatureForSelector:aSelector];
+static NSMethodSignature *FixSignature(NSMethodSignature *signature)
+{
 #ifdef __LP64__
     BOOL isReturnDouble = (strcmp([signature methodReturnType], "d") == 0);
     BOOL isReturnFloat = (strcmp([signature methodReturnType], "f") == 0);
@@ -75,6 +67,19 @@ const static void *JPFixedFlagKey = &JPFixedFlagKey;
     }
 #endif
     return signature;
+}
+
+@interface NSObject (JPFix)
+- (NSMethodSignature *)jp_methodSignatureForSelector:(SEL)aSelector;
++ (void)jp_fixMethodSignature;
+@end
+@implementation NSObject (JPFix)
+
+const static void *JPFixedFlagKey = &JPFixedFlagKey;
+
+- (NSMethodSignature *)jp_methodSignatureForSelector:(SEL)aSelector {
+    NSMethodSignature *signature = [self jp_methodSignatureForSelector:aSelector];
+    return FixSignature(signature);
 }
 + (void)jp_fixMethodSignature {
     NSNumber *flag = objc_getAssociatedObject(self, JPFixedFlagKey);
@@ -1041,6 +1046,10 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         methodSignature = _JSMethodSignatureCache[cls][selectorName];
         if (!methodSignature) {
             methodSignature = [cls instanceMethodSignatureForSelector:selector];
+            // Try to fix the signature
+            if ([[UIDevice currentDevice].systemVersion compare:@"7.1"] == NSOrderedAscending) {
+                methodSignature = FixSignature(methodSignature);
+            }
             _JSMethodSignatureCache[cls][selectorName] = methodSignature;
         }
         [_JSMethodSignatureLock unlock];
@@ -1052,6 +1061,10 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         [invocation setTarget:instance];
     } else {
         methodSignature = [cls methodSignatureForSelector:selector];
+        // Try to fix the signature
+        if ([[UIDevice currentDevice].systemVersion compare:@"7.1"] == NSOrderedAscending) {
+            methodSignature = FixSignature(methodSignature);
+        }
         if (!methodSignature) {
             _exceptionBlock([NSString stringWithFormat:@"unrecognized selector %@ for class %@", selectorName, className]);
             return nil;
@@ -1194,7 +1207,18 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
             }
         }
     }
-    const char *returnType = [methodSignature methodReturnType];
+    
+    char returnType[255];
+    strcpy(returnType, [methodSignature methodReturnType]);
+    
+    // Restore the return type
+    if (strcmp(returnType, @encode(JPDouble)) == 0) {
+        strcpy(returnType, @encode(double));
+    }
+    if (strcmp(returnType, @encode(JPFloat)) == 0) {
+        strcpy(returnType, @encode(float));
+    }
+
     id returnValue;
     if (strncmp(returnType, "v", 1) != 0) {
         if (strncmp(returnType, "@", 1) == 0) {
