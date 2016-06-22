@@ -46,25 +46,32 @@ JPBOXING_GEN(boxAssignObj, assignObj, id)
 }
 @end
 
-#pragma mark - Fix NSInvocation fatal error
+#pragma mark - Fix iOS7 NSInvocation fatal error
+// A fatal error of NSInvocation on iOS7.0.
+// A invocation return 0 when the return type is double/float.
+// http://stackoverflow.com/questions/19874502/nsinvocation-getreturnvalue-with-double-value-produces-0-unexpectedly
 
 typedef struct {double d;} JPDouble;
 typedef struct {float f;} JPFloat;
 
-static NSMethodSignature *FixSignature(NSMethodSignature *signature)
+static NSMethodSignature *fixSignature(NSMethodSignature *signature)
 {
+#if TARGET_OS_IPHONE
 #ifdef __LP64__
-    BOOL isReturnDouble = (strcmp([signature methodReturnType], "d") == 0);
-    BOOL isReturnFloat = (strcmp([signature methodReturnType], "f") == 0);
-    
-    if (isReturnDouble || isReturnFloat) {
-        NSMutableString *types = [NSMutableString stringWithFormat:@"%s@:", isReturnDouble ? @encode(JPDouble) : @encode(JPFloat)];
-        for (int i = 2; i < signature.numberOfArguments; i++) {
-            const char *argType = [signature getArgumentTypeAtIndex:i];
-            [types appendFormat:@"%s", argType];
+    if ([[UIDevice currentDevice].systemVersion floatValue] < 7.1) {
+        BOOL isReturnDouble = (strcmp([signature methodReturnType], "d") == 0);
+        BOOL isReturnFloat = (strcmp([signature methodReturnType], "f") == 0);
+
+        if (isReturnDouble || isReturnFloat) {
+            NSMutableString *types = [NSMutableString stringWithFormat:@"%s@:", isReturnDouble ? @encode(JPDouble) : @encode(JPFloat)];
+            for (int i = 2; i < signature.numberOfArguments; i++) {
+                const char *argType = [signature getArgumentTypeAtIndex:i];
+                [types appendFormat:@"%s", argType];
+            }
+            signature = [NSMethodSignature signatureWithObjCTypes:[types UTF8String]];
         }
-        signature = [NSMethodSignature signatureWithObjCTypes:[types UTF8String]];
     }
+#endif
 #endif
     return signature;
 }
@@ -73,31 +80,40 @@ static NSMethodSignature *FixSignature(NSMethodSignature *signature)
 - (NSMethodSignature *)jp_methodSignatureForSelector:(SEL)aSelector;
 + (void)jp_fixMethodSignature;
 @end
+
 @implementation NSObject (JPFix)
-
 const static void *JPFixedFlagKey = &JPFixedFlagKey;
-
-- (NSMethodSignature *)jp_methodSignatureForSelector:(SEL)aSelector {
+- (NSMethodSignature *)jp_methodSignatureForSelector:(SEL)aSelector
+{
     NSMethodSignature *signature = [self jp_methodSignatureForSelector:aSelector];
-    return FixSignature(signature);
+    return fixSignature(signature);
 }
-+ (void)jp_fixMethodSignature {
-    NSNumber *flag = objc_getAssociatedObject(self, JPFixedFlagKey);
-    if (!flag.boolValue) {
-        SEL originalSelector = @selector(methodSignatureForSelector:);
-        SEL swizzledSelector = @selector(jp_methodSignatureForSelector:);
-        Method originalMethod = class_getInstanceMethod(self, originalSelector);
-        Method swizzledMethod = class_getInstanceMethod(self, swizzledSelector);
-        BOOL didAddMethod = class_addMethod(self, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
-        if (didAddMethod) {
-            class_replaceMethod(self, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
-        } else {
-            method_exchangeImplementations(originalMethod, swizzledMethod);
++ (void)jp_fixMethodSignature
+{
+#if TARGET_OS_IPHONE
+#ifdef __LP64__
+    if ([[UIDevice currentDevice].systemVersion floatValue] < 7.1) {
+        NSNumber *flag = objc_getAssociatedObject(self, JPFixedFlagKey);
+        if (!flag.boolValue) {
+            SEL originalSelector = @selector(methodSignatureForSelector:);
+            SEL swizzledSelector = @selector(jp_methodSignatureForSelector:);
+            Method originalMethod = class_getInstanceMethod(self, originalSelector);
+            Method swizzledMethod = class_getInstanceMethod(self, swizzledSelector);
+            BOOL didAddMethod = class_addMethod(self, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
+            if (didAddMethod) {
+                class_replaceMethod(self, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
+            } else {
+                method_exchangeImplementations(originalMethod, swizzledMethod);
+            }
+            objc_setAssociatedObject(self, JPFixedFlagKey, @YES, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         }
-        objc_setAssociatedObject(self, JPFixedFlagKey, @YES, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
+#endif
+#endif
 }
 @end
+
+#pragma mark -
 
 static JSContext *_context;
 static NSString *_regexStr = @"(?<!\\\\)\\.\\s*(\\w+)\\s*\\(";
@@ -955,14 +971,7 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
         }
     }
 #pragma clang diagnostic pop
-    
-    // A fatal error of NSInvocation on iOS7.0.
-    // A invocation return 0 when the return type is double/float.
-    // http://stackoverflow.com/questions/19874502/nsinvocation-getreturnvalue-with-double-value-produces-0-unexpectedly
-    if ([[UIDevice currentDevice].systemVersion compare:@"7.1"] == NSOrderedAscending) {
-        [cls jp_fixMethodSignature];
-    }
-
+    [cls jp_fixMethodSignature];
     if (class_respondsToSelector(cls, selector)) {
         NSString *originalSelectorName = [NSString stringWithFormat:@"ORIG%@", selectorName];
         SEL originalSelector = NSSelectorFromString(originalSelectorName);
@@ -1046,10 +1055,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         methodSignature = _JSMethodSignatureCache[cls][selectorName];
         if (!methodSignature) {
             methodSignature = [cls instanceMethodSignatureForSelector:selector];
-            // Try to fix the signature
-            if ([[UIDevice currentDevice].systemVersion compare:@"7.1"] == NSOrderedAscending) {
-                methodSignature = FixSignature(methodSignature);
-            }
+            methodSignature = fixSignature(methodSignature);
             _JSMethodSignatureCache[cls][selectorName] = methodSignature;
         }
         [_JSMethodSignatureLock unlock];
@@ -1061,10 +1067,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         [invocation setTarget:instance];
     } else {
         methodSignature = [cls methodSignatureForSelector:selector];
-        // Try to fix the signature
-        if ([[UIDevice currentDevice].systemVersion compare:@"7.1"] == NSOrderedAscending) {
-            methodSignature = FixSignature(methodSignature);
-        }
+        methodSignature = fixSignature(methodSignature);
         if (!methodSignature) {
             _exceptionBlock([NSString stringWithFormat:@"unrecognized selector %@ for class %@", selectorName, className]);
             return nil;
