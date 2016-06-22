@@ -101,6 +101,10 @@ require('JPEngine').defineStruct({
     },
     classFuncToSwizzleReturnInt: function(i) {
       return i
+    },
+    ///////Test for function which return double/float, cause there's a fatal bug in NSInvocation on iOS7.0
+    classFuncToSwizzleReturnDouble: function(d) {
+      return d
     }
   })
 
@@ -122,6 +126,11 @@ require('JPEngine').defineStruct({
   obj.funcReturnVoid();
   var testReturnString = obj.funcReturnString().toJS();
   obj.setFuncReturnStringPassed(testReturnString == "stringFromOC")
+
+  ///////Test for functions which return double/float, cause there's a fatal bug in NSInvocation on iOS7.0
+  var testReturnDouble = obj.funcReturnDouble()
+  console.log(testReturnDouble == 100)
+  obj.setFuncReturnDoublePassed(testReturnDouble == 100)
 
   obj.funcWithInt(42);
   obj.funcWithDict_andDouble({test: "test"}, 4.2)
