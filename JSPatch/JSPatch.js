@@ -98,6 +98,9 @@ var global = this
           if (methodName.length > 3 && methodName.substr(0,3) == 'set' && c >= 65 && c <= 90) {
             return function(val) {
               var propName = methodName[3].toLowerCase() + methodName.substr(4)
+              if(val === undefined || val === null) {
+                val = false;
+              }
               slf.__ocProps[propName] = val
             }
           } else {
