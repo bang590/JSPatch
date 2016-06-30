@@ -29,8 +29,8 @@
 
 #ifdef __x86_64__
 #define LIBFFI_ASM
-#include <fficonfig.h>
-#include <ffi.h>
+#include "fficonfig.h"
+#include "ffi.h"
 
 	.file "darwin64.S"
 .text
