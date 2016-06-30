@@ -36,8 +36,8 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'Extensions' do |ss|
-    ss.ios.source_files = "Extensions/**/*.{h,m}"
-    ss.tvos.source_files = "Extensions/**/*.{h,m}"
+    ss.ios.source_files = "Extensions/**/*.*" 
+    ss.tvos.source_files = "Extensions/**/*.*"
     ss.ios.public_header_files = "Extensions/**/*.h"
     ss.tvos.public_header_files = "Extensions/**/*.h"
     ss.dependency 'JSPatch/Core'
