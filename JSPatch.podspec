@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "JSPatch"
-  s.version      = "1.0"
+  s.version      = "1.1"
   s.summary      = "JSPatch bridge Objective-C and JavaScript. You can call any"  \
                    " Objective-C class and method in JavaScript by just" \
                    " including a small engine."
@@ -38,7 +38,17 @@ Pod::Spec.new do |s|
   s.subspec 'Extensions' do |ss|
     ss.ios.source_files = "Extensions/**/*.{h,m}"
     ss.tvos.source_files = "Extensions/**/*.{h,m}"
-    ss.public_header_files = "Extensions/**/*.h"
+    ss.ios.public_header_files = "Extensions/**/*.h"
+    ss.tvos.public_header_files = "Extensions/**/*.h"
     ss.dependency 'JSPatch/Core'
+  end
+
+  s.subspec 'Loader' do |ss|
+    ss.ios.source_files = "Loader/**/*.{h,m,c}"
+    ss.tvos.source_files = "Loader/**/*.{h,m,c}"
+    ss.ios.public_header_files = "Loader/*.h"
+    ss.tvos.public_header_files = "Loader/*.h"
+    ss.dependency 'JSPatch/Core'
+    ss.library = 'z'
   end
 end
