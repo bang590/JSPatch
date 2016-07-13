@@ -985,7 +985,7 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     _initJPOverideMethods(cls);
     _JSOverideMethods[cls][JPSelectorName] = function;
     
-    // Replace the original secltor at last, preventing threading issus when
+    // Replace the original selector at last, preventing threading issus when
     // the selector get called during the execution of `overrideMethod`
     class_replaceMethod(cls, selector, msgForwardIMP, typeDescription);
 }
