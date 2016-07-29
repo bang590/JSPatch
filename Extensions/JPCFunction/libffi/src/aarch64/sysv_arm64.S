@@ -22,8 +22,8 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 #define LIBFFI_ASM
-#include <fficonfig.h>
-#include <ffi.h>
+#include "fficonfig.h"
+#include "ffi.h"
 
 #ifdef HAVE_MACHINE_ASM_H
 #include <machine/asm.h>

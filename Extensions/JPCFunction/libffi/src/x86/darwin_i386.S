@@ -31,8 +31,8 @@
 #ifndef __x86_64__
 
 #define LIBFFI_ASM	
-#include <fficonfig.h>
-#include <ffi.h>
+#include "fficonfig.h"
+#include "ffi.h"
 
 .text
 

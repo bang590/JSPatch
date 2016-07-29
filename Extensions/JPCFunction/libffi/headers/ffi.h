@@ -1,18 +1,18 @@
 #ifdef __arm64__
 
-#include <ffi_arm64.h>
+#include "ffi_arm64.h"
 
 
 #endif
 #ifdef __i386__
 
-#include <ffi_i386.h>
+#include "ffi_i386.h"
 
 
 #endif
 #ifdef __arm__
 
-#include <ffi_armv7.h>
+#include "ffi_armv7.h"
 
 
 #endif

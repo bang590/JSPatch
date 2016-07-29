@@ -33,8 +33,8 @@
    */
  
 #define LIBFFI_ASM
-#include <fficonfig.h>
-#include <ffi.h>
+#include "fficonfig.h"
+#include "ffi.h"
 
 #define CIF_BYTES_OFFSET 16
 #define CIF_FLAGS_OFFSET 20

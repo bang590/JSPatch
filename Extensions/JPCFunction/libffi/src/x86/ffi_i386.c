@@ -36,8 +36,8 @@
 #include <windows.h>
 #endif
 
-#include <ffi.h>
-#include <ffi_common.h>
+#include "ffi.h"
+#include "ffi_common.h"
 
 #include <stdlib.h>
 
