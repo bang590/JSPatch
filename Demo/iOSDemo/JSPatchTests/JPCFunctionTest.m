@@ -10,6 +10,8 @@
 #import <UIKit/UIKit.h>
 #import "JPEngine.h"
 
+static bool voidFuncRet = false;
+
 id cfuncWithId(NSString *str){
     return str;
 }
@@ -30,6 +32,9 @@ void *cfuncReturnPointer() {
 bool cfuncWithPointerIsEqual(char *a) {
     return a[0] == 'a';
 }
+void cfuncVoid() {
+    NSLog(@"dsssdfsdf");
+}
 
 @implementation JPCFunctionTest
 + (BOOL)testCfuncWithId{
@@ -47,4 +52,10 @@ bool cfuncWithPointerIsEqual(char *a) {
 + (BOOL)testCFunctionReturnClass{
     return NO;
 };
++ (BOOL)testCFunctionVoid{
+    return voidFuncRet;
+};
++ (void)setupCFunctionVoidSucc{
+    voidFuncRet = true;
+}
 @end

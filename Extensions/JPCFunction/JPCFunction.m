@@ -65,6 +65,8 @@
 + (ffi_type *)ffiTypeWithEncodingChar:(const char *)c
 {
     switch (c[0]) {
+        case 'v':
+            return &ffi_type_void;
         case 'c':
             return &ffi_type_schar;
         case 'C':

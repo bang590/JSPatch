@@ -14,4 +14,5 @@
 + (BOOL)testCfuncWithCGFloat;
 + (BOOL)testCfuncReturnPointer;
 + (BOOL)testCFunctionReturnClass;
++ (BOOL)testCFunctionVoid;
 @end

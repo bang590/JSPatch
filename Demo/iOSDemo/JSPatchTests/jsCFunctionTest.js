@@ -25,5 +25,10 @@ defineClass('JPCFunctionTest', {}, {
         var viewCls = NSClassFromString("UIView")
         var view = require('UIView').alloc().init()
         return view.isKindOfClass(viewCls);
-    }
+    },
+    testCFunctionVoid: function() {
+        defineCFunction("cfuncVoid", "void")
+        self.setupCFunctionVoidSucc();
+        return self.ORIGtestCFunctionVoid();
+    },
 })

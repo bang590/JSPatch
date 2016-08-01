@@ -276,6 +276,7 @@
     XCTAssert([JPCFunctionTest testCfuncWithCGFloat], @"testCfuncWithCGFloat");
     XCTAssert([JPCFunctionTest testCfuncReturnPointer], @"testCfuncReturnPointer");
     XCTAssert([JPCFunctionTest testCFunctionReturnClass], @"testCFunctionReturnClass");
+    XCTAssert([JPCFunctionTest testCFunctionVoid], @"testCFunctionVoid");
 }
 
 #pragma mark - multithreadTest
