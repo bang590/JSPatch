@@ -61,6 +61,9 @@
 		36CE19251CB3E709007D73AC /* JPPerformanceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 36CE19241CB3E709007D73AC /* JPPerformanceTest.m */; };
 		36CE19271CB3E72B007D73AC /* performanceTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 36CE19261CB3E72B007D73AC /* performanceTest.js */; };
 		36F0DCC61BFAF41C0090EA4A /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */; };
+		4F9EBFC51D50745200EC72C1 /* JPNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F9EBFC41D50745200EC72C1 /* JPNumber.m */; };
+		4F9EBFC91D50749200EC72C1 /* JPNumberTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F9EBFC71D50749200EC72C1 /* JPNumberTest.m */; };
+		4F9EBFCA1D50749200EC72C1 /* jsNumberTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 4F9EBFC81D50749200EC72C1 /* jsNumberTest.js */; };
 		6C6CAC741C5F0BCA00444348 /* superTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C6CAC721C5F0BCA00444348 /* superTest.js */; };
 		6C6CAC751C5F0BCA00444348 /* JPSuperTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6CAC731C5F0BCA00444348 /* JPSuperTestObject.m */; };
 		6C72B7961C352BA80086C98D /* newProtocolTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C72B7951C352BA80086C98D /* newProtocolTest.m */; };
@@ -191,6 +194,11 @@
 		36CE19241CB3E709007D73AC /* JPPerformanceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPPerformanceTest.m; sourceTree = "<group>"; };
 		36CE19261CB3E72B007D73AC /* performanceTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = performanceTest.js; sourceTree = "<group>"; };
 		36F0DCC51BFAF41C0090EA4A /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = ../../../../../../usr/lib/libz.1.dylib; sourceTree = "<group>"; };
+		4F9EBFC31D50745200EC72C1 /* JPNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPNumber.h; sourceTree = "<group>"; };
+		4F9EBFC41D50745200EC72C1 /* JPNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPNumber.m; sourceTree = "<group>"; };
+		4F9EBFC61D50749200EC72C1 /* JPNumberTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPNumberTest.h; sourceTree = "<group>"; };
+		4F9EBFC71D50749200EC72C1 /* JPNumberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPNumberTest.m; sourceTree = "<group>"; };
+		4F9EBFC81D50749200EC72C1 /* jsNumberTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = jsNumberTest.js; sourceTree = "<group>"; };
 		6C6CAC711C5F0BCA00444348 /* JPSuperTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPSuperTestObject.h; sourceTree = "<group>"; };
 		6C6CAC721C5F0BCA00444348 /* superTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = superTest.js; sourceTree = "<group>"; };
 		6C6CAC731C5F0BCA00444348 /* JPSuperTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPSuperTestObject.m; sourceTree = "<group>"; };
@@ -270,6 +278,8 @@
 				3613C3AE1C6346F500E915CB /* JPCleaner.m */,
 				3646F8B21CA0F89C00E10774 /* JPLocker.h */,
 				3646F8B31CA0F89C00E10774 /* JPLocker.m */,
+				4F9EBFC31D50745200EC72C1 /* JPNumber.h */,
+				4F9EBFC41D50745200EC72C1 /* JPNumber.m */,
 			);
 			name = Extensions;
 			path = ../../../Extensions;
@@ -502,6 +512,9 @@
 		DE94AE271AF246C000E461D4 /* JSPatchTests */ = {
 			isa = PBXGroup;
 			children = (
+				4F9EBFC61D50749200EC72C1 /* JPNumberTest.h */,
+				4F9EBFC71D50749200EC72C1 /* JPNumberTest.m */,
+				4F9EBFC81D50749200EC72C1 /* jsNumberTest.js */,
 				3694925C1CFEFE42003F44CA /* JPCFunctionTest.h */,
 				3694925D1CFEFE42003F44CA /* JPCFunctionTest.m */,
 				3694925E1CFEFE42003F44CA /* jsCFunctionTest.js */,
@@ -640,6 +653,7 @@
 				DE94AE471AF2480000E461D4 /* test.js in Resources */,
 				36CE191B1CAEA179007D73AC /* jsClassTest.js in Resources */,
 				6C9C0EE41C25A7C700FCAAC5 /* newProtocolTest.js in Resources */,
+				4F9EBFCA1D50749200EC72C1 /* jsNumberTest.js in Resources */,
 				E1B89EAE1B228818000645C2 /* multithreadTest.js in Resources */,
 				369492601CFEFE42003F44CA /* jsCFunctionTest.js in Resources */,
 				36CE19271CB3E72B007D73AC /* performanceTest.js in Resources */,
@@ -665,6 +679,7 @@
 				36CC3A541CFEE6A80001465B /* JPCGPath.m in Sources */,
 				3613C3881C6329F300E915CB /* JPLoader.m in Sources */,
 				36CC3A501CFEE6A80001465B /* JPCGColor.m in Sources */,
+				4F9EBFC51D50745200EC72C1 /* JPNumber.m in Sources */,
 				36CC3A521CFEE6A80001465B /* JPCGGeometry.m in Sources */,
 				369493BB1D001EAE003F44CA /* types.c in Sources */,
 				369493B11D001EAE003F44CA /* sysv_arm64.S in Sources */,
@@ -709,6 +724,7 @@
 				36CE191E1CAEA1DE007D73AC /* JPJSClassTest.m in Sources */,
 				36CE19251CB3E709007D73AC /* JPPerformanceTest.m in Sources */,
 				E1B89EA31B218986000645C2 /* JPInheritanceTestObjects.m in Sources */,
+				4F9EBFC91D50749200EC72C1 /* JPNumberTest.m in Sources */,
 				DE94AE2B1AF246C000E461D4 /* JSPatchTests.m in Sources */,
 				3694925F1CFEFE42003F44CA /* JPCFunctionTest.m in Sources */,
 			);
