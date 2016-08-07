@@ -22,4 +22,8 @@
     return NO;
 }
 
++ (BOOL)testJPNUmToOC {
+    return NO;
+}
+
 @end

@@ -287,6 +287,7 @@
     XCTAssert([JPNumberTest testJPNumNSNumber], @"testJPNumNSNumber");
     XCTAssert([JPNumberTest testJPNumNSDecimalNumber], @"testJPNumNSDecimalNumber");
     XCTAssert([JPNumberTest testJPNumToJS], @"testJPNumToJS");
+    XCTAssert([JPNumberTest testJPNUmToOC], @"testJPNumToOC");
 }
 
 #pragma mark - multithreadTest

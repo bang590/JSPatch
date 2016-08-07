@@ -13,5 +13,6 @@
 + (BOOL)testJPNumNSNumber;
 + (BOOL)testJPNumNSDecimalNumber;
 + (BOOL)testJPNumToJS;
++ (BOOL)testJPNUmToOC;
 
 @end

@@ -13,6 +13,7 @@
 
 + (void)main:(JSContext *)context {
     
+    // for subclass of NSNumber, e.g. NSDecimalNumber
     context[@"OCNumber"] = ^ id (NSString *clsName, NSString *selName, JSValue *arguments) {
         Class cls = NSClassFromString(clsName);
         SEL sel = NSSelectorFromString(selName);
@@ -67,6 +68,16 @@
         JPBoxing *box = [[JPBoxing alloc] init];
         box.obj = returnValue;
         return  @{@"__obj": box, @"__clsName": clsName};
+    };
+    
+    context[@"toOCNumber"] = ^ id (JSValue *value) {
+        id obj = [value toObject];
+        if (!obj || ![obj isKindOfClass:[NSNumber class]]) {
+            return nil;
+        }
+        JPBoxing *box = [[JPBoxing alloc] init];
+        box.obj = obj;
+        return  @{@"__obj": box, @"__clsName": NSStringFromClass([obj class])};
     };
     
     context[@"toJSNumber"] = ^ NSNumber *(JSValue *value) {
