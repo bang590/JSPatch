@@ -29,7 +29,7 @@
 #if TARGET_IPHONE_SIMULATOR
     //playground调试
     //JS测试包的本地绝对路径
-    NSString *rootPath = @"/Users/Awhisper/Desktop/Github/JSPatch/Demo/iOSPlaygroundToolDemo/JSPatchPlaygroundDemo";
+    NSString *rootPath = @"/Users/Awhisper/Desktop/Github/JSPatchPlaygroundTool/JSPatchPlaygroundDemo/JSPatchPlaygroundDemo";
     
     NSString *scriptRootPath = [rootPath stringByAppendingPathComponent:@"js"];
     NSString *mainScriptPath = [NSString stringWithFormat:@"%@/%@", scriptRootPath, @"demo.js"];
@@ -41,7 +41,6 @@
     
 #else
     //正常执行JSPatch
-    //JS测试包的本地绝对路径
     NSString *rootPath = [[NSBundle mainBundle] bundlePath];
     
     NSString *scriptPath = [rootPath stringByAppendingPathComponent:@"demo.js"];
