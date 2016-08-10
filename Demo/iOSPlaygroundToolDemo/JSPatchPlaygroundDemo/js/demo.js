@@ -10,7 +10,7 @@ defineClass('JPDemoController: UIViewController', {
             var size = 120;
             var imgView = UIImageView.alloc().initWithFrame({x: (screenWidth - size)/2, y: 150, width: size, height: size});
             imgView.setImage(UIImage.imageNamed('apple'))
-//            imgView.setImage(UIImage.imageWithContentsOfFile(resourcePath('apple.png')));
+            
             self.view().addSubview(imgView);
 
             var label = UILabel.alloc().initWithFrame({x: 0, y: 310, width: screenWidth, height: 30});
