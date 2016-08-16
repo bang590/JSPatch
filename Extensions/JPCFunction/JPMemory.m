@@ -99,6 +99,41 @@
         *((__unsafe_unretained id *)m) = obj;
     };
     
+    context[@"assignScalarTypePointer"] = ^void(JSValue *jsVal, JSValue *value, NSString *type) {
+        void *pointer = [self formatPointerJSToOC:jsVal];
+        char *typeChar = (char*)[type UTF8String];
+        
+        switch (typeChar[0]) {
+            #define JP_ASSIGN_SCALAR_CASE(_typeChar, _type, _method) \
+            case _typeChar: {   \
+                NSNumber *num = [value toNumber]; \
+                (*(_type *)pointer) = [num _method]; \
+                break;  \
+            }
+                
+            JP_ASSIGN_SCALAR_CASE('s', short, shortValue)
+            JP_ASSIGN_SCALAR_CASE('S', unsigned short, unsignedShortValue)
+            JP_ASSIGN_SCALAR_CASE('i', int, intValue)
+            JP_ASSIGN_SCALAR_CASE('I', unsigned int, unsignedIntValue)
+            JP_ASSIGN_SCALAR_CASE('l', long, longValue)
+            JP_ASSIGN_SCALAR_CASE('L', unsigned long, unsignedLongValue)
+            JP_ASSIGN_SCALAR_CASE('q', long long, longLongValue)
+            JP_ASSIGN_SCALAR_CASE('Q', unsigned long long, unsignedLongLongValue)
+            JP_ASSIGN_SCALAR_CASE('f', float, floatValue)
+            JP_ASSIGN_SCALAR_CASE('d', double, doubleValue)
+            JP_ASSIGN_SCALAR_CASE('B', BOOL, boolValue)
+            case 'c': 
+            case 'C': {
+                NSString *str = [value toString];
+                (*(char *)pointer) = *[str cStringUsingEncoding:NSUTF8StringEncoding];
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    };
+    
     context[@"autoreleasepool"] = ^void(JSValue *cb) {
         @autoreleasepool {
             [cb callWithArguments:nil];
