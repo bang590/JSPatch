@@ -122,7 +122,7 @@ static NSRegularExpression* _regex;
 static NSObject *_nullObj;
 static NSObject *_nilObj;
 static NSMutableDictionary *_registeredStruct;
-static NSString *_currInvokeSuperClsName;
+static NSMutableDictionary *_currInvokeSuperClsName;
 static char *kPropAssociatedObjectKey;
 static BOOL _autoConvert;
 static BOOL _convertOCNumberToString;
@@ -288,6 +288,7 @@ static void (^_exceptionBlock)(NSString *log) = ^void(NSString *log) {
     _JSMethodSignatureLock = [[NSLock alloc] init];
     _JSMethodForwardCallLock = [[NSRecursiveLock alloc] init];
     _registeredStruct = [[NSMutableDictionary alloc] init];
+    _currInvokeSuperClsName = [[NSMutableDictionary alloc] init];
     
 #if TARGET_OS_IPHONE
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
@@ -612,8 +613,8 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
 static JSValue *getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
 {
     Class cls = object_getClass(slf);
-    if (_currInvokeSuperClsName) {
-        cls = NSClassFromString(_currInvokeSuperClsName);
+    if (_currInvokeSuperClsName[selectorName]) {
+        cls = NSClassFromString(_currInvokeSuperClsName[selectorName]);
         selectorName = [selectorName stringByReplacingOccurrencesOfString:@"_JPSUPER_" withString:@"_JP"];
     }
     JSValue *func = _JSOverideMethods[cls][selectorName];
@@ -746,13 +747,13 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
         }
     }
     
-    if (_currInvokeSuperClsName) {
-        Class cls = NSClassFromString(_currInvokeSuperClsName);
+    if (_currInvokeSuperClsName[selectorName]) {
+        Class cls = NSClassFromString(_currInvokeSuperClsName[selectorName]);
         NSString *tmpSelectorName = [[selectorName stringByReplacingOccurrencesOfString:@"_JPSUPER_" withString:@"_JP"] stringByReplacingOccurrencesOfString:@"SUPER_" withString:@"_JP"];
         if (!_JSOverideMethods[cls][tmpSelectorName]) {
             NSString *ORIGSelectorName = [selectorName stringByReplacingOccurrencesOfString:@"SUPER_" withString:@"ORIG"];
             [argList removeObjectAtIndex:0];
-            id retObj = callSelector(_currInvokeSuperClsName, ORIGSelectorName, [JSValue valueWithObject:argList inContext:_context], [JSValue valueWithObject:@{@"__obj": slf, @"__realClsName": @""} inContext:_context], NO);
+            id retObj = callSelector(_currInvokeSuperClsName[selectorName], ORIGSelectorName, [JSValue valueWithObject:argList inContext:_context], [JSValue valueWithObject:@{@"__obj": slf, @"__realClsName": @""} inContext:_context], NO);
             id __autoreleasing ret = formatJSToOC([JSValue valueWithObject:retObj inContext:_context]);
             [invocation setReturnValue:&ret];
             return;
@@ -1196,9 +1197,9 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         }
     }
     
-    if (superClassName) _currInvokeSuperClsName = superClassName;
+    if (superClassName) _currInvokeSuperClsName[selectorName] = superClassName;
     [invocation invoke];
-    if (superClassName) _currInvokeSuperClsName = nil;
+    if (superClassName) [_currInvokeSuperClsName removeObjectForKey:selectorName];
     if ([_markArray count] > 0) {
         for (JPBoxing *box in _markArray) {
             void *pointer = [box unboxPointer];
