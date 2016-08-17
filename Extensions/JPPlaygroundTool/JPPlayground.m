@@ -129,8 +129,7 @@ static void (^_reloadCompleteHandler)(void) = ^void(void) {
     [JPDevTipView showJPDevTip:@"JSPatch Reloading ..."];
     [self hideErrorView];
     [JPCleaner cleanAll];
-    NSString *script = [NSString stringWithContentsOfFile:self.rootPath encoding:NSUTF8StringEncoding error:nil];
-    [JPEngine evaluateScript:script];
+    [JPEngine evaluateScriptWithPath:self.rootPath];
     _reloadCompleteHandler();
 #endif
 }
