@@ -50,6 +50,9 @@ typedef NS_ENUM(NSInteger, JPDevMenuType) {
     id _handler; // block
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 - (instancetype)initWithType:(JPDevMenuType)type
                          key:(NSString *)key
                        title:(NSString *)title
@@ -266,5 +269,7 @@ typedef NS_ENUM(NSInteger, JPDevMenuType) {
         [self.delegate devMenuDidAction:JPDevMenuActionCancel withValue:nil];
     }
 }
+
+#pragma clang diagnostic pop
 
 @end
