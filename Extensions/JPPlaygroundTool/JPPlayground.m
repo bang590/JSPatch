@@ -8,7 +8,6 @@
 
 #import "JPPlayground.h"
 #import "JPKeyCommands.h"
-#import "JPCleaner.h"
 #import "JPDevErrorView.h"
 #import "JPDevMenu.h"
 #import "JPDevTipView.h"
@@ -35,6 +34,9 @@ static void (^_reloadCompleteHandler)(void) = ^void(void) {
 };
 
 @implementation JPPlayground
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
 
 + (instancetype)sharedInstance
 {
@@ -97,14 +99,18 @@ static void (^_reloadCompleteHandler)(void) = ^void(void) {
             [self watchFolder:fullPath mainScriptPath:mainScriptPath];
         }
     }
-    
-    
-    [JPEngine handleException:^(NSString *msg) {
+    void(^exceptionhandler)(NSString *msg) = ^(NSString *msg){
         JPDevErrorView *errV = [[JPDevErrorView alloc]initError:msg];
         [[UIApplication sharedApplication].keyWindow addSubview:errV];
         self.errorView = errV;
         [self.devMenu toggle];
-    }];
+    };
+    id JPEngineClass = (id)NSClassFromString(@"JPEngine");
+    if (JPEngineClass && [JPEngineClass respondsToSelector:@selector(handleException:)]) {
+        [JPEngineClass performSelector:@selector(handleException:) withObject:exceptionhandler];
+    }else{
+        NSCAssert(NO, @"can't find JPEngine handleException: Method");
+    }
     
     [self.keyManager registerKeyCommandWithInput:@"x" modifierFlags:UIKeyModifierCommand action:^(UIKeyCommand *command) {
         [self.devMenu toggle];
@@ -128,8 +134,22 @@ static void (^_reloadCompleteHandler)(void) = ^void(void) {
 #if TARGET_IPHONE_SIMULATOR
     [JPDevTipView showJPDevTip:@"JSPatch Reloading ..."];
     [self hideErrorView];
-    [JPCleaner cleanAll];
-    [JPEngine evaluateScriptWithPath:self.rootPath];
+    id JPCleanerClass = (id)NSClassFromString(@"JPCleaner");
+    if (JPCleanerClass && [JPCleanerClass respondsToSelector:@selector(cleanAll)]) {
+        [JPCleanerClass performSelector:@selector(cleanAll)];
+    }else{
+        NSCAssert(NO, @"can't find JPCleaner cleanAll Method");
+    }
+    
+    NSString *script = [NSString stringWithContentsOfFile:self.rootPath encoding:NSUTF8StringEncoding error:nil];
+    
+    id JPEngineClass = (id)NSClassFromString(@"JPEngine");
+    if (JPEngineClass && [JPEngineClass respondsToSelector:@selector(evaluateScript:)]) {
+        [JPEngineClass performSelector:@selector(evaluateScript:) withObject:script];
+    }else{
+        NSCAssert(NO, @"can't find JPEngine evaluateScript: Method");
+    }
+    
     _reloadCompleteHandler();
 #endif
 }
@@ -143,9 +163,12 @@ static void (^_reloadCompleteHandler)(void) = ^void(void) {
     
     NSString *msg = [NSString stringWithFormat:@"JS文件路径：%@\n 编辑JS文件后保存，按Command+R刷新就可以看到最新的代码效果",self.rootPath];
     
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Edit JS File and Reload" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
     [alert show];
     [UIPasteboard generalPasteboard].string = self.rootPath;
+#pragma clang diagnostic pop
     
 #endif
 }
@@ -210,4 +233,6 @@ static void (^_reloadCompleteHandler)(void) = ^void(void) {
     }
 #endif
 }
+
+#pragma clang diagnostic pop
 @end
