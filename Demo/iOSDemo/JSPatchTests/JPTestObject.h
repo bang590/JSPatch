@@ -138,3 +138,17 @@
 @interface JPTestProtocolObject : NSObject <JPTestProtocol, JPTestProtocol2>
 - (BOOL)testProtocolMethods;
 @end
+
+@interface JPTestSwizzledForwardInvocationSuperObject : NSObject
+
+@property (nonatomic, assign) BOOL callSwizzledSuperForwardInvocationPassed;
+
+- (void)swizzleSuperForwoardInvocation;
+
+@end
+
+@interface JPTestSwizzledForwardInvocationSubObject : JPTestSwizzledForwardInvocationSuperObject
+
+- (void)callTestSwizzledSuperForwardInvocation;
+
+@end
