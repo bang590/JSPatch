@@ -107,6 +107,9 @@ require('JPEngine').defineStruct({
       return d
     }
   })
+  defineClass("JPTestSwizzledForwardInvocationSubObject",{
+    stubMethod: function() {}
+  })
 
   var JPTestObject = require("JPTestObject") 
   var UIView = require("UIView") 

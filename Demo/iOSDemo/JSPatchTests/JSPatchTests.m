@@ -152,6 +152,13 @@
     XCTAssert(subObj.funcCallSuperPassed, @"funcCallSuperPassed");
     XCTAssert(obj.callForwardInvocationPassed, @"callForwardInvocationPassed");
     
+    JPTestSwizzledForwardInvocationSubObject *tmp = [[JPTestSwizzledForwardInvocationSubObject alloc] init];
+    [tmp callTestSwizzledSuperForwardInvocation];
+    XCTAssert(!tmp.callSwizzledSuperForwardInvocationPassed);
+    [tmp swizzleSuperForwoardInvocation];
+    [tmp callTestSwizzledSuperForwardInvocation];
+    XCTAssert(tmp.callSwizzledSuperForwardInvocationPassed);
+    
     XCTAssert(obj.propertySetFramePassed, @"propertySetFramePassed");
     XCTAssert(obj.propertySetViewPassed, @"propertySetViewPassed");
     
