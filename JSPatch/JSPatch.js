@@ -84,31 +84,6 @@ var global = this
           slf.__isSuper = 0;
           return _ocCls[clsName][methodType][methodName].bind(slf)
         }
-
-        if (slf.__obj && _ocCls[clsName]['props'][methodName]) {
-          if (!slf.__ocProps) {
-            var props = _OC_getCustomProps(slf.__obj)
-            if (!props) {
-              props = {}
-              _OC_setCustomProps(slf.__obj, props)
-            }
-            slf.__ocProps = props;
-          }
-          var c = methodName.charCodeAt(3);
-          if (methodName.length > 3 && methodName.substr(0,3) == 'set' && c >= 65 && c <= 90) {
-            return function(val) {
-              var propName = methodName[3].toLowerCase() + methodName.substr(4)
-              if(val === undefined || val === null) {
-                val = false;
-              }
-              slf.__ocProps[propName] = val
-            }
-          } else {
-            return function(){ 
-              return slf.__ocProps[methodName]
-            }
-          }
-        }
       }
 
       return function(){
@@ -203,12 +178,54 @@ var global = this
     }
   }
 
+  var _propertiesGetFun = function(name){
+    var slf = this;
+    if (!slf.__ocProps) {
+      var props = _OC_getCustomProps(slf.__obj)
+      if (!props) {
+        props = {}
+        _OC_setCustomProps(slf.__obj, props)
+      }
+      slf.__ocProps = props;
+    }
+    return function(){
+      return slf.__ocProps[name];
+    };
+  }
+
+  var _propertiesSetFun = function(name){
+    var slf = this;
+    if (!slf.__ocProps) {
+      var props = _OC_getCustomProps(slf.__obj)
+      if (!props) {
+        props = {}
+        _OC_setCustomProps(slf.__obj, props)
+      }
+      slf.__ocProps = props;
+    }
+    return function(jval){
+      slf.__ocProps[name] = jval;
+    };
+  }
+
   global.defineClass = function(declaration, properties, instMethods, clsMethods) {
     var newInstMethods = {}, newClsMethods = {}
     if (!(properties instanceof Array)) {
       clsMethods = instMethods
       instMethods = properties
       properties = null
+    }
+
+    if (properties) {
+      properties.forEach(function(name){
+        if (!instMethods[name]) {
+          instMethods[name] = _propertiesGetFun(name);
+        }
+        var nameOfSet = "set"+ name.substr(0,1).toUpperCase() + name.substr(1);
+        if (!instMethods[nameOfSet]) {
+          instMethods[nameOfSet] = _propertiesSetFun(name);
+        }
+      });
     }
 
     var realClsName = declaration.split(':')[0].trim()
@@ -223,7 +240,6 @@ var global = this
     _ocCls[className] = {
       instMethods: {},
       clsMethods: {},
-      props: {}
     }
 
     if (superCls.length && _ocCls[superCls]) {
@@ -233,20 +249,11 @@ var global = this
       for (var funcName in _ocCls[superCls]['clsMethods']) {
         _ocCls[className]['clsMethods'][funcName] = _ocCls[superCls]['clsMethods'][funcName]
       }
-      if (_ocCls[superCls]['props']) {
-        _ocCls[className]['props'] = JSON.parse(JSON.stringify(_ocCls[superCls]['props']));
-      }
     }
 
     _setupJSMethod(className, instMethods, 1, realClsName)
     _setupJSMethod(className, clsMethods, 0, realClsName)
 
-    if (properties) {
-      properties.forEach(function(o){
-        _ocCls[className]['props'][o] = 1
-        _ocCls[className]['props']['set' + o.substr(0,1).toUpperCase() + o.substr(1)] = 1
-      })
-    }
     return require(className)
   }
 
