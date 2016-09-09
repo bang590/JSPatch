@@ -29,23 +29,19 @@
 #if TARGET_IPHONE_SIMULATOR
     //playground调试
     //JS测试包的本地绝对路径
-    NSString *rootPath = @"/Users/Awhisper/Desktop/Github/JSPatch/Demo/iOSPlaygroundToolDemo/JSPatchPlaygroundDemo";
+    NSString *rootPath = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"projectPath"];;
     
-    NSString *scriptRootPath = [rootPath stringByAppendingPathComponent:@"js"];
-    NSString *mainScriptPath = [NSString stringWithFormat:@"%@/%@", scriptRootPath, @"demo.js"];
+    NSString *scriptPath = [NSString stringWithFormat:@"%@/js/%@", rootPath, @"/demo.js"];
     [JPPlayground setReloadCompleteHandler:^{
         [self showController];
     }];
-    [JPPlayground startPlaygroundWithJSPath:mainScriptPath];
-    
+    [JPPlayground startPlaygroundWithJSPath:scriptPath];
     
 #else
     //正常执行JSPatch
     NSString *rootPath = [[NSBundle mainBundle] bundlePath];
-    
     NSString *scriptPath = [rootPath stringByAppendingPathComponent:@"demo.js"];
-    NSString *script = [NSString stringWithContentsOfFile:scriptPath encoding:NSUTF8StringEncoding error:nil];
-    [JPEngine evaluateScript:script];
+    [JPEngine evaluateScriptWithPath:scriptPath];
 #endif
     
     

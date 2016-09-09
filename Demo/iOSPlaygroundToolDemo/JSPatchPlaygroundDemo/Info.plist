@@ -43,5 +43,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>projectPath</key>
+	<string>$(SRCROOT)/$(TARGET_NAME)</string>
 </dict>
 </plist>

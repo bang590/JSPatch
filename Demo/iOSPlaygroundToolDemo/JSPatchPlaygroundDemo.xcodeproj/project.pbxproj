@@ -53,7 +53,6 @@
 		6C5D37BB1D56F58600B78CD9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C5D37B91D56F58600B78CD9 /* LaunchScreen.storyboard */; };
 		6C5D387B1D57237200B78CD9 /* JPRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C5D387A1D57237200B78CD9 /* JPRootViewController.m */; };
 		6CC772261D575D400001B951 /* demo.js in Resources */ = {isa = PBXBuildFile; fileRef = 6CC772241D575D400001B951 /* demo.js */; };
-		6CC772271D575D400001B951 /* demo2.js in Resources */ = {isa = PBXBuildFile; fileRef = 6CC772251D575D400001B951 /* demo2.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -148,7 +147,6 @@
 		6C5D38791D57237200B78CD9 /* JPRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPRootViewController.h; sourceTree = "<group>"; };
 		6C5D387A1D57237200B78CD9 /* JPRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPRootViewController.m; sourceTree = "<group>"; };
 		6CC772241D575D400001B951 /* demo.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = demo.js; sourceTree = "<group>"; };
-		6CC772251D575D400001B951 /* demo2.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = demo2.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -417,7 +415,6 @@
 			isa = PBXGroup;
 			children = (
 				6CC772241D575D400001B951 /* demo.js */,
-				6CC772251D575D400001B951 /* demo2.js */,
 			);
 			name = js;
 			path = JSPatchPlaygroundDemo/js;
@@ -482,7 +479,6 @@
 			files = (
 				6C0910FA1D5829C6006CB65E /* JSPatch.js in Resources */,
 				6CC772261D575D400001B951 /* demo.js in Resources */,
-				6CC772271D575D400001B951 /* demo2.js in Resources */,
 				6C5D37BB1D56F58600B78CD9 /* LaunchScreen.storyboard in Resources */,
 				6C5D37B81D56F58600B78CD9 /* Assets.xcassets in Resources */,
 				6C5D37B61D56F58600B78CD9 /* Main.storyboard in Resources */,
