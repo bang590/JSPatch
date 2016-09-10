@@ -13,6 +13,8 @@
 		2D6D12FD1B0B8CF20095A435 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D12FA1B0B8CF20095A435 /* Images.xcassets */; };
 		2D6D12FF1B0B8CF20095A435 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6D12FC1B0B8CF20095A435 /* main.m */; };
 		2D6D13011B0B8CFF0095A435 /* demo.js in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D13001B0B8CFF0095A435 /* demo.js */; };
+		360BCF4E1D82DCFC00202977 /* JPDispatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 360BCF4D1D82DCFC00202977 /* JPDispatch.m */; };
+		360BCF541D82EFCD00202977 /* JPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 360BCF531D82EFCD00202977 /* JPProtocol.m */; };
 		3613C3861C6329F300E915CB /* JPEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3611C6329F300E915CB /* JPEngine.m */; };
 		3613C3871C6329F300E915CB /* JSPatch.js in Resources */ = {isa = PBXBuildFile; fileRef = 3613C3621C6329F300E915CB /* JSPatch.js */; };
 		3613C3881C6329F300E915CB /* JPLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3651C6329F300E915CB /* JPLoader.m */; };
@@ -100,6 +102,10 @@
 		2D6D12FB1B0B8CF20095A435 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D6D12FC1B0B8CF20095A435 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2D6D13001B0B8CFF0095A435 /* demo.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = demo.js; sourceTree = "<group>"; };
+		360BCF4C1D82DCFC00202977 /* JPDispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPDispatch.h; sourceTree = "<group>"; };
+		360BCF4D1D82DCFC00202977 /* JPDispatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPDispatch.m; sourceTree = "<group>"; };
+		360BCF521D82EFCD00202977 /* JPProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPProtocol.h; sourceTree = "<group>"; };
+		360BCF531D82EFCD00202977 /* JPProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPProtocol.m; sourceTree = "<group>"; };
 		3613C3601C6329F300E915CB /* JPEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPEngine.h; sourceTree = "<group>"; };
 		3613C3611C6329F300E915CB /* JPEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPEngine.m; sourceTree = "<group>"; };
 		3613C3621C6329F300E915CB /* JSPatch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = JSPatch.js; sourceTree = "<group>"; };
@@ -280,6 +286,10 @@
 				3646F8B31CA0F89C00E10774 /* JPLocker.m */,
 				4F9EBFC31D50745200EC72C1 /* JPNumber.h */,
 				4F9EBFC41D50745200EC72C1 /* JPNumber.m */,
+				360BCF4C1D82DCFC00202977 /* JPDispatch.h */,
+				360BCF4D1D82DCFC00202977 /* JPDispatch.m */,
+				360BCF521D82EFCD00202977 /* JPProtocol.h */,
+				360BCF531D82EFCD00202977 /* JPProtocol.m */,
 			);
 			name = Extensions;
 			path = ../../../Extensions;
@@ -669,6 +679,7 @@
 			files = (
 				36CC3A591CFEE6A80001465B /* JPUIImage.m in Sources */,
 				369493BF1D001EAE003F44CA /* ffi_i386.c in Sources */,
+				360BCF4E1D82DCFC00202977 /* JPDispatch.m in Sources */,
 				3613C3AF1C6346F500E915CB /* JPCleaner.m in Sources */,
 				2D5D89211B0B8BFF009382EC /* AppDelegate.m in Sources */,
 				36CC3A511CFEE6A80001465B /* JPCGContext.m in Sources */,
@@ -681,6 +692,7 @@
 				36CC3A501CFEE6A80001465B /* JPCGColor.m in Sources */,
 				4F9EBFC51D50745200EC72C1 /* JPNumber.m in Sources */,
 				36CC3A521CFEE6A80001465B /* JPCGGeometry.m in Sources */,
+				360BCF541D82EFCD00202977 /* JPProtocol.m in Sources */,
 				369493BB1D001EAE003F44CA /* types.c in Sources */,
 				369493B11D001EAE003F44CA /* sysv_arm64.S in Sources */,
 				369493C01D001EAE003F44CA /* win32_i386.S in Sources */,
