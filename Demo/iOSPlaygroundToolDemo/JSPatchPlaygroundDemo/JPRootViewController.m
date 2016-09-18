@@ -57,8 +57,11 @@
 - (void)showController
 {
     Class clz = NSClassFromString(@"JPDemoController");
-    id vc = [[clz alloc]init];
-    [self.navigationController pushViewController:vc animated:NO];
+    if (clz) {
+        id vc = [[clz alloc]init];
+        [self.navigationController popViewControllerAnimated:NO];
+        [self.navigationController pushViewController:vc animated:NO];
+    }
 }
 
 
