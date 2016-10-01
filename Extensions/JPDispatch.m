@@ -48,32 +48,32 @@
     
     
     /* dispatch & dispatch_barrier */
-    context[@"dispatch_async"] = ^void(id queue, JSValue *cb) {
-        dispatch_async(queue, ^{
+    context[@"dispatch_async"] = ^void(JSValue *queue, JSValue *cb) {
+        dispatch_async([self formatJSToOC:queue], ^{
             [cb callWithArguments:nil];
         });
     };
     
-    context[@"dispatch_sync"] = ^void(id queue, JSValue *cb) {
-        dispatch_sync(queue, ^{
+    context[@"dispatch_sync"] = ^void(JSValue *queue, JSValue *cb) {
+        dispatch_sync([self formatJSToOC:queue], ^{
             [cb callWithArguments:nil];
         });
     };
     
-    context[@"dispatch_barrier_async"] = ^void(id queue, JSValue *cb) {
-        dispatch_barrier_async(queue, ^{
+    context[@"dispatch_barrier_async"] = ^void(JSValue *queue, JSValue *cb) {
+        dispatch_barrier_async([self formatJSToOC:queue], ^{
             [cb callWithArguments:nil];
         });
     };
     
-    context[@"dispatch_barrier_sync"] = ^void(id queue, JSValue *cb) {
-        dispatch_barrier_sync(queue, ^{
+    context[@"dispatch_barrier_sync"] = ^void(JSValue *queue, JSValue *cb) {
+        dispatch_barrier_sync([self formatJSToOC:queue], ^{
             [cb callWithArguments:nil];
         });
     };
     
-    context[@"dispatch_apply"] = ^void(size_t iterations, id queue, JSValue *cb) {
-        dispatch_apply(iterations, queue, ^(size_t index) {
+    context[@"dispatch_apply"] = ^void(size_t iterations, JSValue *queue, JSValue *cb) {
+        dispatch_apply(iterations, [self formatJSToOC:queue], ^(size_t index) {
             [cb callWithArguments:@[@(index)]];
         });
     };
@@ -86,28 +86,28 @@
         return group;
     };
     
-    context[@"dispatch_group_async"] = ^void(id group, id queue, JSValue *cb) {
-        dispatch_group_async(group, queue, ^{
+    context[@"dispatch_group_async"] = ^void(JSValue *group, JSValue *queue, JSValue *cb) {
+        dispatch_group_async([self formatJSToOC:group], [self formatJSToOC:queue], ^{
             [cb callWithArguments:nil];
         });
     };
     
-    context[@"dispatch_group_wait"] = ^void(id group, uint64_t dispatch_time) {
-        dispatch_group_wait(group, dispatch_time);
+    context[@"dispatch_group_wait"] = ^void(JSValue *group, uint64_t dispatch_time) {
+        dispatch_group_wait([self formatJSToOC:group], dispatch_time);
     };
     
-    context[@"dispatch_group_notify"] = ^void(id group, id queue, JSValue *cb) {
-        dispatch_group_notify(group, queue, ^{
+    context[@"dispatch_group_notify"] = ^void(JSValue *group, JSValue *queue, JSValue *cb) {
+        dispatch_group_notify([self formatJSToOC:group], [self formatJSToOC:queue], ^{
             [cb callWithArguments:nil];
         });
     };
     
-    context[@"dispatch_group_enter"] = ^void(id group) {
-        dispatch_group_enter(group);
+    context[@"dispatch_group_enter"] = ^void(JSValue *group) {
+        dispatch_group_enter([self formatJSToOC:group]);
     };
     
-    context[@"dispatch_group_leave"] = ^void(id group) {
-        dispatch_group_leave(group);
+    context[@"dispatch_group_leave"] = ^void(JSValue *group) {
+        dispatch_group_leave([self formatJSToOC:group]);
     };
     
     
