@@ -138,6 +138,10 @@ static NSRecursiveLock     *_JSMethodForwardCallLock;
 static NSMutableDictionary *_protocolTypeEncodeDict;
 static NSMutableArray      *_pointersToRelease;
 
+#ifdef DEBUG
+static NSArray *_JSLastCallStack;
+#endif
+
 static void (^_exceptionBlock)(NSString *log) = ^void(NSString *log) {
     NSCAssert(NO, log);
 };
@@ -154,6 +158,17 @@ static void (^_exceptionBlock)(NSString *log) = ^void(NSString *log) {
     
     JSContext *context = [[JSContext alloc] init];
     
+#ifdef DEBUG
+    context[@"po"] = ^JSValue*(JSValue *obj) {
+        id ocObject = formatJSToOC(obj);
+        return [JSValue valueWithObject:[ocObject description] inContext:_context];
+    };
+
+    context[@"bt"] = ^JSValue*() {
+        return [JSValue valueWithObject:_JSLastCallStack inContext:_context];
+    };
+#endif
+
     context[@"_OC_defineClass"] = ^(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods) {
         return defineClass(classDeclaration, instanceMethods, classMethods);
     };
@@ -632,6 +647,9 @@ static JSValue *getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
 
 static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, NSInvocation *invocation)
 {
+#ifdef DEBUG
+    _JSLastCallStack = [NSThread callStackSymbols];
+#endif
     BOOL deallocFlag = NO;
     id slf = assignSlf;
     NSMethodSignature *methodSignature = [invocation methodSignature];
