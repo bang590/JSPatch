@@ -1672,6 +1672,10 @@ static id formatJSToOC(JSValue *jsval)
         if (obj[@"__isBlock"]) {
             return genCallbackBlock(jsval);
         }
+        if (obj[@"__clsName"]) {
+            NSString *clsName = [obj objectForKey:@"__clsName"];
+            return NSClassFromString(clsName);
+        }
         NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
         for (NSString *key in [obj allKeys]) {
             [newDict setObject:formatJSToOC(jsval[key]) forKey:key];
