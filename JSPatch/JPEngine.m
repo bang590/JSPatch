@@ -1323,7 +1323,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 case '#': {
                     Class result;
                     [invocation getReturnValue:&result];
-                    returnValue = formatOCToJS([JPBoxing boxClass:result]);
+                    returnValue = @{ @"__clsName": NSStringFromClass(result)};
                     break;
                 }
             }
