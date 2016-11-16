@@ -20,6 +20,17 @@
     return @"stringFromOC";
 }
 
++ (NSString *)classFunCallReturnString
+{
+    return @"classFunCallReturnString";
+}
+
+- (Class)funcReturnClass
+{
+    return [self class];
+}
+
+
 - (double)funcReturnDouble {
     return 100.0;
 }
@@ -54,6 +65,12 @@
 {
     return view;
 }
+
+- (NSString *)funcWithClassAndReturnString:(Class)cls
+{
+    return NSStringFromClass(cls);
+}
+
 
 - (void)funcWithInt:(int)intValue
 {

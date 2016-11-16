@@ -755,7 +755,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
             case '#': {
                 Class arg;
                 [invocation getArgument:&arg atIndex:i];
-                [argList addObject:[JPBoxing boxClass:arg]];
+                [argList addObject:@{ @"__clsName": NSStringFromClass(arg)}];
                 break;
             }
             default: {
@@ -1323,7 +1323,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 case '#': {
                     Class result;
                     [invocation getReturnValue:&result];
-                    returnValue = formatOCToJS([JPBoxing boxClass:result]);
+                    returnValue = @{ @"__clsName": NSStringFromClass(result)};
                     break;
                 }
             }
@@ -1671,6 +1671,10 @@ static id formatJSToOC(JSValue *jsval)
         }
         if (obj[@"__isBlock"]) {
             return genCallbackBlock(jsval);
+        }
+        if (obj[@"__clsName"]) {
+            NSString *clsName = [obj objectForKey:@"__clsName"];
+            return NSClassFromString(clsName);
         }
         NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
         for (NSString *key in [obj allKeys]) {
