@@ -30,6 +30,11 @@
     return [self class];
 }
 
+- (Class)funcToSwizzleReturnClass
+{
+    return nil;
+}
+
 
 - (double)funcReturnDouble {
     return 100.0;
@@ -274,6 +279,9 @@ typedef struct {
     
     char *cStr = [self funcToSwizzleTestChar:"JSPatch"];
     self.funcToSwizzleTestCharPassed = strcmp("JSPatch", cStr) == 0;
+    
+    Class myClass = [self funcToSwizzleReturnClass];
+    self.funcToSwizzleReturnClassPassed = [NSStringFromClass(myClass) isEqualToString:@"UIView"];
     
     JPTestStruct *testStruct = (JPTestStruct*)malloc(sizeof(JPTestStruct));
     testStruct->idx = 42;

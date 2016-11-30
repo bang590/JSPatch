@@ -120,6 +120,7 @@
     XCTAssert(obj.funcToSwizzleTestClassPassed, @"funcToSwizzleTestClassPassed");
     XCTAssert(obj.funcToSwizzleTestSelectorPassed, @"funcToSwizzleTestSelectorPassed");
     XCTAssert(obj.funcToSwizzleTestCharPassed, @"funcToSwizzleTestCharPassed");
+    XCTAssert(obj.funcToSwizzleTestClassPassed,@"funcToSwizzleTestClassPassed");
     XCTAssert(obj.funcTestCharPassed, @"funcTestCharPassed");
     XCTAssert(obj.funcToSwizzleTestPointerPassed, @"funcToSwizzleTestPointerPassed");
     XCTAssert(obj.funcTestPointerPassed, @"funcTestPointerPassed");

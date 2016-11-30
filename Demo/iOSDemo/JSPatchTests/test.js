@@ -90,6 +90,9 @@ require('JPEngine').defineStruct({
     funcToSwizzleTestPointer: function(pointer) {
       return pointer
     },
+    funcToSwizzleReturnClass:function(){
+      return UIView.class()
+    }
   },
   {
     classFuncToSwizzle_int: function(o, num) {
