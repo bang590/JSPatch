@@ -90,6 +90,9 @@ require('JPEngine').defineStruct({
     funcToSwizzleTestPointer: function(pointer) {
       return pointer
     },
+    funcToSwizzleReturnClass:function(){
+      return UIView.class()
+    }
   },
   {
     classFuncToSwizzle_int: function(o, num) {
@@ -129,6 +132,14 @@ require('JPEngine').defineStruct({
   obj.funcReturnVoid();
   var testReturnString = obj.funcReturnString().toJS();
   obj.setFuncReturnStringPassed(testReturnString == "stringFromOC")
+
+  ////////Test Class function call
+  testReturnString = obj.funcReturnClass().classFunCallReturnString().toJS();
+  obj.setFuncReturnClassPassed(testReturnString == "classFunCallReturnString")
+ 
+  ////////Test Parameter Class return String
+  var instanceString = obj.funcWithClassAndReturnString(JPTestObject.class()).toJS()
+  obj.setFuncWithClassAndReturnStringPassed(instanceString == "JPTestObject")
 
   ///////Test for functions which return double/float, cause there's a fatal bug in NSInvocation on iOS7.0
   var testReturnDouble = obj.funcReturnDouble()

@@ -755,7 +755,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
             case '#': {
                 Class arg;
                 [invocation getArgument:&arg atIndex:i];
-                [argList addObject:[JPBoxing boxClass:arg]];
+                [argList addObject:@{ @"__clsName": NSStringFromClass(arg)}];
                 break;
             }
             default: {
@@ -834,9 +834,10 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
         #define JP_FWD_RET_CODE_CLASS    \
             Class ret;   \
             id obj = formatJSToOC(jsval); \
-            if ([obj isKindOfClass:[JPBoxing class]]) { \
-                ret = [((JPBoxing *)obj) unboxClass]; \
-            }
+            if (object_isClass(obj)) { \
+                ret = obj; \
+            }\
+
 
         #define JP_FWD_RET_CODE_SEL    \
             SEL ret;   \
@@ -1187,8 +1188,8 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 }
             }
             case '#': {
-                if ([valObj isKindOfClass:[JPBoxing class]]) {
-                    Class value = [((JPBoxing *)valObj) unboxClass];
+                if (object_isClass(valObj)) {
+                    Class value = (Class)valObj;
                     [invocation setArgument:&value atIndex:i];
                     break;
                 }
@@ -1323,7 +1324,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 case '#': {
                     Class result;
                     [invocation getReturnValue:&result];
-                    returnValue = formatOCToJS([JPBoxing boxClass:result]);
+                    returnValue = @{ @"__clsName": NSStringFromClass(result)};
                     break;
                 }
             }
@@ -1647,6 +1648,9 @@ static id formatOCToJS(id obj)
     if ([obj isKindOfClass:NSClassFromString(@"NSBlock")] || [obj isKindOfClass:[JSValue class]]) {
         return obj;
     }
+    if (object_isClass(obj)) {
+        return @{ @"__clsName": NSStringFromClass(obj)};
+    }
     return _wrapObj(obj);
 }
 
@@ -1671,6 +1675,10 @@ static id formatJSToOC(JSValue *jsval)
         }
         if (obj[@"__isBlock"]) {
             return genCallbackBlock(jsval);
+        }
+        if (obj[@"__clsName"]) {
+            NSString *clsName = [obj objectForKey:@"__clsName"];
+            return NSClassFromString(clsName);
         }
         NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
         for (NSString *key in [obj allKeys]) {

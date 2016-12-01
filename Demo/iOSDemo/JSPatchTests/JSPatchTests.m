@@ -54,6 +54,8 @@
     
     XCTAssert(obj.funcReturnStringPassed, @"funcReturnStringPassed");
     
+    XCTAssert(obj.funcReturnClassPassed, @"funcReturnClassPassed");
+    
     // Test for functions which return double/float, cause there's a fatal bug in NSInvocation on iOS7.0
     // This case shall fail if you comment line 957~959 in JPEngine.m on iOS7.0.
     XCTAssert(obj.funcReturnDoublePassed, @"funcReturnDoublePassed");
@@ -72,6 +74,7 @@
     XCTAssert(obj.funcWithSizeAndReturnSizePassed, @"funcWithSizeAndReturnSizePassed");
     XCTAssert(obj.funcWithPointAndReturnPointPassed, @"funcWithPointAndReturnPointPassed");
     XCTAssert(obj.funcWithRangeAndReturnRangePassed, @"funcWithRangeAndReturnRangePassed");
+    XCTAssert(obj.funcWithClassAndReturnStringPassed, @"funcWithClassAndReturnInstancePassed");
     
     XCTAssert(obj.funcReturnViewWithFramePassed, @"funcReturnViewWithFramePassed");
     XCTAssert(obj.funcWithViewAndReturnViewPassed, @"funcWithViewAndReturnViewPassed");
@@ -117,6 +120,7 @@
     XCTAssert(obj.funcToSwizzleTestClassPassed, @"funcToSwizzleTestClassPassed");
     XCTAssert(obj.funcToSwizzleTestSelectorPassed, @"funcToSwizzleTestSelectorPassed");
     XCTAssert(obj.funcToSwizzleTestCharPassed, @"funcToSwizzleTestCharPassed");
+    XCTAssert(obj.funcToSwizzleTestClassPassed,@"funcToSwizzleTestClassPassed");
     XCTAssert(obj.funcTestCharPassed, @"funcTestCharPassed");
     XCTAssert(obj.funcToSwizzleTestPointerPassed, @"funcToSwizzleTestPointerPassed");
     XCTAssert(obj.funcTestPointerPassed, @"funcTestPointerPassed");

@@ -248,7 +248,7 @@ static NSMutableDictionary *_typeEncodeDict;
                 break;
             }
             case '#': {
-                id ptr = [((JPBoxing *)arguments[i]) unboxClass];
+                id ptr = arguments[i];
                 void **argPtr = ffiArgPtr;
                 *argPtr = (__bridge void *)(ptr);
                 break;
@@ -309,9 +309,7 @@ static NSMutableDictionary *_typeEncodeDict;
                     break;
                 }
                 case '#': {
-                    JPBoxing *box = [[JPBoxing alloc] init];
-                    box.cls = (__bridge id)(*(void**)returnPtr);
-                    ret = box;
+                    ret = (__bridge id)(*(void**)returnPtr);
                     break;
                 }
             }
