@@ -179,31 +179,31 @@ var global = this
   }
 
   var _propertiesGetFun = function(name){
-    var slf = this;
-    if (!slf.__ocProps) {
-      var props = _OC_getCustomProps(slf.__obj)
-      if (!props) {
-        props = {}
-        _OC_setCustomProps(slf.__obj, props)
-      }
-      slf.__ocProps = props;
-    }
     return function(){
+      var slf = this;
+      if (!slf.__ocProps) {
+        var props = _OC_getCustomProps(slf.__obj)
+        if (!props) {
+          props = {}
+          _OC_setCustomProps(slf.__obj, props)
+        }
+        slf.__ocProps = props;
+      }
       return slf.__ocProps[name];
     };
   }
 
   var _propertiesSetFun = function(name){
-    var slf = this;
-    if (!slf.__ocProps) {
-      var props = _OC_getCustomProps(slf.__obj)
-      if (!props) {
-        props = {}
-        _OC_setCustomProps(slf.__obj, props)
-      }
-      slf.__ocProps = props;
-    }
     return function(jval){
+      var slf = this;
+      if (!slf.__ocProps) {
+        var props = _OC_getCustomProps(slf.__obj)
+        if (!props) {
+          props = {}
+          _OC_setCustomProps(slf.__obj, props)
+        }
+        slf.__ocProps = props;
+      }
       slf.__ocProps[name] = jval;
     };
   }
