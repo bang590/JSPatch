@@ -138,6 +138,10 @@ static NSRecursiveLock     *_JSMethodForwardCallLock;
 static NSMutableDictionary *_protocolTypeEncodeDict;
 static NSMutableArray      *_pointersToRelease;
 
+#ifdef DEBUG
+static NSArray *_JSLastCallStack;
+#endif
+
 static void (^_exceptionBlock)(NSString *log) = ^void(NSString *log) {
     NSCAssert(NO, log);
 };
@@ -154,6 +158,17 @@ static void (^_exceptionBlock)(NSString *log) = ^void(NSString *log) {
     
     JSContext *context = [[JSContext alloc] init];
     
+#ifdef DEBUG
+    context[@"po"] = ^JSValue*(JSValue *obj) {
+        id ocObject = formatJSToOC(obj);
+        return [JSValue valueWithObject:[ocObject description] inContext:_context];
+    };
+
+    context[@"bt"] = ^JSValue*() {
+        return [JSValue valueWithObject:_JSLastCallStack inContext:_context];
+    };
+#endif
+
     context[@"_OC_defineClass"] = ^(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods) {
         return defineClass(classDeclaration, instanceMethods, classMethods);
     };
@@ -632,6 +647,9 @@ static JSValue *getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
 
 static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, NSInvocation *invocation)
 {
+#ifdef DEBUG
+    _JSLastCallStack = [NSThread callStackSymbols];
+#endif
     BOOL deallocFlag = NO;
     id slf = assignSlf;
     NSMethodSignature *methodSignature = [invocation methodSignature];
@@ -737,7 +755,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
             case '#': {
                 Class arg;
                 [invocation getArgument:&arg atIndex:i];
-                [argList addObject:[JPBoxing boxClass:arg]];
+                [argList addObject:@{ @"__clsName": NSStringFromClass(arg)}];
                 break;
             }
             default: {
@@ -816,9 +834,10 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
         #define JP_FWD_RET_CODE_CLASS    \
             Class ret;   \
             id obj = formatJSToOC(jsval); \
-            if ([obj isKindOfClass:[JPBoxing class]]) { \
-                ret = [((JPBoxing *)obj) unboxClass]; \
-            }
+            if (object_isClass(obj)) { \
+                ret = obj; \
+            }\
+
 
         #define JP_FWD_RET_CODE_SEL    \
             SEL ret;   \
@@ -1169,8 +1188,8 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 }
             }
             case '#': {
-                if ([valObj isKindOfClass:[JPBoxing class]]) {
-                    Class value = [((JPBoxing *)valObj) unboxClass];
+                if (object_isClass(valObj)) {
+                    Class value = (Class)valObj;
                     [invocation setArgument:&value atIndex:i];
                     break;
                 }
@@ -1305,7 +1324,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 case '#': {
                     Class result;
                     [invocation getReturnValue:&result];
-                    returnValue = formatOCToJS([JPBoxing boxClass:result]);
+                    returnValue = @{ @"__clsName": NSStringFromClass(result)};
                     break;
                 }
             }
@@ -1629,6 +1648,9 @@ static id formatOCToJS(id obj)
     if ([obj isKindOfClass:NSClassFromString(@"NSBlock")] || [obj isKindOfClass:[JSValue class]]) {
         return obj;
     }
+    if (object_isClass(obj)) {
+        return @{ @"__clsName": NSStringFromClass(obj)};
+    }
     return _wrapObj(obj);
 }
 
@@ -1653,6 +1675,10 @@ static id formatJSToOC(JSValue *jsval)
         }
         if (obj[@"__isBlock"]) {
             return genCallbackBlock(jsval);
+        }
+        if (obj[@"__clsName"]) {
+            NSString *clsName = [obj objectForKey:@"__clsName"];
+            return NSClassFromString(clsName);
         }
         NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
         for (NSString *key in [obj allKeys]) {
