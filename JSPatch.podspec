@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "JSPatch"
-  s.version      = "1.1"
+  s.version      = "1.1.1"
   s.summary      = "JSPatch bridge Objective-C and JavaScript. You can call any"  \
                    " Objective-C class and method in JavaScript by just" \
                    " including a small engine."
@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/bang590/JSPatch"
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.author             = { "bang" => "bang590@gmail.com" }
-  s.social_media_url   = "http://twitter.com/bang590"
+  s.social_media_url   = "https://twitter.com/bang590"
 
   s.ios.deployment_target = '6.0'
   s.tvos.deployment_target = '9.0'
@@ -35,11 +35,21 @@ Pod::Spec.new do |s|
     ss.resources    = "JSPatch/*.js"
   end
 
-  s.subspec 'Extensions' do |ss|
-    ss.ios.source_files = "Extensions/**/*.*" 
-    ss.tvos.source_files = "Extensions/**/*.*"
-    ss.ios.public_header_files = "Extensions/**/*.h"
-    ss.tvos.public_header_files = "Extensions/**/*.h"
+  s.subspec "Extensions" do |ss|
+    ss.ios.source_files = "Extensions/*" 
+    ss.ios.public_header_files = "Extensions/*.h"
+    ss.dependency 'JSPatch/Core'
+  end
+
+  s.subspec "JPCFunction" do |ss|
+    ss.ios.source_files = "Extensions/JPCFunction/**/*" 
+    ss.ios.public_header_files = "Extensions/JPCFunction/**/*.h"
+    ss.dependency 'JSPatch/Core'
+  end
+
+  s.subspec "JPCFunctionBinder" do |ss|
+    ss.ios.source_files = "Extensions/JPCFunctionBinder/**/*" 
+    ss.ios.public_header_files = "Extensions/JPCFunctionBinder/**/*.h"
     ss.dependency 'JSPatch/Core'
   end
 
