@@ -834,7 +834,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
         #define JP_FWD_RET_CODE_CLASS    \
             Class ret;   \
             id obj = formatJSToOC(jsval); \
-            if (object_isClass(obj)) { \
+            if (class_isMetaClass(object_getClass(obj))) { \
                 ret = obj; \
             }\
 
@@ -1188,7 +1188,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 }
             }
             case '#': {
-                if (object_isClass(valObj)) {
+                if (class_isMetaClass(object_getClass(valObj))) {
                     Class value = (Class)valObj;
                     [invocation setArgument:&value atIndex:i];
                     break;
@@ -1648,7 +1648,7 @@ static id formatOCToJS(id obj)
     if ([obj isKindOfClass:NSClassFromString(@"NSBlock")] || [obj isKindOfClass:[JSValue class]]) {
         return obj;
     }
-    if (object_isClass(obj)) {
+    if (class_isMetaClass(object_getClass(obj))) {
         return @{ @"__clsName": NSStringFromClass(obj)};
     }
     return _wrapObj(obj);
