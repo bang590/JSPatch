@@ -643,8 +643,6 @@ static JSValue *getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
     return func;
 }
 
-#pragma clang diagnostic pop
-
 static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, NSInvocation *invocation)
 {
 #ifdef DEBUG
