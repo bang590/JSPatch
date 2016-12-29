@@ -128,11 +128,13 @@ var global = this
     return global[clsName]
   }
 
-  global.require = function(clsNames) {
+  global.require = function() {
     var lastRequire
-    clsNames.split(',').forEach(function(clsName) {
-      lastRequire = _require(clsName.trim())
-    })
+    for (var i = 0; i < arguments.length; i ++) {
+      arguments[i].split(',').forEach(function(clsName) {
+        lastRequire = _require(clsName.trim())
+      })
+    }
     return lastRequire
   }
 
