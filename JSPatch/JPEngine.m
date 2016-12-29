@@ -1415,7 +1415,7 @@ static id genCallbackBlock(JSValue *jsVal)
     #define BLK_TRAITS_ARG(_idx, _paramName) \
     if (_idx < argTypes.count) { \
         NSString *argType = trim(argTypes[_idx]); \
-        if (blockTypeIsSCalarPointer(argType)) { \
+        if (blockTypeIsScalarPointer(argType)) { \
             [list addObject:formatOCToJS([JPBoxing boxPointer:_paramName])]; \
         } else if (blockTypeIsObject(trim(argTypes[_idx]))) {  \
             [list addObject:formatOCToJS((__bridge id)_paramName)]; \
@@ -1617,7 +1617,7 @@ static BOOL blockTypeIsObject(NSString *typeString)
     return [typeString rangeOfString:@"*"].location != NSNotFound || [typeString isEqualToString:@"id"];
 }
 
-static BOOL blockTypeIsSCalarPointer(NSString *typeString)
+static BOOL blockTypeIsScalarPointer(NSString *typeString)
 {
     NSUInteger location = [typeString rangeOfString:@"*"].location;
     NSString *typeWithoutAsterisk = trim([typeString stringByReplacingOccurrencesOfString:@"*" withString:@""]);
