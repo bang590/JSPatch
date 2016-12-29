@@ -263,14 +263,16 @@ var global = this
   }
 
   global.block = function(args, cb) {
-    var slf = this
+    var that = this
+    var slf = global.self
     if (args instanceof Function) {
       cb = args
       args = ''
     }
     var callback = function() {
       var args = Array.prototype.slice.call(arguments)
-      return cb.apply(slf, _formatOCToJS(args))
+      global.self = slf
+      return cb.apply(that, _formatOCToJS(args))
     }
     return {args: args, cb: callback, __isBlock: 1}
   }
