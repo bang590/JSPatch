@@ -58,6 +58,10 @@ static NSMethodSignature *fixSignature(NSMethodSignature *signature)
 {
 #if TARGET_OS_IPHONE
 #ifdef __LP64__
+    if (!signature) {
+        return nil;
+    }
+    
     if ([[UIDevice currentDevice].systemVersion floatValue] < 7.1) {
         BOOL isReturnDouble = (strcmp([signature methodReturnType], "d") == 0);
         BOOL isReturnFloat = (strcmp([signature methodReturnType], "f") == 0);
