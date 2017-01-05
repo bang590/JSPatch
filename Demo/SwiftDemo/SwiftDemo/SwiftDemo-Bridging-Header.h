@@ -3,7 +3,7 @@
 //  SwiftDemo
 //
 //  Created by bang on 2/4/16.
-//  Copyright © 2016 Arlen. All rights reserved.
+//  Copyright © 2016 jspatch. All rights reserved.
 //
 
 #ifndef SwiftDemo_Bridging_Header_h
