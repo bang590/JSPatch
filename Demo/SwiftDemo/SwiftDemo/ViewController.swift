@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  SwiftDemo
 //
-//  Created by KouArlen on 16/2/3.
+//  Created by jspatch on 16/2/3.
 //  Copyright © 2016年 Arlen. All rights reserved.
 //
 
@@ -17,7 +17,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "TableViewCell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "TableViewCell")
         
         let testObject = TestObject()
         testObject.testLog()
@@ -30,7 +30,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
      
      http://stackoverflow.com/questions/25651081/method-swizzling-in-swift
      
-     In production environment, I advise you to add the dynamic attribute to all your Custom Function.
+     In production environment, I advise you to add the dynamic attribute to all your Custom Functions.
      But you must know, this operation will reduce efficiency.
      */
     dynamic func testLog() {
@@ -43,16 +43,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 5
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("TableViewCell", forIndexPath: indexPath)
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TableViewCell", for: indexPath)
         cell.textLabel?.text = NSString(format: "cell%d", indexPath.row) as String;
         return cell
     }
