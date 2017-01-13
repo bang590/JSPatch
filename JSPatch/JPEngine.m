@@ -34,6 +34,7 @@ JPBOXING_GEN(boxAssignObj, assignObj, id)
     if (self.obj) return self.obj;
     if (self.weakObj) return self.weakObj;
     if (self.assignObj) return self.assignObj;
+    if (self.cls) return self.cls;
     return self;
 }
 - (void *)unboxPointer
@@ -757,7 +758,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
             case '#': {
                 Class arg;
                 [invocation getArgument:&arg atIndex:i];
-                [argList addObject:@{ @"__clsName": NSStringFromClass(arg)}];
+                [argList addObject:[JPBoxing boxClass:arg]];
                 break;
             }
             default: {
@@ -836,9 +837,9 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
         #define JP_FWD_RET_CODE_CLASS    \
             Class ret;   \
             id obj = formatJSToOC(jsval); \
-            if (class_isMetaClass(object_getClass(obj))) { \
-                ret = obj; \
-            }\
+            if ([obj isKindOfClass:[JPBoxing class]]) { \
+               ret = [((JPBoxing *)obj) unboxClass]; \
+            }
 
 
         #define JP_FWD_RET_CODE_SEL    \
@@ -1020,7 +1021,12 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
    
     if (instance) {
         instance = formatJSToOC(instance);
-        if (!instance || instance == _nilObj || [instance isKindOfClass:[JPBoxing class]]) return @{@"__isNil": @(YES)};
+        if (class_isMetaClass(object_getClass(instance))) {
+            className = NSStringFromClass((Class)instance);
+            instance = nil;
+        } else if (!instance || instance == _nilObj || [instance isKindOfClass:[JPBoxing class]]) {
+            return @{@"__isNil": @(YES)};
+        }
     }
     id argumentsObj = formatJSToOC(arguments);
     
@@ -1190,8 +1196,8 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 }
             }
             case '#': {
-                if (class_isMetaClass(object_getClass(valObj))) {
-                    Class value = (Class)valObj;
+                if ([valObj isKindOfClass:[JPBoxing class]]) {
+                    Class value = [((JPBoxing *)valObj) unboxClass];
                     [invocation setArgument:&value atIndex:i];
                     break;
                 }
@@ -1326,7 +1332,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                 case '#': {
                     Class result;
                     [invocation getReturnValue:&result];
-                    returnValue = @{ @"__clsName": NSStringFromClass(result)};
+                    returnValue = formatOCToJS([JPBoxing boxClass:result]);
                     break;
                 }
             }
@@ -1650,9 +1656,6 @@ static id formatOCToJS(id obj)
     if ([obj isKindOfClass:NSClassFromString(@"NSBlock")] || [obj isKindOfClass:[JSValue class]]) {
         return obj;
     }
-    if (class_isMetaClass(object_getClass(obj))) {
-        return @{ @"__clsName": NSStringFromClass(obj)};
-    }
     return _wrapObj(obj);
 }
 
@@ -1677,10 +1680,6 @@ static id formatJSToOC(JSValue *jsval)
         }
         if (obj[@"__isBlock"]) {
             return genCallbackBlock(jsval);
-        }
-        if (obj[@"__clsName"]) {
-            NSString *clsName = [obj objectForKey:@"__clsName"];
-            return NSClassFromString(clsName);
         }
         NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
         for (NSString *key in [obj allKeys]) {
