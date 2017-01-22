@@ -207,7 +207,7 @@ void JPBlockInterpreter(ffi_cif *cif, void *ret, void **args, void *userdata)
     };
     
     _descriptor = malloc(sizeof(struct JPSimulateBlockDescriptor));
-    memcpy(_descriptor, &descriptor, sizeof(struct JPSimulateBlock));
+    memcpy(_descriptor, &descriptor, sizeof(struct JPSimulateBlockDescriptor));
     
     struct JPSimulateBlock simulateBlock = {
         &_NSConcreteStackBlock,
