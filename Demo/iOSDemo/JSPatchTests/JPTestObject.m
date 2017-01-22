@@ -187,6 +187,11 @@ typedef id (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     return block;
 }
 
+- (ISTestBlock)funcReturnJSBlock:(ISTestBlock)jsblock
+{
+    return jsblock;
+}
+
 - (void)callBlockWithStringAndInt:(id(^)(NSString *str, int num))block
 {
     id ret = block(@"stringFromOC", 42);
@@ -215,6 +220,12 @@ typedef id (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
         return @"succ";
     };
     block(view, cbBlock);
+}
+
+- (void)callBlockWithDouble:(double(^)(double num))block
+{
+    double ret = block(4.2);
+    self.callBlockWithDoubleAndReturnDoublePassed = fabs(ret - 8.4) < 0.1;
 }
 
 #pragma mark - swizzle

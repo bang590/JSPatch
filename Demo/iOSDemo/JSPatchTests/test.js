@@ -241,6 +241,7 @@ require('JPEngine').defineStruct({
   obj.setPropertySetViewPassed(obj.testView.frame().x == 10)
 
   /////Block
+  require('JPEngine').addExtensions(['JPBlock']);
   var blk = obj.funcReturnBlock();
   blk("stringFromJS", 42);
 
@@ -257,22 +258,27 @@ require('JPEngine').defineStruct({
   }, view)
   obj.setFuncReturnObjectBlockReturnValuePassed(blkRet.toJS() == "succ")
 
-  obj.callBlockWithStringAndInt(block("NSString *, int", function(str, num) {
+  var jsBlkRet = obj.funcReturnJSBlock(block("id, NSString *, int", function(str, num) {
+    obj.setFuncReturnJSBlockPassed(str.toJS() == 'stringFromJS' && num == 42)
+  }))
+  jsBlkRet('stringFromJS', 42);
+    
+  obj.callBlockWithStringAndInt(block("id, NSString *, int", function(str, num) {
     obj.setCallBlockWithStringAndIntPassed(str.toJS() == "stringFromOC" && num == 42)
     return "succ"
   }))
 
-  obj.callBlockWithArrayAndView(block("NSArray *, UIView *", function(arr, view) {
+  obj.callBlockWithArrayAndView(block("id, NSArray *, UIView *", function(arr, view) {
     var viewFrame = view.frame()
     arr = arr.toJS()
     obj.setCallBlockWithArrayAndViewPassed(arr[0] == "stringFromOC" && arr[1] && viewFrame.width == 100)
   }))
 
-  obj.callBlockWithBoolAndBlock(block("BOOL, NSBlock *", function(b, blk) {
+  obj.callBlockWithBoolAndBlock(block("id, BOOL, NSBlock *", function(b, blk) {
     blk("stringFromJS", b ? 42 : 0);
   }))
 
-  obj.callBlockWithObjectAndBlock(block("UIView *, NSBlock *", function(view, blk) {
+  obj.callBlockWithObjectAndBlock(block("id, UIView *, NSBlock *", function(view, blk) {
     var viewFrame = view.frame()
     var ret = blk((viewFrame.width == 100 ? {
       "str": "stringFromJS",
@@ -280,6 +286,10 @@ require('JPEngine').defineStruct({
     }: {}), view)
     obj.setCallBlockWithObjectAndBlockReturnValuePassed(ret.toJS() == "succ")
   }))
+    
+  obj.callBlockWithDouble(block("double, double", function(num) {
+    return num + 4.2;
+  }));
     
   //////super
   var subObj = require("JPTestSubObject").alloc().init() 

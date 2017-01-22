@@ -276,7 +276,11 @@ var global = this
       global.self = slf
       return cb.apply(that, _formatOCToJS(args))
     }
-    return {args: args, cb: callback, __isBlock: 1}
+    var ret = {args: args, cb: callback, argCount: cb.length, __isBlock: 1}
+    if (global.__genBlock) {
+      ret['blockObj'] = global.__genBlock(args, cb)
+    }
+    return ret
   }
   
   if (global.console) {
