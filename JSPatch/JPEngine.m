@@ -55,6 +55,18 @@ JPBOXING_GEN(boxAssignObj, assignObj, id)
 typedef struct {double d;} JPDouble;
 typedef struct {float f;} JPFloat;
 
+#pragma mark - Fix getVersion Error when on simulator
+//https://github.com/bang590/JSPatch/issues/712
+static float JSGetIOSVersion()
+{
+    NSString *version = [[UIDevice currentDevice] systemVersion];
+    NSRange range = [version rangeOfString:@"."];
+    NSString *subStr = [version substringFromIndex:range.location+range.length];
+    subStr = [subStr stringByReplacingOccurrencesOfString:@"." withString:@""];
+    version = [[version substringToIndex:range.location+range.length] stringByAppendingString:subStr];
+    return [version floatValue];
+}
+
 static NSMethodSignature *fixSignature(NSMethodSignature *signature)
 {
 #if TARGET_OS_IPHONE
@@ -63,7 +75,7 @@ static NSMethodSignature *fixSignature(NSMethodSignature *signature)
         return nil;
     }
     
-    if ([[UIDevice currentDevice].systemVersion floatValue] < 7.1) {
+    if (JSGetIOSVersion() < 7.1) {
         BOOL isReturnDouble = (strcmp([signature methodReturnType], "d") == 0);
         BOOL isReturnFloat = (strcmp([signature methodReturnType], "f") == 0);
 
@@ -97,7 +109,7 @@ const static void *JPFixedFlagKey = &JPFixedFlagKey;
 {
 #if TARGET_OS_IPHONE
 #ifdef __LP64__
-    if ([[UIDevice currentDevice].systemVersion floatValue] < 7.1) {
+    if (JSGetIOSVersion() < 7.1) {
         NSNumber *flag = objc_getAssociatedObject(self, JPFixedFlagKey);
         if (!flag.boolValue) {
             SEL originalSelector = @selector(methodSignatureForSelector:);
