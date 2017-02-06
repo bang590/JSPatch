@@ -7,14 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1C4348D40A4D221DDAD99381 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A354BF41D400455B098BBF0B /* libPods.a */; };
 		36091A1B1CAAA2830012490F /* JPEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 36091A191CAAA2830012490F /* JPEngine.m */; };
 		36091A1C1CAAA2830012490F /* JSPatch.js in Resources */ = {isa = PBXBuildFile; fileRef = 36091A1A1CAAA2830012490F /* JSPatch.js */; };
 		36091A771CAB91990012490F /* JPCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 36091A5B1CAB91980012490F /* JPCleaner.m */; };
 		36091A791CAB91990012490F /* JPLocker.m in Sources */ = {isa = PBXBuildFile; fileRef = 36091A5F1CAB91980012490F /* JPLocker.m */; };
 		36091A7B1CAB91990012490F /* JPSpecialInit.m in Sources */ = {isa = PBXBuildFile; fileRef = 36091A631CAB91980012490F /* JPSpecialInit.m */; };
 		36CE19221CB17D6A007D73AC /* dribbble in Resources */ = {isa = PBXBuildFile; fileRef = 36CE19211CB17D6A007D73AC /* dribbble */; };
-		6A4C70F39EFE1488DDCC96A6 /* libPods-dribbbleDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15903DAE6B51ADB1AEC38472 /* libPods-dribbbleDemo.a */; };
 		DEBA57DF1B95D5A200B4DC66 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBA57DE1B95D5A200B4DC66 /* main.m */; };
 		DEBA57E21B95D5A300B4DC66 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBA57E11B95D5A300B4DC66 /* AppDelegate.m */; };
 		DEBA57EA1B95D5A300B4DC66 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DEBA57E91B95D5A300B4DC66 /* Images.xcassets */; };
@@ -70,8 +68,6 @@
 			files = (
 				DEBA58551B95DA7C00B4DC66 /* Security.framework in Frameworks */,
 				DEBA58531B95DA6E00B4DC66 /* UIKit.framework in Frameworks */,
-				1C4348D40A4D221DDAD99381 /* libPods.a in Frameworks */,
-				6A4C70F39EFE1488DDCC96A6 /* libPods-dribbbleDemo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
