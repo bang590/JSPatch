@@ -63,7 +63,7 @@ static NSMethodSignature *fixSignature(NSMethodSignature *signature)
         return nil;
     }
     
-    if ([[UIDevice currentDevice].systemVersion floatValue] < 7.1) {
+    if ([[UIDevice currentDevice].systemVersion floatValue] < 7.09) {
         BOOL isReturnDouble = (strcmp([signature methodReturnType], "d") == 0);
         BOOL isReturnFloat = (strcmp([signature methodReturnType], "f") == 0);
 
