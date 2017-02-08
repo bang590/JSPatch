@@ -1,5 +1,3 @@
-#ifdef __arm__
-
 /* -----------------------------------------------------------------*-C-*-
    ffitarget.h - Copyright (c) 2012  Anthony Green
                  Copyright (c) 2010  CodeSourcery
@@ -55,22 +53,30 @@ typedef enum ffi_abi {
 
 #define FFI_EXTRA_CIF_FIELDS			\
   int vfp_used;					\
-  short vfp_reg_free, vfp_nargs;		\
+  unsigned short vfp_reg_free, vfp_nargs;	\
   signed char vfp_args[16]			\
 
-/* Internally used. */
-#define FFI_TYPE_STRUCT_VFP_FLOAT  (FFI_TYPE_LAST + 1)
-#define FFI_TYPE_STRUCT_VFP_DOUBLE (FFI_TYPE_LAST + 2)
-
 #define FFI_TARGET_SPECIFIC_VARIADIC
+#define FFI_TARGET_HAS_COMPLEX_TYPE
 
 /* ---- Definitions for closures ----------------------------------------- */
 
 #define FFI_CLOSURES 1
-#define FFI_TRAMPOLINE_SIZE 20
+#define FFI_GO_CLOSURES 1
 #define FFI_NATIVE_RAW_API 0
 
+#if defined (FFI_EXEC_TRAMPOLINE_TABLE) && FFI_EXEC_TRAMPOLINE_TABLE
+
+#ifdef __MACH__
+#define FFI_TRAMPOLINE_SIZE 12
+#define FFI_TRAMPOLINE_CLOSURE_OFFSET 8
+#else
+#error "No trampoline table implementation"
 #endif
 
+#else
+#define FFI_TRAMPOLINE_SIZE 12
+#define FFI_TRAMPOLINE_CLOSURE_OFFSET FFI_TRAMPOLINE_SIZE
+#endif
 
 #endif

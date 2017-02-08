@@ -1,7 +1,5 @@
-#ifdef __i386__
-
 /* -----------------------------------------------------------------*-C-*-
-   libffi 3.2.1 - Copyright (c) 2011, 2014 Anthony Green
+   libffi 3.99999 - Copyright (c) 2011, 2014 Anthony Green
                     - Copyright (c) 1996-2003, 2007, 2008 Red Hat, Inc.
 
    Permission is hereby granted, free of charge, to any person
@@ -27,23 +25,14 @@
    ----------------------------------------------------------------------- */
 
 /* -------------------------------------------------------------------
-   The basic API is described in the README file.
+   Most of the API is documented in doc/libffi.texi.
 
-   The raw API is designed to bypass some of the argument packing
-   and unpacking on architectures for which it can be avoided.
+   The raw API is designed to bypass some of the argument packing and
+   unpacking on architectures for which it can be avoided.  Routines
+   are provided to emulate the raw API if the underlying platform
+   doesn't allow faster implementation.
 
-   The closure API allows interpreted functions to be packaged up
-   inside a C function pointer, so that they can be called as C functions,
-   with no understanding on the client side that they are interpreted.
-   It can also be used in other cases in which it is necessary to package
-   up a user specified parameter and a function pointer as a single
-   function pointer.
-
-   The closure API must be implemented in order to get its functionality,
-   e.g. for use by gij.  Routines are provided to emulate the raw API
-   if the underlying platform doesn't allow faster implementation.
-
-   More details on the raw and cloure API can be found in:
+   More details on the raw API can be found in:
 
    http://gcc.gnu.org/ml/java/1999-q3/msg00138.html
 
@@ -60,13 +49,13 @@ extern "C" {
 #endif
 
 /* Specify which architecture libffi is configured for. */
-#ifndef X86_DARWIN
-#define X86_DARWIN
+#ifndef X86_64
+#define X86_64
 #endif
 
 /* ---- System configuration information --------------------------------- */
 
-#include "ffitarget.h"
+#include <ffitarget.h>
 
 #ifndef LIBFFI_ASM
 
@@ -108,8 +97,8 @@ extern "C" {
 # endif
 #endif
 
-/* The closure code assumes that this works on pointers, i.e. a size_t	*/
-/* can hold a pointer.							*/
+/* The closure code assumes that this works on pointers, i.e. a size_t
+   can hold a pointer.  */
 
 typedef struct _ffi_type
 {
@@ -168,21 +157,20 @@ typedef struct _ffi_type
  #error "long size not supported"
 #endif
 
-/* Need minimal decorations for DLLs to works on Windows. */
-/* GCC has autoimport and autoexport.  Rely on Libtool to */
-/* help MSVC export from a DLL, but always declare data   */
-/* to be imported for MSVC clients.  This costs an extra  */
-/* indirection for MSVC clients using the static version  */
-/* of the library, but don't worry about that.  Besides,  */
-/* as a workaround, they can define FFI_BUILDING if they  */
-/* *know* they are going to link with the static library. */
+/* Need minimal decorations for DLLs to works on Windows.  GCC has
+   autoimport and autoexport.  Rely on Libtool to help MSVC export
+   from a DLL, but always declare data to be imported for MSVC
+   clients.  This costs an extra indirection for MSVC clients using
+   the static version of the library, but don't worry about that.
+   Besides, as a workaround, they can define FFI_BUILDING if they
+   *know* they are going to link with the static library.  */
 #if defined _MSC_VER && !defined FFI_BUILDING
 #define FFI_EXTERN extern __declspec(dllimport)
 #else
 #define FFI_EXTERN extern
 #endif
 
-/* These are defined in types.c */
+/* These are defined in types.c.  */
 FFI_EXTERN ffi_type ffi_type_void;
 FFI_EXTERN ffi_type ffi_type_uint8;
 FFI_EXTERN ffi_type ffi_type_sint8;
@@ -219,8 +207,6 @@ typedef enum {
   FFI_BAD_ABI
 } ffi_status;
 
-typedef unsigned FFI_TYPE;
-
 typedef struct {
   ffi_abi abi;
   unsigned nargs;
@@ -232,20 +218,6 @@ typedef struct {
   FFI_EXTRA_CIF_FIELDS;
 #endif
 } ffi_cif;
-
-#if 0
-/* Used to adjust size/alignment of ffi types.  */
-void ffi_prep_types (ffi_abi abi);
-#endif
-
-/* Used internally, but overridden by some architectures */
-ffi_status ffi_prep_cif_core(ffi_cif *cif,
-			     ffi_abi abi,
-			     unsigned int isvariadic,
-			     unsigned int nfixedargs,
-			     unsigned int ntotalargs,
-			     ffi_type *rtype,
-			     ffi_type **atypes);
 
 /* ---- Definitions for the raw API -------------------------------------- */
 
@@ -293,9 +265,9 @@ void ffi_ptrarray_to_raw (ffi_cif *cif, void **args, ffi_raw *raw);
 void ffi_raw_to_ptrarray (ffi_cif *cif, ffi_raw *raw, void **args);
 size_t ffi_raw_size (ffi_cif *cif);
 
-/* This is analogous to the raw API, except it uses Java parameter	*/
-/* packing, even on 64-bit machines.  I.e. on 64-bit machines		*/
-/* longs and doubles are followed by an empty 64-bit word.		*/
+/* This is analogous to the raw API, except it uses Java parameter
+   packing, even on 64-bit machines.  I.e. on 64-bit machines longs
+   and doubles are followed by an empty 64-bit word.  */
 
 void ffi_java_raw_call (ffi_cif *cif,
 			void (*fn)(void),
@@ -323,10 +295,13 @@ typedef struct {
   ffi_cif   *cif;
   void     (*fun)(ffi_cif*,void*,void**,void*);
   void      *user_data;
+} ffi_closure
 #ifdef __GNUC__
-} ffi_closure __attribute__((aligned (8)));
-#else
-} ffi_closure;
+    __attribute__((aligned (8)))
+#endif
+    ;
+
+#ifndef __GNUC__
 # ifdef __sgi
 #  pragma pack 0
 # endif
@@ -339,7 +314,8 @@ ffi_status
 ffi_prep_closure (ffi_closure*,
 		  ffi_cif *,
 		  void (*fun)(ffi_cif*,void*,void**,void*),
-		  void *user_data);
+		  void *user_data)
+  __attribute__((deprecated ("use ffi_prep_closure_loc instead")));
 
 ffi_status
 ffi_prep_closure_loc (ffi_closure*,
@@ -362,9 +338,9 @@ typedef struct {
 
 #if !FFI_NATIVE_RAW_API
 
-  /* if this is enabled, then a raw closure has the same layout 
+  /* If this is enabled, then a raw closure has the same layout 
      as a regular closure.  We use this to install an intermediate 
-     handler to do the transaltion, void** -> ffi_raw*. */
+     handler to do the transaltion, void** -> ffi_raw*.  */
 
   void     (*translate_args)(ffi_cif*,void*,void**,void*);
   void      *this_closure;
@@ -388,9 +364,9 @@ typedef struct {
 
 #if !FFI_NATIVE_RAW_API
 
-  /* if this is enabled, then a raw closure has the same layout 
+  /* If this is enabled, then a raw closure has the same layout 
      as a regular closure.  We use this to install an intermediate 
-     handler to do the transaltion, void** -> ffi_raw*. */
+     handler to do the translation, void** -> ffi_raw*.  */
 
   void     (*translate_args)(ffi_cif*,void*,void**,void*);
   void      *this_closure;
@@ -430,6 +406,22 @@ ffi_prep_java_raw_closure_loc (ffi_java_raw_closure*,
 
 #endif /* FFI_CLOSURES */
 
+#if FFI_GO_CLOSURES
+
+typedef struct {
+  void      *tramp;
+  ffi_cif   *cif;
+  void     (*fun)(ffi_cif*,void*,void**,void*);
+} ffi_go_closure;
+
+ffi_status ffi_prep_go_closure (ffi_go_closure*, ffi_cif *,
+				void (*fun)(ffi_cif*,void*,void**,void*));
+
+void ffi_call_go (ffi_cif *cif, void (*fn)(void), void *rvalue,
+		  void **avalue, void *closure);
+
+#endif /* FFI_GO_CLOSURES */
+
 /* ---- Public interface definition -------------------------------------- */
 
 ffi_status ffi_prep_cif(ffi_cif *cif,
@@ -450,7 +442,10 @@ void ffi_call(ffi_cif *cif,
 	      void *rvalue,
 	      void **avalue);
 
-/* Useful for eliminating compiler warnings */
+ffi_status ffi_get_struct_offsets (ffi_abi abi, ffi_type *struct_type,
+				   size_t *offsets);
+
+/* Useful for eliminating compiler warnings.  */
 #define FFI_FN(f) ((void (*)(void))f)
 
 /* ---- Definitions shared with assembly code ---------------------------- */
@@ -479,14 +474,11 @@ void ffi_call(ffi_cif *cif,
 #define FFI_TYPE_POINTER    14
 #define FFI_TYPE_COMPLEX    15
 
-/* This should always refer to the last type code (for sanity checks) */
+/* This should always refer to the last type code (for sanity checks).  */
 #define FFI_TYPE_LAST       FFI_TYPE_COMPLEX
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif
-
 
 #endif

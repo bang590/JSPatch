@@ -1,4 +1,4 @@
-#ifdef __x86_64__
+#ifdef __i386__
 
 /* -----------------------------------------------------------------*-C-*-
    libffi 3.2.1 - Copyright (c) 2011, 2014 Anthony Green
@@ -66,7 +66,7 @@ extern "C" {
 
 /* ---- System configuration information --------------------------------- */
 
-#include "ffitarget.h"
+#include <ffitarget.h>
 
 #ifndef LIBFFI_ASM
 
