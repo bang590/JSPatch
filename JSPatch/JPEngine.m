@@ -1781,7 +1781,8 @@ static id _unboxOCObjectToJS(id obj)
 
 + (id)formatOCToJS:(id)obj
 {
-    return [[JSContext currentContext][@"_formatOCToJS"] callWithArguments:@[formatOCToJS(obj)]];
+    JSContext *context = [JSContext currentContext] ? [JSContext currentContext]: _context;
+    return [context[@"_formatOCToJS"] callWithArguments:@[formatOCToJS(obj)]];
 }
 
 + (int)sizeOfStructTypes:(NSString *)structTypes
