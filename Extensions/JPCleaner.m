@@ -8,6 +8,7 @@
 
 #import "JPCleaner.h"
 #import <objc/runtime.h>
+#import <objc/message.h>
 
 @implementation JPCleaner
 #pragma clang diagnostic push
@@ -42,7 +43,13 @@
         
         char *typeDescription = (char *)method_getTypeEncoding(class_getInstanceMethod(cls, @selector(forwardInvocation:)));
         IMP forwardInvocationIMP = class_getMethodImplementation(cls, @selector(ORIGforwardInvocation:));
-        class_replaceMethod(cls, @selector(forwardInvocation:), forwardInvocationIMP, typeDescription);
+        
+        //forwardInvocationIMP will be _objc_msgForward if ORIGforwardInvocation: doesn't exist
+        if (forwardInvocationIMP == _objc_msgForward) {
+            class_replaceMethod(cls, @selector(forwardInvocation:), NULL, typeDescription);
+        } else {
+            class_replaceMethod(cls, @selector(forwardInvocation:), forwardInvocationIMP, typeDescription);
+        }
     }
 }
 
