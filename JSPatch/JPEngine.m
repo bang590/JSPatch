@@ -836,10 +836,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
 
         #define JP_FWD_RET_CODE_CLASS    \
             Class ret;   \
-            id obj = formatJSToOC(jsval); \
-            if ([obj isKindOfClass:[JPBoxing class]]) { \
-               ret = [((JPBoxing *)obj) unboxClass]; \
-            }
+            ret = formatJSToOC(jsval);
 
 
         #define JP_FWD_RET_CODE_SEL    \
@@ -1681,6 +1678,8 @@ static id formatJSToOC(JSValue *jsval)
             id ocObj = [obj objectForKey:@"__obj"];
             if ([ocObj isKindOfClass:[JPBoxing class]]) return [ocObj unbox];
             return ocObj;
+        } else if (obj[@"__clsName"]) {
+            return NSClassFromString(obj[@"__clsName"]);
         }
         if (obj[@"__isBlock"]) {
             Class JPBlockClass = NSClassFromString(@"JPBlock");
