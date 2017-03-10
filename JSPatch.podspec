@@ -42,14 +42,14 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "JPCFunction" do |ss|
-    ss.ios.source_files = "Extensions/JPCFunction/**/*", "Extensions/JPLibffi/**/*" 
+    ss.ios.source_files = "Extensions/JPCFunction/**/*", "Extensions/JPLibffi/**/*.{h,m}"
     ss.ios.public_header_files = "Extensions/JPCFunction/**/*.h", "Extensions/JPLibffi/**/*.h" 
     ss.vendored_libraries = 'Extensions/JPLibffi/libffi/libffi.a'
     ss.dependency 'JSPatch/Core'
   end
 
   s.subspec "JPBlock" do |ss|
-    ss.ios.source_files = "Extensions/JPBlock/**/*", "Extensions/JPLibffi/**/*" 
+    ss.ios.source_files = "Extensions/JPBlock/**/*", "Extensions/JPLibffi/**/*.{h,m}" 
     ss.ios.public_header_files = "Extensions/JPBlock/**/*.h", "Extensions/JPLibffi/**/*.h" 
     ss.vendored_libraries = 'Extensions/JPLibffi/libffi/libffi.a'
     ss.dependency 'JSPatch/Core'
