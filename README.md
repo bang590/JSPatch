@@ -5,6 +5,8 @@
 
 [中文介绍](https://github.com/bang590/JSPatch/blob/master/README-CN.md) | [文档](https://github.com/bang590/JSPatch/wiki) | [JSPatch平台](http://jspatch.com)
 
+**请大家不要自行接入 JSPatch，统一接入 JSPatch 平台，让热修复在一个安全和可控的环境下使用。原因详见 [这里](http://jspatch.com/Docs/appleFAQ) **
+
 JSPatch bridges Objective-C and JavaScript using the Objective-C runtime. You can call any Objective-C class and method in JavaScript by just including a small engine. That makes the APP obtaining the power of script language: add modules or replacing Objective-C code to fix bugs dynamically.
 
 JSPatch is still in development, welcome to improve the project together.
