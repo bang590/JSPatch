@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface JPCFunctionTest : NSObject
++ (BOOL)testCfuncWithCGSize;
 + (BOOL)testCfuncWithId;
 + (BOOL)testCfuncWithInt;
 + (BOOL)testCfuncWithCGFloat;

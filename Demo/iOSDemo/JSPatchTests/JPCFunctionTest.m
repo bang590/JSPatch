@@ -12,6 +12,10 @@
 
 static bool voidFuncRet = false;
 
+CGSize cfuncWithCGSize(CGSize size){
+    return size;
+}
+
 id cfuncWithId(NSString *str){
     return str;
 }
@@ -37,6 +41,9 @@ void cfuncVoid() {
 }
 
 @implementation JPCFunctionTest
++ (BOOL)testCfuncWithCGSize{
+    return NO;
+}
 + (BOOL)testCfuncWithId{
     return NO;
 };

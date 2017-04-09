@@ -104,3 +104,4 @@
 - (void *)unboxPointer;
 - (Class)unboxClass;
 @end
+

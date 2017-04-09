@@ -13,6 +13,12 @@
 #import <UIKit/UIApplication.h>
 #endif
 
+#if CGFLOAT_IS_DOUBLE
+#define CGFloatValue doubleValue
+#else
+#define CGFloatValue floatValue
+#endif
+
 @implementation JPBoxing
 
 #define JPBOXING_GEN(_name, _prop, _type) \
@@ -1519,23 +1525,11 @@ static void getStructDataWithDict(void *structData, NSDictionary *dict, NSDictio
             JP_STRUCT_DATA_CASE('q', long long, longLongValue)
             JP_STRUCT_DATA_CASE('Q', unsigned long long, unsignedLongLongValue)
             JP_STRUCT_DATA_CASE('f', float, floatValue)
+            JP_STRUCT_DATA_CASE('F', CGFloat, CGFloatValue)
             JP_STRUCT_DATA_CASE('d', double, doubleValue)
             JP_STRUCT_DATA_CASE('B', BOOL, boolValue)
             JP_STRUCT_DATA_CASE('N', NSInteger, integerValue)
             JP_STRUCT_DATA_CASE('U', NSUInteger, unsignedIntegerValue)
-            
-            case 'F': {
-                int size = sizeof(CGFloat);
-                CGFloat val;
-                #if CGFLOAT_IS_DOUBLE
-                val = [dict[itemKeys[i]] doubleValue];
-                #else
-                val = [dict[itemKeys[i]] floatValue];
-                #endif
-                memcpy(structData + position, &val, size);
-                position += size;
-                break;
-            }
             
             case '*':
             case '^': {

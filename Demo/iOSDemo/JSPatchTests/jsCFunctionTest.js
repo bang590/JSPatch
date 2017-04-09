@@ -1,6 +1,16 @@
 require('JPEngine').addExtensions(['JPCFunction'])
+require('JPEngine').defineStruct({
+    "name": "CGSize",
+    "types": "FF",
+    "keys": ["width", "height"]
+});
 
 defineClass('JPCFunctionTest', {}, {
+    testCfuncWithCGSize: function() {
+        defineCFunction("cfuncWithCGSize", "{CGSize}, {CGSize}")
+        var ret = cfuncWithCGSize({width:1, height:2});
+        return ret.width == 1 && ret.height == 2;
+    },
     testCfuncWithId: function() {
         defineCFunction("cfuncWithId", "id, NSString *")
         var ret = cfuncWithId("JSPatch");
