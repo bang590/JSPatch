@@ -107,11 +107,14 @@ static NSMutableDictionary *_funcDefines;
         }
         case '{': {
             NSString *structName = [NSString stringWithCString:typeString encoding:NSASCIIStringEncoding];
-            structName = [structName substringWithRange:NSMakeRange(1, structName.length - 2)];
-            NSDictionary *structDefine = [JPExtension registeredStruct][structName];
-            id dict = [JPExtension getDictOfStruct:src structDefine:structDefine];
-            id ret = [JSValue valueWithObject:dict inContext:[JPEngine context]];
-            return ret;
+            NSUInteger end = [structName rangeOfString:@"}"].location;
+            if (end != NSNotFound) {
+                structName = [structName substringWithRange:NSMakeRange(1, end - 1)];
+                NSDictionary *structDefine = [JPExtension registeredStruct][structName];
+                id dict = [JPExtension getDictOfStruct:src structDefine:structDefine];
+                id ret = [JSValue valueWithObject:dict inContext:[JPEngine context]];
+                return ret;
+            }
         }
         default:
             return nil;
@@ -153,10 +156,13 @@ static NSMutableDictionary *_funcDefines;
         }
         case '{': {
             NSString *structName = [NSString stringWithCString:typeString encoding:NSASCIIStringEncoding];
-            structName = [structName substringWithRange:NSMakeRange(1, structName.length - 2)];
-            NSDictionary *structDefine = [JPExtension registeredStruct][structName];
-            [JPExtension getStructDataWidthDict:dist dict:object structDefine:structDefine];
-            break;
+            NSUInteger end = [structName rangeOfString:@"}"].location;
+            if (end != NSNotFound) {
+                structName = [structName substringWithRange:NSMakeRange(1, end - 1)];
+                NSDictionary *structDefine = [JPExtension registeredStruct][structName];
+                [JPExtension getStructDataWidthDict:dist dict:object structDefine:structDefine];
+                break;
+            }
         }
         default:
             break;

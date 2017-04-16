@@ -1489,6 +1489,19 @@ static int sizeOfStructTypes(NSString *structTypes)
             JP_STRUCT_SIZE_CASE('B', BOOL)
             JP_STRUCT_SIZE_CASE('*', void *)
             JP_STRUCT_SIZE_CASE('^', void *)
+                
+            case '{': {
+                NSString *structTypeStr = [structTypes substringFromIndex:index];
+                NSUInteger end = [structTypeStr rangeOfString:@"}"].location;
+                if (end != NSNotFound) {
+                    NSString *subStructName = [structTypeStr substringWithRange:NSMakeRange(1, end - 1)];
+                    NSDictionary *subStructDefine = [JPExtension registeredStruct][subStructName];
+                    NSString *subStructTypes = subStructDefine[@"types"];
+                    size += sizeOfStructTypes(subStructTypes);
+                    index += (int)end;
+                    break;
+                }
+            }
             
             default:
                 break;
@@ -1503,12 +1516,12 @@ static void getStructDataWithDict(void *structData, NSDictionary *dict, NSDictio
     NSArray *itemKeys = structDefine[@"keys"];
     const char *structTypes = [structDefine[@"types"] cStringUsingEncoding:NSUTF8StringEncoding];
     int position = 0;
-    for (int i = 0; i < itemKeys.count; i ++) {
-        switch(structTypes[i]) {
+    for (NSString *itemKey in itemKeys) {
+        switch(*structTypes) {
             #define JP_STRUCT_DATA_CASE(_typeStr, _type, _transMethod) \
             case _typeStr: { \
                 int size = sizeof(_type);    \
-                _type val = [dict[itemKeys[i]] _transMethod];   \
+                _type val = [dict[itemKey] _transMethod];   \
                 memcpy(structData + position, &val, size);  \
                 position += size;    \
                 break;  \
@@ -1534,12 +1547,29 @@ static void getStructDataWithDict(void *structData, NSDictionary *dict, NSDictio
             case '*':
             case '^': {
                 int size = sizeof(void *);
-                void *val = [(JPBoxing *)dict[itemKeys[i]] unboxPointer];
+                void *val = [(JPBoxing *)dict[itemKey] unboxPointer];
                 memcpy(structData + position, &val, size);
                 break;
             }
+            case '{': {
+                NSString *subStructName = [NSString stringWithCString:structTypes encoding:NSASCIIStringEncoding];
+                NSUInteger end = [subStructName rangeOfString:@"}"].location;
+                if (end != NSNotFound) {
+                    subStructName = [subStructName substringWithRange:NSMakeRange(1, end - 1)];
+                    NSDictionary *subStructDefine = [JPExtension registeredStruct][subStructName];
+                    NSDictionary *subDict = dict[itemKey];
+                    int size = sizeOfStructTypes(subStructDefine[@"types"]);
+                    getStructDataWithDict(structData + position, subDict, subStructDefine);
+                    position += size;
+                    structTypes += end;
+                    break;
+                }
+            }
+            default:
+                break;
             
         }
+        structTypes ++;
     }
 }
 
@@ -1550,14 +1580,14 @@ static NSDictionary *getDictOfStruct(void *structData, NSDictionary *structDefin
     const char *structTypes = [structDefine[@"types"] cStringUsingEncoding:NSUTF8StringEncoding];
     int position = 0;
     
-    for (int i = 0; i < itemKeys.count; i ++) {
-        switch(structTypes[i]) {
+    for (NSString *itemKey in itemKeys) {
+        switch(*structTypes) {
             #define JP_STRUCT_DICT_CASE(_typeName, _type)   \
             case _typeName: { \
                 size_t size = sizeof(_type); \
                 _type *val = malloc(size);   \
                 memcpy(val, structData + position, size);   \
-                [dict setObject:@(*val) forKey:itemKeys[i]];    \
+                [dict setObject:@(*val) forKey:itemKey];    \
                 free(val);  \
                 position += size;   \
                 break;  \
@@ -1584,12 +1614,26 @@ static NSDictionary *getDictOfStruct(void *structData, NSDictionary *structDefin
                 size_t size = sizeof(void *);
                 void *val = malloc(size);
                 memcpy(val, structData + position, size);
-                [dict setObject:[JPBoxing boxPointer:val] forKey:itemKeys[i]];
+                [dict setObject:[JPBoxing boxPointer:val] forKey:itemKey];
                 position += size;
                 break;
             }
-            
+            case '{': {
+                NSString *subStructName = [NSString stringWithCString:structTypes encoding:NSASCIIStringEncoding];
+                NSUInteger end = [subStructName rangeOfString:@"}"].location;
+                if (end != NSNotFound) {
+                    subStructName = [subStructName substringWithRange:NSMakeRange(1, end - 1)];
+                    NSDictionary *subStructDefine = [JPExtension registeredStruct][subStructName];
+                    int size = sizeOfStructTypes(subStructDefine[@"types"]);
+                    NSDictionary *subDict = getDictOfStruct(structData + position, subStructDefine);
+                    [dict setObject:subDict forKey:itemKey];
+                    position += size;
+                    structTypes += end;
+                    break;
+                }
+            }
         }
+        structTypes ++;
     }
     return dict;
 }

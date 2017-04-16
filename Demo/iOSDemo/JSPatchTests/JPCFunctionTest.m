@@ -16,6 +16,10 @@ CGSize cfuncWithCGSize(CGSize size){
     return size;
 }
 
+CGRect cfuncWithCGRect(CGRect rect){
+    return rect;
+}
+
 id cfuncWithId(NSString *str){
     return str;
 }
@@ -42,6 +46,9 @@ void cfuncVoid() {
 
 @implementation JPCFunctionTest
 + (BOOL)testCfuncWithCGSize{
+    return NO;
+}
++ (BOOL)testCfuncWithCGRect{
     return NO;
 }
 + (BOOL)testCfuncWithId{

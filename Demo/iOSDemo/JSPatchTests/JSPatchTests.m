@@ -287,6 +287,7 @@
 {
     [self loadPatch:@"jsCFunctionTest"];
     XCTAssert([JPCFunctionTest testCfuncWithCGSize], @"testCfuncWithCGSize");
+    XCTAssert([JPCFunctionTest testCfuncWithCGRect], @"testCfuncWithCGRect");
     XCTAssert([JPCFunctionTest testCfuncWithId], @"testCfuncWithId");
     XCTAssert([JPCFunctionTest testCfuncWithInt], @"testCfuncWithInt");
     XCTAssert([JPCFunctionTest testCfuncWithCGFloat], @"testCfuncWithCGFloat");
