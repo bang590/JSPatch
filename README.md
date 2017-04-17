@@ -165,7 +165,7 @@ Go to wiki page for more details: [Base Usage](https://github.com/bang590/JSPatc
 
 
 
-####defineClass
+#### defineClass
 You can redefine an existing class and override methods.
 
 ```objc
@@ -212,7 +212,7 @@ defineClass("JPTableViewController", {
 
 Go to wiki page for more details: [Usage of defineClass](https://github.com/bang590/JSPatch/wiki/Usage-of-defineClass)
 
-####Extensions
+#### Extensions
 
 There are some extensions provide support for custom struct type, C methods and other functional, call `+addExtensions:` after starting engine to add extensions:
 
