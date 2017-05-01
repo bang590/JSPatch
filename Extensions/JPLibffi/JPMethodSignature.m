@@ -8,6 +8,7 @@
 
 #import "JPMethodSignature.h"
 #import <UIKit/UIKit.h>
+#import "JPEngine.h"
 
 @implementation JPMethodSignature {
     NSString *_typeNames;
@@ -59,6 +60,17 @@
             arg = [_types substringWithRange:NSMakeRange(i - 1, 2)];
             [_argumentTypes removeLastObject];
             
+        } else if (c == '{') {
+            NSUInteger end = [[_types substringFromIndex:i] rangeOfString:@"}"].location + i;
+            arg = [_types substringWithRange:NSMakeRange(i, end - i + 1)];
+            if (i == 0) {
+                _returnType = arg;
+            } else {
+                [_argumentTypes addObject:arg];
+            }
+            i = (int)end;
+            continue;
+        
         } else {
             
             arg = [_types substringWithRange:NSMakeRange(i, 1)];
@@ -147,6 +159,12 @@
         return &ffi_type_float;
         case 'd':
         return &ffi_type_double;
+        case 'F':
+#if CGFLOAT_IS_DOUBLE
+        return &ffi_type_double;
+#else
+        return &ffi_type_float;
+#endif
         case 'B':
         return &ffi_type_uint8;
         case '^':
@@ -155,6 +173,29 @@
         return &ffi_type_pointer;
         case '#':
         return &ffi_type_pointer;
+        case '{':
+        {
+            NSString *typeStr = [NSString stringWithCString:c encoding:NSASCIIStringEncoding];
+            NSUInteger end = [typeStr rangeOfString:@"}"].location;
+            if (end != NSNotFound) {
+                NSString *structName = [typeStr substringWithRange:NSMakeRange(1, end - 1)];
+                ffi_type *type = malloc(sizeof(ffi_type));
+                type->alignment = 0;
+                type->size = 0;
+                type->type = FFI_TYPE_STRUCT;
+                NSDictionary *structDefine = [JPExtension registeredStruct][structName];
+                NSUInteger subTypeCount = [structDefine[@"keys"] count];
+                NSString *subTypes = structDefine[@"types"];
+                ffi_type **sub_types = malloc(sizeof(ffi_type *) * (subTypeCount + 1));
+                for (NSUInteger i=0; i<subTypeCount; i++) {
+                    sub_types[i] = [self ffiTypeWithEncodingChar:[subTypes cStringUsingEncoding:NSASCIIStringEncoding]];
+                    type->size += sub_types[i]->size;
+                }
+                sub_types[subTypeCount] = NULL;
+                type->elements = sub_types;
+                return type;
+            }
+        }
     }
     return NULL;
 }
