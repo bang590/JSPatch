@@ -283,10 +283,16 @@ static void (^_exceptionBlock)(NSString *log) = ^void(NSString *log) {
     
     context[@"releaseTmpObj"] = ^void(JSValue *jsVal) {
         if ([[jsVal toObject] isKindOfClass:[NSDictionary class]]) {
-            void *pointer =  [(JPBoxing *)([jsVal toObject][@"__obj"]) unboxPointer];
-            id obj = *((__unsafe_unretained id *)pointer);
+            void *pointer = nil;
+            id obj = nil;
+            if ([[jsVal toObject][@"__obj"] isKindOfClass:[JPBoxing class]]) {
+                pointer =  [(JPBoxing *)([jsVal toObject][@"__obj"]) unboxPointer];
+                obj = *((__unsafe_unretained id *)pointer);
+            } else {
+                obj = [jsVal toObject][@"__obj"];
+            }
             @synchronized(_TMPMemoryPool) {
-                [_TMPMemoryPool removeObjectForKey:[NSNumber numberWithInteger:[(NSObject*)obj hash]]];
+                [_TMPMemoryPool removeObjectForKey:[NSNumber numberWithInteger:[obj hash]]];
             }
         }
     };
