@@ -140,7 +140,7 @@ static BOOL _convertOCNumberToString;
 static NSString *_scriptRootDir;
 static NSMutableSet *_runnedScript;
 
-static NSMutableDictionary *_JSOverideMethods;
+static NSMutableDictionary *_JSOverrideMethods;
 static NSMutableDictionary *_TMPMemoryPool;
 static NSMutableDictionary *_propKeys;
 static NSMutableDictionary *_JSMethodSignatureCache;
@@ -643,13 +643,13 @@ static JSValue *getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
         cls = NSClassFromString(_currInvokeSuperClsName[selectorName]);
         selectorName = [selectorName stringByReplacingOccurrencesOfString:@"_JPSUPER_" withString:@"_JP"];
     }
-    JSValue *func = _JSOverideMethods[cls][selectorName];
+    JSValue *func = _JSOverrideMethods[cls][selectorName];
     while (!func) {
         cls = class_getSuperclass(cls);
         if (!cls) {
             return nil;
         }
-        func = _JSOverideMethods[cls][selectorName];
+        func = _JSOverrideMethods[cls][selectorName];
     }
     return func;
 }
@@ -777,7 +777,7 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
     if (_currInvokeSuperClsName[selectorName]) {
         Class cls = NSClassFromString(_currInvokeSuperClsName[selectorName]);
         NSString *tmpSelectorName = [[selectorName stringByReplacingOccurrencesOfString:@"_JPSUPER_" withString:@"_JP"] stringByReplacingOccurrencesOfString:@"SUPER_" withString:@"_JP"];
-        if (!_JSOverideMethods[cls][tmpSelectorName]) {
+        if (!_JSOverrideMethods[cls][tmpSelectorName]) {
             NSString *ORIGSelectorName = [selectorName stringByReplacingOccurrencesOfString:@"SUPER_" withString:@"ORIG"];
             [argList removeObjectAtIndex:0];
             id retObj = callSelector(_currInvokeSuperClsName[selectorName], ORIGSelectorName, [JSValue valueWithObject:argList inContext:_context], [JSValue valueWithObject:@{@"__obj": slf, @"__realClsName": @""} inContext:_context], NO);
@@ -952,12 +952,12 @@ static void JPExecuteORIGForwardInvocation(id slf, SEL selector, NSInvocation *i
     }
 }
 
-static void _initJPOverideMethods(Class cls) {
-    if (!_JSOverideMethods) {
-        _JSOverideMethods = [[NSMutableDictionary alloc] init];
+static void _initJPOverrideMethods(Class cls) {
+    if (!_JSOverrideMethods) {
+        _JSOverrideMethods = [[NSMutableDictionary alloc] init];
     }
-    if (!_JSOverideMethods[cls]) {
-        _JSOverideMethods[(id<NSCopying>)cls] = [[NSMutableDictionary alloc] init];
+    if (!_JSOverrideMethods[cls]) {
+        _JSOverrideMethods[(id<NSCopying>)cls] = [[NSMutableDictionary alloc] init];
     }
 }
 
@@ -1003,8 +1003,8 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
     
-    _initJPOverideMethods(cls);
-    _JSOverideMethods[cls][JPSelectorName] = function;
+    _initJPOverrideMethods(cls);
+    _JSOverrideMethods[cls][JPSelectorName] = function;
     
     // Replace the original selector at last, preventing threading issus when
     // the selector get called during the execution of `overrideMethod`
@@ -1055,9 +1055,9 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         class_addMethod(cls, superSelector, superIMP, method_getTypeEncoding(superMethod));
         
         NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
-        JSValue *overideFunction = _JSOverideMethods[superCls][JPSelectorName];
-        if (overideFunction) {
-            overrideMethod(cls, superSelectorName, overideFunction, NO, NULL);
+        JSValue *overrideFunction = _JSOverrideMethods[superCls][JPSelectorName];
+        if (overrideFunction) {
+            overrideMethod(cls, superSelectorName, overrideFunction, NO, NULL);
         }
         
         selector = superSelector;
@@ -1842,9 +1842,9 @@ static id _unboxOCObjectToJS(id obj)
     return _registeredStruct;
 }
 
-+ (NSDictionary *)overideMethods
++ (NSDictionary *)overrideMethods
 {
-    return _JSOverideMethods;
+    return _JSOverrideMethods;
 }
 
 + (NSMutableSet *)includedScriptPaths
