@@ -22,7 +22,7 @@
 
 + (void)cleanClass:(NSString *)className
 {
-    NSDictionary *methodsDict = [JPExtension overideMethods];
+    NSDictionary *methodsDict = [JPExtension overrideMethods];
     for (Class cls in methodsDict.allKeys) {
         if (className && ![className isEqualToString:NSStringFromClass(cls)]) {
             continue;
