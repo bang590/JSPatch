@@ -113,6 +113,7 @@ void JPBlockInterpreter(ffi_cif *cif, void *ret, void **args, void *userdata)
     }
     
     JSValue *jsResult = [blockObj.jsFunction callWithArguments:params];
+    NSLog(@"memleak JPBlockWrapper used %p, %p", blockObj, jsResult);
     
     switch ([blockObj.signature.returnType UTF8String][0]) {
             
@@ -164,6 +165,7 @@ void JPBlockInterpreter(ffi_cif *cif, void *ret, void **args, void *userdata)
         _generatedPtr = NO;
         self.jsFunction = jsFunction;
         self.signature = [[JPMethodSignature alloc] initWithBlockTypeNames:typeString];
+        NSLog(@"memleak JPBlockWrapper init %p", self);
     }
     return self;
 }
@@ -224,6 +226,7 @@ void JPBlockInterpreter(ffi_cif *cif, void *ret, void **args, void *userdata)
 
 - (void)dealloc
 {
+    NSLog(@"memleak JPBlockWrapper dealloc %p, %p", self, _jsFunction);
     ffi_closure_free(_closure);
     free(_args);
     free(_cifPtr);

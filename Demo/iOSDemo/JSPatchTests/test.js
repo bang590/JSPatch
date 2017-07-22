@@ -276,6 +276,19 @@ require('JPEngine').defineStruct({
     obj.setCallBlockWithStringAndIntPassed(str.toJS() == "stringFromOC" && num == 42)
     return "succ"
   }))
+ 
+  obj.callBlockDelay(block("id, NSString *, int", function(str, num) {
+    obj.setCallBlockWithStringAndIntPassed(str.toJS() == "stringFromOC" && num == 42)
+    return "succ"
+  }))
+ 
+ // try to test block memory bad access.
+ // request big memory to trigger JSContext gc, then the above argument function(str, num) will be free.
+  require('JPEngine').addExtensions(['JPCFunction'])
+  for (var i = 0; i < 100000; i ++) {
+      defineCFunction("malloc", "void *, size_t")
+      var p = malloc(10)
+  }
 
   obj.callBlockWithArrayAndView(block("id, NSArray *, UIView *", function(arr, view) {
     var viewFrame = view.frame()

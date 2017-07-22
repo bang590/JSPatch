@@ -198,6 +198,14 @@ typedef id (^JPTestObjectBlock)(NSDictionary *dict, UIView *view);
     self.callBlockWithStringAndIntReturnValuePassed = [ret isEqualToString:@"succ"];
 }
 
+- (void)callBlockDelay:(id(^)(NSString *str, int num))block
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        id ret = block(@"stringFromOC", 42);
+        self.callBlockWithStringAndIntReturnValuePassed = [ret isEqualToString:@"succ"];
+    });
+}
+
 - (void)callBlockWithArrayAndView:(void(^)(NSArray *arr, UIView *view))block
 {
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
