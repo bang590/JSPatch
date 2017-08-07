@@ -282,8 +282,8 @@ require('JPEngine').defineStruct({
     return "succ"
   }))
  
- // try to test block memory bad access.
- // request big memory to trigger JSContext gc, then the above argument function(str, num) will be free.
+ // request big memory to trigger JSContext gc
+ // make sure the above argument function(str, num) not freed before calling.
   require('JPEngine').addExtensions(['JPCFunction'])
   for (var i = 0; i < 100000; i ++) {
       defineCFunction("malloc", "void *, size_t")

@@ -1217,6 +1217,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     if (JPBlockClass && ![blkJSVal[@"blockObj"] isUndefined]) {
                         __autoreleasing id cb = [JPBlockClass performSelector:@selector(blockWithBlockObj:) withObject:[blkJSVal[@"blockObj"] toObject]];
                         [invocation setArgument:&cb atIndex:i];
+                        Block_release((__bridge void *)cb);
                     } else {
                         __autoreleasing id cb = genCallbackBlock(arguments[i-2]);
                         [invocation setArgument:&cb atIndex:i];
