@@ -974,14 +974,23 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     
     IMP msgForwardIMP = _objc_msgForward;
     #if !defined(__arm64__)
-        if (typeDescription[0] == '{') {
-            //In some cases that returns struct, we should use the '_stret' API:
-            //http://sealiesoftware.com/blog/archive/2008/10/30/objc_explain_objc_msgSend_stret.html
-            //NSMethodSignature knows the detail but has no API to return, we can only get the info from debugDescription.
-            NSMethodSignature *methodSignature = [NSMethodSignature signatureWithObjCTypes:typeDescription];
-            if ([methodSignature.debugDescription rangeOfString:@"is special struct return? YES"].location != NSNotFound) {
-                msgForwardIMP = (IMP)_objc_msgForward_stret;
-            }
+        //In some cases that returns struct, we should use the '_stret' API:
+        // https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/LowLevelABI/000-Introduction/introduction.html
+        // https://github.com/ReactiveCocoa/ReactiveCocoa/issues/783
+        // http://infocenter.arm.com/help/topic/com.arm.doc.ihi0042e/IHI0042E_aapcs.pdf
+        BOOL methodReturnsStructValue = typeDescription[0] == _C_STRUCT_B;
+        if (methodReturnsStructValue) {
+            @try {
+                NSUInteger valueSize = 0;
+                NSGetSizeAndAlignment(typeDescription, &valueSize, NULL);
+            
+                if (valueSize == 1 || valueSize == 2 || valueSize == 4 || valueSize == 8) {
+                    methodReturnsStructValue = NO;
+                }
+            } @catch (__unused NSException *e) {}
+        }
+        if (methodReturnsStructValue) {
+            msgForwardIMP = (IMP)_objc_msgForward_stret;
         }
     #endif
 
