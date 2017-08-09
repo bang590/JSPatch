@@ -21,8 +21,6 @@
 
 + (id)blockWithBlockObj:(JPBlockWrapper *)blockObj
 {
-    void *blockPtr = [blockObj blockPtr];
-    id blk = [((__bridge id)blockPtr) copy];
-    return blk;
+    return [blockObj blockPtr];
 }
 @end

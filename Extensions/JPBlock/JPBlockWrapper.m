@@ -29,6 +29,7 @@ struct JPSimulateBlock {
     int reserved;
     void *invoke;
     struct JPSimulateBlockDescriptor *descriptor;
+    void *wrapper;
 };
 
 struct JPSimulateBlockDescriptor {
@@ -37,25 +38,31 @@ struct JPSimulateBlockDescriptor {
         unsigned long int reserved;
         unsigned long int size;
     };
-    
-    /*
+
     //Block_descriptor_2
-    //no need
     struct {
         // requires BLOCK_HAS_COPY_DISPOSE
         void (*copy)(void *dst, const void *src);
         void (*dispose)(const void *);
     };
-    */
-    
+
     //Block_descriptor_3
     struct {
         // requires BLOCK_HAS_SIGNATURE
         const char *signature;
-        const char *layout;
     };
 };
 
+void copy_helper(struct JPSimulateBlock *dst, struct JPSimulateBlock *src)
+{
+    // do not copy anything is this funcion! just retain if need.
+    CFRetain(dst->wrapper);
+}
+
+void dispose_helper(struct JPSimulateBlock *src)
+{
+    CFRelease(src->wrapper);
+}
 
 
 @interface JPBlockWrapper ()
@@ -76,7 +83,7 @@ struct JPSimulateBlockDescriptor {
 void JPBlockInterpreter(ffi_cif *cif, void *ret, void **args, void *userdata)
 {
     JPBlockWrapper *blockObj = (__bridge JPBlockWrapper*)userdata;
-    
+
     NSMutableArray *params = [[NSMutableArray alloc] init];
     for (int i = 1; i < blockObj.signature.argumentTypes.count; i ++) {
         id param;
@@ -113,7 +120,7 @@ void JPBlockInterpreter(ffi_cif *cif, void *ret, void **args, void *userdata)
     }
     
     JSValue *jsResult = [blockObj.jsFunction callWithArguments:params];
-    
+
     switch ([blockObj.signature.returnType UTF8String][0]) {
             
     #define JP_BLOCK_RET_CASE(_typeString, _type, _selector) \
@@ -198,27 +205,28 @@ void JPBlockInterpreter(ffi_cif *cif, void *ret, void **args, void *userdata)
             NSAssert(NO, @"generate block error");
         }
     }
-    
+
     struct JPSimulateBlockDescriptor descriptor = {
         0,
         sizeof(struct JPSimulateBlock),
-        [self.signature.types cStringUsingEncoding:NSUTF8StringEncoding],
-        NULL
+        (void (*)(void *dst, const void *src))copy_helper,
+        (void (*)(const void *src))dispose_helper,
+        [self.signature.types cStringUsingEncoding:NSASCIIStringEncoding]
     };
     
     _descriptor = malloc(sizeof(struct JPSimulateBlockDescriptor));
     memcpy(_descriptor, &descriptor, sizeof(struct JPSimulateBlockDescriptor));
-    
+
     struct JPSimulateBlock simulateBlock = {
         &_NSConcreteStackBlock,
-        (BLOCK_HAS_SIGNATURE), 0,
+        (BLOCK_HAS_COPY_DISPOSE | BLOCK_HAS_SIGNATURE),
+        0,
         blockImp,
-        _descriptor
+        _descriptor,
+        (__bridge void*)self
     };
-    
-    _blockPtr = malloc(sizeof(struct JPSimulateBlock));
-    memcpy(_blockPtr, &simulateBlock, sizeof(struct JPSimulateBlock));
-    
+
+    _blockPtr = Block_copy(&simulateBlock);
     return _blockPtr;
 }
 
@@ -227,7 +235,6 @@ void JPBlockInterpreter(ffi_cif *cif, void *ret, void **args, void *userdata)
     ffi_closure_free(_closure);
     free(_args);
     free(_cifPtr);
-    free(_blockPtr);
     free(_descriptor);
     return;
 }
