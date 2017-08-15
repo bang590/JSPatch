@@ -984,9 +984,14 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
                 NSUInteger valueSize = 0;
                 NSGetSizeAndAlignment(typeDescription, &valueSize, NULL);
             
-                if (valueSize == 1 || valueSize == 2 || valueSize == 4 || valueSize == 8 || valueSize == 16) {
+                if (valueSize == 1 || valueSize == 2 || valueSize == 4 || valueSize == 8 ) {
                     methodReturnsStructValue = NO;
                 }
+              #if defined(__LP64__) && __LP64__
+                if (valueSize == 16) {
+                    methodReturnsStructValue = NO;
+                }
+              #endif
             } @catch (__unused NSException *e) {}
         }
         if (methodReturnsStructValue) {
