@@ -88,7 +88,7 @@
  */
 + (NSMutableDictionary *)registeredStruct;
 
-+ (NSDictionary *)overideMethods;
++ (NSDictionary *)overrideMethods;
 + (NSMutableSet *)includedScriptPaths;
 @end
 
