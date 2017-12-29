@@ -980,19 +980,18 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
         // http://infocenter.arm.com/help/topic/com.arm.doc.ihi0042e/IHI0042E_aapcs.pdf
         BOOL methodReturnsStructValue = typeDescription[0] == _C_STRUCT_B;
         if (methodReturnsStructValue) {
-            @try {
+
                 NSUInteger valueSize = 0;
                 NSGetSizeAndAlignment(typeDescription, &valueSize, NULL);
-            
-                if (valueSize == 1 || valueSize == 2 || valueSize == 4 || valueSize == 8 ) {
+                if (valueSize <= 8 ) {//32位
                     methodReturnsStructValue = NO;
                 }
               #if defined(__LP64__) && __LP64__
-                if (valueSize == 16) {
+                if (valueSize <= 16) {//64位
                     methodReturnsStructValue = NO;
                 }
               #endif
-            } @catch (__unused NSException *e) {}
+      
         }
         if (methodReturnsStructValue) {
             msgForwardIMP = (IMP)_objc_msgForward_stret;
