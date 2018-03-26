@@ -662,8 +662,9 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
 #endif
     BOOL deallocFlag = NO;
     id slf = assignSlf;
-    BOOL isBlock = [[assignSlf class] isSubclassOfClass : NSClassFromString(@"NSBlock")];
     
+    
+    BOOL isBlock = [[assignSlf class] isSubclassOfClass : NSClassFromString(@"NSBlock")] && NSClassFromString(@"JPBlock");
     NSMethodSignature *methodSignature = [invocation methodSignature];
     NSInteger numberOfArguments = [methodSignature numberOfArguments];
     NSString *selectorName = isBlock ? @"" : NSStringFromSelector(invocation.selector);
