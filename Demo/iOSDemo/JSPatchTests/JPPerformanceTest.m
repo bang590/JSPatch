@@ -7,6 +7,7 @@
 //
 
 #import "JPPerformanceTest.h"
+#import <UIKit/UIKit.h>
 
 @implementation JPPerformanceTest
 
@@ -49,7 +50,6 @@ static NSObject *testPerformanceObj;
     if (!testPerformanceObj) testPerformanceObj = [[NSObject alloc] init];
 }
 - (void)emptyMethod {
-    
 }
 
 - (void)methodWithParamObject:(NSObject *)obj {
