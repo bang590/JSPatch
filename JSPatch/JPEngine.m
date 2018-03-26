@@ -656,33 +656,38 @@ static JSValue *getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
 
 static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, NSInvocation *invocation)
 {
+    
 #ifdef DEBUG
     _JSLastCallStack = [NSThread callStackSymbols];
 #endif
     BOOL deallocFlag = NO;
     id slf = assignSlf;
+    
+    
+    BOOL isBlock = [[assignSlf class] isSubclassOfClass : NSClassFromString(@"NSBlock")] && NSClassFromString(@"JPBlock");
     NSMethodSignature *methodSignature = [invocation methodSignature];
     NSInteger numberOfArguments = [methodSignature numberOfArguments];
-    
-    NSString *selectorName = NSStringFromSelector(invocation.selector);
+    NSString *selectorName = isBlock ? @"" : NSStringFromSelector(invocation.selector);
     NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
-    JSValue *jsFunc = getJSFunctionInObjectHierachy(slf, JPSelectorName);
+    JSValue *jsFunc = isBlock ? objc_getAssociatedObject(assignSlf, "_JSValue")[@"cb"] : getJSFunctionInObjectHierachy(slf, JPSelectorName);
     if (!jsFunc) {
         JPExecuteORIGForwardInvocation(slf, selector, invocation);
         return;
     }
     
     NSMutableArray *argList = [[NSMutableArray alloc] init];
-    if ([slf class] == slf) {
-        [argList addObject:[JSValue valueWithObject:@{@"__clsName": NSStringFromClass([slf class])} inContext:_context]];
-    } else if ([selectorName isEqualToString:@"dealloc"]) {
-        [argList addObject:[JPBoxing boxAssignObj:slf]];
-        deallocFlag = YES;
-    } else {
-        [argList addObject:[JPBoxing boxWeakObj:slf]];
+    if (!isBlock) {
+        if ([slf class] == slf) {
+            [argList addObject:[JSValue valueWithObject:@{@"__clsName": NSStringFromClass([slf class])} inContext:_context]];
+        } else if ([selectorName isEqualToString:@"dealloc"]) {
+            [argList addObject:[JPBoxing boxAssignObj:slf]];
+            deallocFlag = YES;
+        } else {
+            [argList addObject:[JPBoxing boxWeakObj:slf]];
+        }
     }
     
-    for (NSUInteger i = 2; i < numberOfArguments; i++) {
+    for (NSUInteger i = isBlock ? 1 : 2; i < numberOfArguments; i++) {
         const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];
         switch(argumentType[0] == 'r' ? argumentType[1] : argumentType[0]) {
         
@@ -1415,6 +1420,14 @@ static id invokeVariableParameterMethod(NSMutableArray *origArgumentsList, NSMet
     return results;
 }
 
+NSMethodSignature *block_methodSignatureForSelector(id self, SEL _cmd, SEL aSelector) {
+    uint8_t *p = (uint8_t *)((__bridge void *)self);
+    p += sizeof(void *) * 2 + sizeof(int32_t) *2 + sizeof(uintptr_t) * 2;
+    const char **signature = (const char **)p;
+    return [NSMethodSignature signatureWithObjCTypes:*signature];
+}
+
+
 static id getArgument(id valObj){
     if (valObj == _nilObj ||
         ([valObj isKindOfClass:[NSNumber class]] && strcmp([valObj objCType], "c") == 0 && ![valObj boolValue])) {
@@ -1427,35 +1440,102 @@ static id getArgument(id valObj){
 
 static id genCallbackBlock(JSValue *jsVal)
 {
-    #define BLK_TRAITS_ARG(_idx, _paramName) \
-    if (_idx < argTypes.count) { \
-        NSString *argType = trim(argTypes[_idx]); \
-        if (blockTypeIsScalarPointer(argType)) { \
-            [list addObject:formatOCToJS([JPBoxing boxPointer:_paramName])]; \
-        } else if (blockTypeIsObject(trim(argTypes[_idx]))) {  \
-            [list addObject:formatOCToJS((__bridge id)_paramName)]; \
-        } else {  \
-            [list addObject:formatOCToJS([NSNumber numberWithLongLong:(long long)_paramName])]; \
-        }   \
-    }
-
-    NSArray *argTypes = [[jsVal[@"args"] toString] componentsSeparatedByString:@","];
-    if (argTypes.count > [jsVal[@"argCount"] toInt32]) {
-        argTypes = [argTypes subarrayWithRange:NSMakeRange(1, argTypes.count - 1)];
-    }
-    id cb = ^id(void *p0, void *p1, void *p2, void *p3, void *p4, void *p5) {
-        NSMutableArray *list = [[NSMutableArray alloc] init];
-        BLK_TRAITS_ARG(0, p0)
-        BLK_TRAITS_ARG(1, p1)
-        BLK_TRAITS_ARG(2, p2)
-        BLK_TRAITS_ARG(3, p3)
-        BLK_TRAITS_ARG(4, p4)
-        BLK_TRAITS_ARG(5, p5)
-        JSValue *ret = [jsVal[@"cb"] callWithArguments:list];
-        return formatJSToOC(ret);
-    };
+    void (^block)(void) = ^(void){};
+    uint8_t *p = (uint8_t *)((__bridge void *)block);
+    p += sizeof(void *) + sizeof(int32_t) *2;
+    void(**invoke)(void) = (void (**)(void))p;
     
-    return cb;
+    p += sizeof(void *) + sizeof(uintptr_t) * 2;
+    const char **signature = (const char **)p;
+    
+    static NSMutableDictionary *typeSignatureDict;
+    if (!typeSignatureDict) {
+        typeSignatureDict  = [NSMutableDictionary new];
+        #define JP_DEFINE_TYPE_SIGNATURE(_type) \
+        [typeSignatureDict setObject:@[[NSString stringWithUTF8String:@encode(_type)], @(sizeof(_type))] forKey:@#_type];\
+
+        JP_DEFINE_TYPE_SIGNATURE(id);
+        JP_DEFINE_TYPE_SIGNATURE(BOOL);
+        JP_DEFINE_TYPE_SIGNATURE(int);
+        JP_DEFINE_TYPE_SIGNATURE(void);
+        JP_DEFINE_TYPE_SIGNATURE(char);
+        JP_DEFINE_TYPE_SIGNATURE(short);
+        JP_DEFINE_TYPE_SIGNATURE(unsigned short);
+        JP_DEFINE_TYPE_SIGNATURE(unsigned int);
+        JP_DEFINE_TYPE_SIGNATURE(long);
+        JP_DEFINE_TYPE_SIGNATURE(unsigned long);
+        JP_DEFINE_TYPE_SIGNATURE(long long);
+        JP_DEFINE_TYPE_SIGNATURE(unsigned long long);
+        JP_DEFINE_TYPE_SIGNATURE(float);
+        JP_DEFINE_TYPE_SIGNATURE(double);
+        JP_DEFINE_TYPE_SIGNATURE(bool);
+        JP_DEFINE_TYPE_SIGNATURE(size_t);
+        JP_DEFINE_TYPE_SIGNATURE(CGFloat);
+        JP_DEFINE_TYPE_SIGNATURE(CGSize);
+        JP_DEFINE_TYPE_SIGNATURE(CGRect);
+        JP_DEFINE_TYPE_SIGNATURE(CGPoint);
+        JP_DEFINE_TYPE_SIGNATURE(CGVector);
+        JP_DEFINE_TYPE_SIGNATURE(NSRange);
+        JP_DEFINE_TYPE_SIGNATURE(NSInteger);
+        JP_DEFINE_TYPE_SIGNATURE(Class);
+        JP_DEFINE_TYPE_SIGNATURE(SEL);
+        JP_DEFINE_TYPE_SIGNATURE(void*);
+        JP_DEFINE_TYPE_SIGNATURE(void *);
+    }
+    
+    NSString *types = [jsVal[@"args"] toString];
+    NSArray *lt = [types componentsSeparatedByString:@","];
+    
+    NSString *funcSignature = @"@?0";
+    
+    NSInteger size = sizeof(void *);
+    for (NSInteger i = 1; i < lt.count;) {
+        NSString *t = trim(lt[i]);
+        NSString *tpe = typeSignatureDict[typeSignatureDict[t] ? t : @"id"][0];
+        if (i == 0) {
+            funcSignature  =[[NSString stringWithFormat:@"%@%@",tpe, [@(size) stringValue]] stringByAppendingString:funcSignature];
+            break;
+        }
+        
+        funcSignature = [funcSignature stringByAppendingString:[NSString stringWithFormat:@"%@%@", tpe, [@(size) stringValue]]];
+        size += [typeSignatureDict[typeSignatureDict[t] ? t : @"id"][1] integerValue];
+        
+        i = (i != lt.count - 1) ? i + 1 : 0;
+    }
+    
+    IMP msgForwardIMP = _objc_msgForward;
+#if !defined(__arm64__)
+    if ([funcSignature UTF8String][0] == '{') {
+        //In some cases that returns struct, we should use the '_stret' API:
+        //http://sealiesoftware.com/blog/archive/2008/10/30/objc_explain_objc_msgSend_stret.html
+        //NSMethodSignature knows the detail but has no API to return, we can only get the info from debugDescription.
+        NSMethodSignature *methodSignature = [NSMethodSignature signatureWithObjCTypes:[funcSignature UTF8String]];
+        if ([methodSignature.debugDescription rangeOfString:@"is special struct return? YES"].location != NSNotFound) {
+            msgForwardIMP = (IMP)_objc_msgForward_stret;
+        }
+    }
+#endif
+    *invoke = (void *)msgForwardIMP;
+    
+    const char *fs = [funcSignature UTF8String];
+    char *s = malloc(strlen(fs));
+    strcpy(s, fs);
+    *signature = s;
+    
+    objc_setAssociatedObject(block, "_JSValue", jsVal, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class cls = NSClassFromString(@"NSBlock");
+#define JP_HOOK_METHOD(selector, func) {Method method = class_getInstanceMethod([NSObject class], selector); \
+BOOL success = class_addMethod(cls, selector, (IMP)func, method_getTypeEncoding(method)); \
+if (!success) { class_replaceMethod(cls, selector, (IMP)func, method_getTypeEncoding(method));}}
+        
+        JP_HOOK_METHOD(@selector(methodSignatureForSelector:), block_methodSignatureForSelector);
+        JP_HOOK_METHOD(@selector(forwardInvocation:), JPForwardInvocation);
+    });
+    
+    return block;
 }
 
 #pragma mark - Struct

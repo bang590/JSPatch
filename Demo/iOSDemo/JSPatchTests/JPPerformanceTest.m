@@ -7,6 +7,7 @@
 //
 
 #import "JPPerformanceTest.h"
+#import <UIKit/UIKit.h>
 
 @implementation JPPerformanceTest
 
@@ -19,6 +20,8 @@
 - (void)testJSCallJSMethodWithLargeDictionaryParam{}
 - (void)testJSCallJSMethodWithLargeDictionaryParamAutoConvert{}
 - (void)testJSCallJSMethodWithParam{}
+
+- (void)testJSCallOCBlock{}
 
 - (void)testOCCallEmptyMethod {
     for (int i = 0; i < 10000; i ++) {
@@ -49,7 +52,6 @@ static NSObject *testPerformanceObj;
     if (!testPerformanceObj) testPerformanceObj = [[NSObject alloc] init];
 }
 - (void)emptyMethod {
-    
 }
 
 - (void)methodWithParamObject:(NSObject *)obj {
@@ -68,5 +70,13 @@ static NSObject *testPerformanceObj;
 - (NSObject *)methodReturnObjectToOverride {
     return nil;
 }
+
+- (void)allArgSumWithBlock:(double (^)(CGFloat arg0, CGPoint arg1, NSInteger arg2, id arg3))block {
+    
+    NSNumber *arg3 = [NSNumber numberWithDouble:3.3];
+    double sum = block(3.2, (CGPoint){1.1,1.2}, 10,arg3);
+    NSLog(@"==== sum = %@",@(sum));
+}
+
 
 @end
