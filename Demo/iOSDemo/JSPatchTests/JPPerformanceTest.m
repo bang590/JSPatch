@@ -71,9 +71,10 @@ static NSObject *testPerformanceObj;
     return nil;
 }
 
-- (void)allArgSumWithBlock:(double (^)(CGFloat arg0, NSInteger arg2))block {
+- (void)allArgSumWithBlock:(double (^)(CGFloat arg0, CGPoint arg1, NSInteger arg2, id arg3))block {
     
-    double sum = block(3.2, 10);
+    NSNumber *arg3 = [NSNumber numberWithDouble:3.3];
+    double sum = block(3.2, (CGPoint){1.1,1.2}, 10,arg3);
     NSLog(@"==== sum = %@",@(sum));
 }
 

@@ -159,7 +159,7 @@ defineClass('JPPerformanceTest', {
     },
             
     testJSCallOCBlock: function() {
-        self.allArgSumWithBlock(block("double, CGFloat, NSInteger", function(arg0, arg2, arg3) {
-            return arg0 + arg2;}));
+        self.allArgSumWithBlock(block("double, CGFloat, CGPoint, NSInteger, id", function(arg0, arg1, arg2, arg3) {
+                                      return arg0 + arg1.x + arg1.y + arg2 + arg3}));
     }
 })
