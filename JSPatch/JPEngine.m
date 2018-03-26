@@ -930,10 +930,6 @@ static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, 
         void (*originalDealloc)(__unsafe_unretained id, SEL) = (__typeof__(originalDealloc))method_getImplementation(deallocMethod);
         originalDealloc(assignSlf, NSSelectorFromString(@"dealloc"));
     }
-    
-    if (isBlock) {
-        objc_setAssociatedObject(assignSlf, "_JSValue", nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    }
 }
 
 static void JPExecuteORIGForwardInvocation(id slf, SEL selector, NSInvocation *invocation)
@@ -1447,7 +1443,7 @@ static id genCallbackBlock(JSValue *jsVal)
     uint8_t *p = (uint8_t *)((__bridge void *)block);
     p += sizeof(void *) + sizeof(int32_t) *2;
     void(**invoke)(void) = (void (**)(void))p;
-    *invoke = (void *)_objc_msgForward;
+    
     p += sizeof(void *) + sizeof(uintptr_t) * 2;
     const char **signature = (const char **)p;
     
@@ -1494,17 +1490,31 @@ static id genCallbackBlock(JSValue *jsVal)
     NSInteger size = sizeof(void *);
     for (NSInteger i = 1; i < lt.count;) {
         NSString *t = trim(lt[i]);
-        NSString *tpe = typeSignatureDict[t][0];
+        NSString *tpe = typeSignatureDict[typeSignatureDict[t] ? t : @"id"][0];
         if (i == 0) {
             funcSignature  =[[NSString stringWithFormat:@"%@%@",tpe, [@(size) stringValue]] stringByAppendingString:funcSignature];
             break;
         }
         
         funcSignature = [funcSignature stringByAppendingString:[NSString stringWithFormat:@"%@%@", tpe, [@(size) stringValue]]];
-        size += [typeSignatureDict[t][1] integerValue];
+        size += [typeSignatureDict[typeSignatureDict[t] ? t : @"id"][1] integerValue];
         
         i = (i != lt.count - 1) ? i + 1 : 0;
     }
+    
+    IMP msgForwardIMP = _objc_msgForward;
+#if !defined(__arm64__)
+    if ([funcSignature UTF8String][0] == '{') {
+        //In some cases that returns struct, we should use the '_stret' API:
+        //http://sealiesoftware.com/blog/archive/2008/10/30/objc_explain_objc_msgSend_stret.html
+        //NSMethodSignature knows the detail but has no API to return, we can only get the info from debugDescription.
+        NSMethodSignature *methodSignature = [NSMethodSignature signatureWithObjCTypes:[funcSignature UTF8String]];
+        if ([methodSignature.debugDescription rangeOfString:@"is special struct return? YES"].location != NSNotFound) {
+            msgForwardIMP = (IMP)_objc_msgForward_stret;
+        }
+    }
+#endif
+    *invoke = (void *)msgForwardIMP;
     
     const char *fs = [funcSignature UTF8String];
     char *s = malloc(strlen(fs));
