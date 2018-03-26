@@ -479,14 +479,6 @@ void thread(void* context)
     }];
 }
 
-- (void)testJSCallOCBlock {
-    [self loadPatch:@"performanceTest"];
-    JPPerformanceTest *obj = [[JPPerformanceTest alloc] init];
-    [self measureBlock:^{
-        [obj testJSCallOCBlock];
-    }];
-}
-
 - (void)testNewProtocol{
     [self loadPatch:@"newProtocolTest"];
     
