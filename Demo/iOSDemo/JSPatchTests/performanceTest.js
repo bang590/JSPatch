@@ -156,10 +156,5 @@ defineClass('JPPerformanceTest', {
             defineCFunction("malloc", "void *, size_t")
             var p = malloc(10)
         }
-    },
-            
-    testJSCallOCBlock: function() {
-        self.allArgSumWithBlock(block("double, CGFloat, CGPoint, NSInteger, id", function(arg0, arg1, arg2, arg3) {
-                                      return arg0 + arg1.x + arg1.y + arg2 + arg3}));
     }
 })
