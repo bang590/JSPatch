@@ -250,7 +250,6 @@ require('JPEngine').defineStruct({
   obj.setPropertySetViewPassed(obj.testView.frame().x == 10)
 
   /////Block
-  require('JPEngine').addExtensions(['JPBlock']);
   var blk = obj.funcReturnBlock();
   blk("stringFromJS", 42);
 

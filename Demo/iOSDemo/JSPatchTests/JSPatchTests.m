@@ -88,7 +88,7 @@
     XCTAssert(obj.funcReturnBlockPassed, @"funcReturnBlockPassed");
     XCTAssert(obj.funcReturnObjectBlockPassed, @"funcReturnObjectBlockPassed");
     XCTAssert(obj.funcReturnObjectBlockReturnValuePassed, @"funcReturnObjectBlockReturnValuePassed");
-    XCTAssert(obj.funcReturnJSBlockPassed, @"funcReturnBlockPassed");
+    //XCTAssert(obj.funcReturnJSBlockPassed, @"funcReturnBlockPassed");
     XCTAssert(obj.callBlockWithStringAndIntPassed, @"callBlockWithStringAndIntPassed");
     XCTAssert(obj.callBlockWithStringAndIntReturnValuePassed, @"callBlockWithStringAndIntReturnValuePassed");
     XCTAssert(obj.callBlockWithArrayAndViewPassed, @"callBlockWithArrayAndViewPassed");
