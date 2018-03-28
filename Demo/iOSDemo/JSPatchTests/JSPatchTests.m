@@ -19,6 +19,7 @@
 #import "JPPerformanceTest.h"
 #import "JPCFunctionTest.h"
 #import "JPNumberTest.h"
+#import "newBlockTest.h"
 
 @interface JSPatchTests : XCTestCase
 
@@ -477,6 +478,14 @@ void thread(void* context)
     [self measureBlock:^{
         [obj testJSCallMallocJPCFunction];
     }];
+}
+
+- (void)testNewBlock {
+    [self loadPatch:@"newBlockTest"];
+    newBlockTest *obj = [[newBlockTest alloc] init];
+    [obj removeJPBlock];
+    [obj testJSBlockToOCCall];
+    XCTAssert(obj.success, @"testJSBlockToOCCall");
 }
 
 - (void)testNewProtocol{
