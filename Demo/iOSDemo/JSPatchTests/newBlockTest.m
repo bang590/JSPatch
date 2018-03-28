@@ -25,7 +25,7 @@
 }
 
 - (void)performBlock:(CGFloat (^)(int arg1, CGPoint arg2, double arg3, CGFloat arg4, NSNumber *arg5, NSString *arg6, NSInteger arg7))block {
-    _success = (block(1, (CGPoint){3.3, 3.3}, 1.1, 1.1, @(11), @"4.4", 17) == 1 + 3.3 + 3.3 + 1.1 + 1.1 + 11 + 4.4 + 17) && (block(1, (CGPoint){3.3, 3.3}, 1.1, 1.1, @(11), @"4.4", 17) == 1 + 3.3 + 3.3 + 1.1 + 1.1 + 11 + 4.4 + 17);
+    _success = (block(1, (CGPoint){3.3, 3.3}, 1.1, 1.1, @(11), @"4.4", 17) == (CGFloat)(1 + 3.3 + 3.3 + 1.1 + 1.1 + 11 + 4.4 + 17)) && (block(1, (CGPoint){3.3, 3.3}, 1.1, 1.1, @(11), @"4.4", 17) == (CGFloat)(1 + 3.3 + 3.3 + 1.1 + 1.1 + 11 + 4.4 + 17));
 }
 
 @end
