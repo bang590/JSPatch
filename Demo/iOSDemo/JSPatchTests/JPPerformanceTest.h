@@ -24,4 +24,5 @@
 
 - (void)testJSCallMallocJPMemory;
 - (void)testJSCallMallocJPCFunction;
+
 @end

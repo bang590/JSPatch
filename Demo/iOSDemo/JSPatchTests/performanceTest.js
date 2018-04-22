@@ -157,5 +157,4 @@ defineClass('JPPerformanceTest', {
             var p = malloc(10)
         }
     }
-
 })

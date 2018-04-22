@@ -13,6 +13,8 @@
 		2D6D12FD1B0B8CF20095A435 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D12FA1B0B8CF20095A435 /* Images.xcassets */; };
 		2D6D12FF1B0B8CF20095A435 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D6D12FC1B0B8CF20095A435 /* main.m */; };
 		2D6D13011B0B8CFF0095A435 /* demo.js in Resources */ = {isa = PBXBuildFile; fileRef = 2D6D13001B0B8CFF0095A435 /* demo.js */; };
+		2DA3C42B206A1892005877CB /* newBlockTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DA3C42A206A1892005877CB /* newBlockTest.m */; };
+		2DA3C434206B5569005877CB /* newBlockTest.js in Resources */ = {isa = PBXBuildFile; fileRef = 2DA3C433206B5569005877CB /* newBlockTest.js */; };
 		360BCF4E1D82DCFC00202977 /* JPDispatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 360BCF4D1D82DCFC00202977 /* JPDispatch.m */; };
 		360BCF541D82EFCD00202977 /* JPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 360BCF531D82EFCD00202977 /* JPProtocol.m */; };
 		3613C3861C6329F300E915CB /* JPEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 3613C3611C6329F300E915CB /* JPEngine.m */; };
@@ -93,6 +95,9 @@
 		2D6D12FB1B0B8CF20095A435 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D6D12FC1B0B8CF20095A435 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2D6D13001B0B8CFF0095A435 /* demo.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = demo.js; sourceTree = "<group>"; };
+		2DA3C429206A1892005877CB /* newBlockTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = newBlockTest.h; sourceTree = "<group>"; };
+		2DA3C42A206A1892005877CB /* newBlockTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = newBlockTest.m; sourceTree = "<group>"; };
+		2DA3C433206B5569005877CB /* newBlockTest.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = newBlockTest.js; sourceTree = "<group>"; };
 		360BCF4C1D82DCFC00202977 /* JPDispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPDispatch.h; sourceTree = "<group>"; };
 		360BCF4D1D82DCFC00202977 /* JPDispatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JPDispatch.m; sourceTree = "<group>"; };
 		360BCF521D82EFCD00202977 /* JPProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JPProtocol.h; sourceTree = "<group>"; };
@@ -473,6 +478,9 @@
 				36CE19231CB3E709007D73AC /* JPPerformanceTest.h */,
 				36CE19241CB3E709007D73AC /* JPPerformanceTest.m */,
 				36CE19261CB3E72B007D73AC /* performanceTest.js */,
+				2DA3C429206A1892005877CB /* newBlockTest.h */,
+				2DA3C42A206A1892005877CB /* newBlockTest.m */,
+				2DA3C433206B5569005877CB /* newBlockTest.js */,
 				6C72B7941C352BA80086C98D /* newProtocolTest.h */,
 				6C72B7951C352BA80086C98D /* newProtocolTest.m */,
 				6C9C0EE31C25A7C700FCAAC5 /* newProtocolTest.js */,
@@ -603,6 +611,7 @@
 				E1B89EAE1B228818000645C2 /* multithreadTest.js in Resources */,
 				369492601CFEFE42003F44CA /* jsCFunctionTest.js in Resources */,
 				36CE19271CB3E72B007D73AC /* performanceTest.js in Resources */,
+				2DA3C434206B5569005877CB /* newBlockTest.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -664,6 +673,7 @@
 				E1B89EA31B218986000645C2 /* JPInheritanceTestObjects.m in Sources */,
 				4F9EBFC91D50749200EC72C1 /* JPNumberTest.m in Sources */,
 				DE94AE2B1AF246C000E461D4 /* JSPatchTests.m in Sources */,
+				2DA3C42B206A1892005877CB /* newBlockTest.m in Sources */,
 				3694925F1CFEFE42003F44CA /* JPCFunctionTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
