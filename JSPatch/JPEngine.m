@@ -141,6 +141,7 @@ static NSString *_scriptRootDir;
 static NSMutableSet *_runnedScript;
 
 static NSMutableDictionary *_JSOverideMethods;
+static NSMutableDictionary *_JSOrigMethods;
 static NSMutableDictionary *_TMPMemoryPool;
 static NSMutableDictionary *_propKeys;
 static NSMutableDictionary *_JSMethodSignatureCache;
@@ -636,6 +637,25 @@ static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMe
     return @{@"cls": className, @"superCls": superClassName};
 }
 
+static BOOL isMsgForwardIMP(IMP impl) {
+    return impl == _objc_msgForward
+#if !defined(__arm64__)
+    || impl == (IMP)_objc_msgForward_stret
+#endif
+  ;
+}
+static void deleteSelectorPrefix(id slf, NSInvocation *invocation) {
+    if (isMsgForwardIMP(class_getMethodImplementation([slf class],invocation.selector)) && _JSOrigMethods[[slf class]][NSStringFromSelector(invocation.selector)]) {
+      if ([NSStringFromSelector(invocation.selector) hasPrefix:@"ORIG"]) {
+        invocation.selector = NSSelectorFromString([NSStringFromSelector(invocation.selector) substringFromIndex:4]);
+      } else if ([NSStringFromSelector(invocation.selector) hasPrefix:@"SUPER_"]) {
+        invocation.selector = NSSelectorFromString([NSStringFromSelector(invocation.selector) substringFromIndex:6]);
+      }
+    }
+}
+
+
+
 static JSValue *getJSFunctionInObjectHierachy(id slf, NSString *selectorName)
 {
     Class cls = object_getClass(slf);
@@ -943,6 +963,7 @@ static void JPExecuteORIGForwardInvocation(id slf, SEL selector, NSInvocation *i
             return;
         }
         NSInvocation *forwardInv= [NSInvocation invocationWithMethodSignature:methodSignature];
+        deleteSelectorPrefix(slf, invocation);
         [forwardInv setTarget:slf];
         [forwardInv setSelector:origForwardSelector];
         [forwardInv setArgument:&invocation atIndex:2];
@@ -952,9 +973,26 @@ static void JPExecuteORIGForwardInvocation(id slf, SEL selector, NSInvocation *i
         Method superForwardMethod = class_getInstanceMethod(superCls, @selector(forwardInvocation:));
         void (*superForwardIMP)(id, SEL, NSInvocation *);
         superForwardIMP = (void (*)(id, SEL, NSInvocation *))method_getImplementation(superForwardMethod);
+        deleteSelectorPrefix(slf, invocation);
         superForwardIMP(slf, @selector(forwardInvocation:), invocation);
     }
 }
+
+static void addJPOrigMethods(Class cls, NSString *originalSelectorName) {
+    _initJPOrigMethods(cls);
+    _JSOrigMethods[cls][originalSelectorName] = @(YES);
+}
+
+
+static void _initJPOrigMethods(Class cls) {
+  if (!_JSOrigMethods) {
+    _JSOrigMethods = [[NSMutableDictionary alloc] init];
+  }
+  if (!_JSOrigMethods[cls]) {
+    _JSOrigMethods[(id<NSCopying>)cls] = [[NSMutableDictionary alloc] init];
+  }
+}
+
 
 static void _initJPOverideMethods(Class cls) {
     if (!_JSOverideMethods) {
@@ -992,8 +1030,12 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
     if (class_getMethodImplementation(cls, @selector(forwardInvocation:)) != (IMP)JPForwardInvocation) {
         IMP originalForwardImp = class_replaceMethod(cls, @selector(forwardInvocation:), (IMP)JPForwardInvocation, "v@:@");
         if (originalForwardImp) {
-            class_addMethod(cls, @selector(ORIGforwardInvocation:), originalForwardImp, "v@:@");
+          BOOL add = class_addMethod(cls, @selector(ORIGforwardInvocation:), originalForwardImp, "v@:@");
+          if (!add) {
+            Method method = class_getInstanceMethod(cls, @selector(ORIGforwardInvocation:));
+            method_setImplementation(method, originalForwardImp);
         }
+      }
     }
 
     [cls jp_fixMethodSignature];
@@ -1001,7 +1043,9 @@ static void overrideMethod(Class cls, NSString *selectorName, JSValue *function,
         NSString *originalSelectorName = [NSString stringWithFormat:@"ORIG%@", selectorName];
         SEL originalSelector = NSSelectorFromString(originalSelectorName);
         if(!class_respondsToSelector(cls, originalSelector)) {
-            class_addMethod(cls, originalSelector, originalImp, typeDescription);
+            if (class_addMethod(cls, originalSelector, originalImp, typeDescription)) {
+              addJPOrigMethods(cls, originalSelectorName);
+            }
         }
     }
     
@@ -1056,8 +1100,10 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
         Method superMethod = class_getInstanceMethod(superCls, selector);
         IMP superIMP = method_getImplementation(superMethod);
         
-        class_addMethod(cls, superSelector, superIMP, method_getTypeEncoding(superMethod));
-        
+        if (class_addMethod(cls, superSelector, superIMP, method_getTypeEncoding(superMethod))) {
+          addJPOrigMethods(cls,superSelectorName);
+        }
+
         NSString *JPSelectorName = [NSString stringWithFormat:@"_JP%@", selectorName];
         JSValue *overideFunction = _JSOverideMethods[superCls][JPSelectorName];
         if (overideFunction) {
