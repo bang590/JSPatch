@@ -57,7 +57,7 @@ defineClass('AppDelegate', {
 });
 ```
 
-You can also try to use [JSPatch Convertor](https://github.com/bang590/JSPatchConvertor) to convertor code from Objective-C to JavaScript automatically.
+You can also try to use [JSPatch Convertor](https://github.com/bang590/JSPatchConvertor) to convert code from Objective-C to JavaScript automatically.
 
 ## Installation
 
@@ -81,7 +81,7 @@ Copy `JSEngine.m` `JSEngine.h` `JSPatch.js` in `JSPatch/` to your project.
 ### Objective-C
 1. `#import "JPEngine.h"`
 2. call `[JPEngine startEngine]`
-3. exec JavasScript by `[JPEngine evaluateScript:@""]`
+3. exec JavaScript by `[JPEngine evaluateScript:@""]`
 
 ```objc
 [JPEngine startEngine];
