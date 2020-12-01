@@ -1108,16 +1108,64 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     
     NSUInteger numberOfArguments = methodSignature.numberOfArguments;
     NSInteger inputArguments = [(NSArray *)argumentsObj count];
+    int argRegNum = 0;
     if (inputArguments > numberOfArguments - 2) {
-        // calling variable argument method, only support parameter type `id` and return type `id`
-        id sender = instance != nil ? instance : cls;
-        id result = invokeVariableParameterMethod(argumentsObj, methodSignature, sender, selector);
-        return formatOCToJS(result);
+#ifdef __arm64__
+//  https://developer.apple.com/library/archive/documentation/Xcode/Conceptual/iPhoneOSABIReference/Articles/ARM64FunctionCallingConventions.html
+//  The iOS ABI for functions that take a variable number of arguments is entirely different from the generic version.
+//  Stages A and B of the generic procedure call standard are performed as usual—in particular, even variadic aggregates larger than 16 bytes are passed via a reference to temporary memory allocated by the caller. After that, the fixed arguments are allocated to registers and stack slots as usual in iOS.
+//  The NSRN is then rounded up to the next multiple of 8 bytes, and each variadic argument is assigned to the appropriate number of 8-byte stack slots.
+//  The C language requires arguments smaller than int to be promoted before a call, but beyond that, unused bytes on the stack are not specified by this ABI.
+//  As a result of this change, the type va_list is an alias for char * rather than for the struct type specified in the generic PCS. It is also not in the std namespace when compiling C++ code.
+        argRegNum = 8;
+
+#else
+// https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf
+//  Some otherwise portable C programs depend on the argument passing scheme,
+//  implicitly assuming that all arguments are passed on the stack, and arguments
+//  appear in increasing order on the stack. Programs that make these assumptions
+//  never have been portable, but they have worked on many implementations. However, they do not work on the AMD64 architecture because some arguments are
+//  passed in registers. Portable C programs must use the header file <stdarg.h>
+//  in order to handle variable argument lists.
+        argRegNum = 0;
+
+#endif
+
+        size_t objCTypesLen = 1 /* return type */
+                            + 2 /* self and _cmd */
+                            + inputArguments
+                            + MAX(argRegNum - (int)numberOfArguments, 0) /* placeholders to fill register */
+                            + 1 /* '\0' */;
+        char * methodObjCTypes = (char *)alloca(sizeof(char)*objCTypesLen);
+        methodObjCTypes[0] = [methodSignature methodReturnType][0]; // TODO: support complex return type.
+        size_t i = 0;
+        for (i = 0; i < numberOfArguments; i++) {
+            methodObjCTypes[i + 1] = [methodSignature getArgumentTypeAtIndex:i][0];
+        }
+        for (i = 1 + numberOfArguments; i < objCTypesLen; i++) {
+            methodObjCTypes[i] = '@';
+        }
+        methodObjCTypes[objCTypesLen - 1] = '\0';
+        methodSignature = [NSMethodSignature signatureWithObjCTypes:methodObjCTypes];
+        NSInvocation *inv = [NSInvocation invocationWithMethodSignature:methodSignature];
+        [inv setTarget:invocation.target];
+        [inv setSelector:invocation.selector];
+        invocation = inv;
     }
     
-    for (NSUInteger i = 2; i < numberOfArguments; i++) {
+    for (NSUInteger i = 2; i < methodSignature.numberOfArguments; i++) {
         const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];
-        id valObj = argumentsObj[i-2];
+        id valObj = _nilObj;
+        BOOL isAppendedArgument = NO;
+        if (i - 2 < inputArguments && (argRegNum == 0 || i < argRegNum)) {
+            valObj = argumentsObj[i - 2];
+        } else if (argRegNum) {
+            int idx = (int)i - argRegNum + (int)numberOfArguments;
+            if (idx >= 2 && idx - 2 < inputArguments) {
+                valObj = argumentsObj[idx - 2];
+                isAppendedArgument = YES;
+            }
+        }
         switch (argumentType[0] == 'r' ? argumentType[1] : argumentType[0]) {
                 
                 #define JP_CALL_ARG_CASE(_typeString, _type, _selector) \
@@ -1215,7 +1263,7 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
                     [invocation setArgument:&valObj atIndex:i];
                     break;
                 }
-                if ([(JSValue *)arguments[i-2] hasProperty:@"__isBlock"]) {
+                if (!isAppendedArgument && [(JSValue *)arguments[i-2] hasProperty:@"__isBlock"]) {
                     JSValue *blkJSVal = arguments[i-2];
                     Class JPBlockClass = NSClassFromString(@"JPBlock");
                     if (JPBlockClass && ![blkJSVal[@"blockObj"] isUndefined]) {
@@ -1351,88 +1399,11 @@ static id callSelector(NSString *className, NSString *selectorName, JSValue *arg
     return nil;
 }
 
-static id (*new_msgSend1)(id, SEL, id,...) = (id (*)(id, SEL, id,...)) objc_msgSend;
-static id (*new_msgSend2)(id, SEL, id, id,...) = (id (*)(id, SEL, id, id,...)) objc_msgSend;
-static id (*new_msgSend3)(id, SEL, id, id, id,...) = (id (*)(id, SEL, id, id, id,...)) objc_msgSend;
-static id (*new_msgSend4)(id, SEL, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id,...)) objc_msgSend;
-static id (*new_msgSend5)(id, SEL, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id,...)) objc_msgSend;
-static id (*new_msgSend6)(id, SEL, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id,...)) objc_msgSend;
-static id (*new_msgSend7)(id, SEL, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id,id,...)) objc_msgSend;
-static id (*new_msgSend8)(id, SEL, id, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id, id, id,...)) objc_msgSend;
-static id (*new_msgSend9)(id, SEL, id, id, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id, id, id, id, ...)) objc_msgSend;
-static id (*new_msgSend10)(id, SEL, id, id, id, id, id, id, id, id, id, id,...) = (id (*)(id, SEL, id, id, id, id, id, id, id, id, id, id,...)) objc_msgSend;
-
-static id invokeVariableParameterMethod(NSMutableArray *origArgumentsList, NSMethodSignature *methodSignature, id sender, SEL selector) {
-    
-    NSInteger inputArguments = [(NSArray *)origArgumentsList count];
-    NSUInteger numberOfArguments = methodSignature.numberOfArguments;
-    
-    NSMutableArray *argumentsList = [[NSMutableArray alloc] init];
-    for (NSUInteger j = 0; j < inputArguments; j++) {
-        NSInteger index = MIN(j + 2, numberOfArguments - 1);
-        const char *argumentType = [methodSignature getArgumentTypeAtIndex:index];
-        id valObj = origArgumentsList[j];
-        char argumentTypeChar = argumentType[0] == 'r' ? argumentType[1] : argumentType[0];
-        if (argumentTypeChar == '@') {
-            [argumentsList addObject:valObj];
-        } else {
-            return nil;
-        }
-    }
-    
-    id results = nil;
-    numberOfArguments = numberOfArguments - 2;
-    
-    //If you want to debug the macro code below, replace it to the expanded code:
-    //https://gist.github.com/bang590/ca3720ae1da594252a2e
-    #define JP_G_ARG(_idx) getArgument(argumentsList[_idx])
-    #define JP_CALL_MSGSEND_ARG1(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0));
-    #define JP_CALL_MSGSEND_ARG2(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1));
-    #define JP_CALL_MSGSEND_ARG3(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2));
-    #define JP_CALL_MSGSEND_ARG4(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3));
-    #define JP_CALL_MSGSEND_ARG5(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4));
-    #define JP_CALL_MSGSEND_ARG6(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5));
-    #define JP_CALL_MSGSEND_ARG7(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5), JP_G_ARG(6));
-    #define JP_CALL_MSGSEND_ARG8(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5), JP_G_ARG(6), JP_G_ARG(7));
-    #define JP_CALL_MSGSEND_ARG9(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5), JP_G_ARG(6), JP_G_ARG(7), JP_G_ARG(8));
-    #define JP_CALL_MSGSEND_ARG10(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5), JP_G_ARG(6), JP_G_ARG(7), JP_G_ARG(8), JP_G_ARG(9));
-    #define JP_CALL_MSGSEND_ARG11(_num) results = new_msgSend##_num(sender, selector, JP_G_ARG(0), JP_G_ARG(1), JP_G_ARG(2), JP_G_ARG(3), JP_G_ARG(4), JP_G_ARG(5), JP_G_ARG(6), JP_G_ARG(7), JP_G_ARG(8), JP_G_ARG(9), JP_G_ARG(10));
-        
-    #define JP_IF_REAL_ARG_COUNT(_num) if([argumentsList count] == _num)
-
-    #define JP_DEAL_MSGSEND(_realArgCount, _defineArgCount) \
-        if(numberOfArguments == _defineArgCount) { \
-            JP_CALL_MSGSEND_ARG##_realArgCount(_defineArgCount) \
-        }
-    
-    JP_IF_REAL_ARG_COUNT(1) { JP_CALL_MSGSEND_ARG1(1) }
-    JP_IF_REAL_ARG_COUNT(2) { JP_DEAL_MSGSEND(2, 1) JP_DEAL_MSGSEND(2, 2) }
-    JP_IF_REAL_ARG_COUNT(3) { JP_DEAL_MSGSEND(3, 1) JP_DEAL_MSGSEND(3, 2) JP_DEAL_MSGSEND(3, 3) }
-    JP_IF_REAL_ARG_COUNT(4) { JP_DEAL_MSGSEND(4, 1) JP_DEAL_MSGSEND(4, 2) JP_DEAL_MSGSEND(4, 3) JP_DEAL_MSGSEND(4, 4) }
-    JP_IF_REAL_ARG_COUNT(5) { JP_DEAL_MSGSEND(5, 1) JP_DEAL_MSGSEND(5, 2) JP_DEAL_MSGSEND(5, 3) JP_DEAL_MSGSEND(5, 4) JP_DEAL_MSGSEND(5, 5) }
-    JP_IF_REAL_ARG_COUNT(6) { JP_DEAL_MSGSEND(6, 1) JP_DEAL_MSGSEND(6, 2) JP_DEAL_MSGSEND(6, 3) JP_DEAL_MSGSEND(6, 4) JP_DEAL_MSGSEND(6, 5) JP_DEAL_MSGSEND(6, 6) }
-    JP_IF_REAL_ARG_COUNT(7) { JP_DEAL_MSGSEND(7, 1) JP_DEAL_MSGSEND(7, 2) JP_DEAL_MSGSEND(7, 3) JP_DEAL_MSGSEND(7, 4) JP_DEAL_MSGSEND(7, 5) JP_DEAL_MSGSEND(7, 6) JP_DEAL_MSGSEND(7, 7) }
-    JP_IF_REAL_ARG_COUNT(8) { JP_DEAL_MSGSEND(8, 1) JP_DEAL_MSGSEND(8, 2) JP_DEAL_MSGSEND(8, 3) JP_DEAL_MSGSEND(8, 4) JP_DEAL_MSGSEND(8, 5) JP_DEAL_MSGSEND(8, 6) JP_DEAL_MSGSEND(8, 7) JP_DEAL_MSGSEND(8, 8) }
-    JP_IF_REAL_ARG_COUNT(9) { JP_DEAL_MSGSEND(9, 1) JP_DEAL_MSGSEND(9, 2) JP_DEAL_MSGSEND(9, 3) JP_DEAL_MSGSEND(9, 4) JP_DEAL_MSGSEND(9, 5) JP_DEAL_MSGSEND(9, 6) JP_DEAL_MSGSEND(9, 7) JP_DEAL_MSGSEND(9, 8) JP_DEAL_MSGSEND(9, 9) }
-    JP_IF_REAL_ARG_COUNT(10) { JP_DEAL_MSGSEND(10, 1) JP_DEAL_MSGSEND(10, 2) JP_DEAL_MSGSEND(10, 3) JP_DEAL_MSGSEND(10, 4) JP_DEAL_MSGSEND(10, 5) JP_DEAL_MSGSEND(10, 6) JP_DEAL_MSGSEND(10, 7) JP_DEAL_MSGSEND(10, 8) JP_DEAL_MSGSEND(10, 9) JP_DEAL_MSGSEND(10, 10) }
-    
-    return results;
-}
-
 NSMethodSignature *block_methodSignatureForSelector(id self, SEL _cmd, SEL aSelector) {
     uint8_t *p = (uint8_t *)((__bridge void *)self);
     p += sizeof(void *) * 2 + sizeof(int32_t) *2 + sizeof(uintptr_t) * 2;
     const char **signature = (const char **)p;
     return [NSMethodSignature signatureWithObjCTypes:*signature];
-}
-
-
-static id getArgument(id valObj){
-    if (valObj == _nilObj ||
-        ([valObj isKindOfClass:[NSNumber class]] && strcmp([valObj objCType], "c") == 0 && ![valObj boolValue])) {
-        return nil;
-    }
-    return valObj;
 }
 
 #pragma mark -
