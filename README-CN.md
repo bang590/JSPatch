@@ -102,7 +102,7 @@ var redColor = UIColor.redColor();
 var view = UIView.alloc().init();
 view.setNeedsLayout();
 
-// set proerty
+// set property
 view.setBackgroundColor(redColor);
 
 // get property 
@@ -226,7 +226,7 @@ view.setTransform({a:1, b:0, c:0, d:1, tx:0, ty:100})
 ```js
 require('JPEngine').addExtensions(['JPInclude', 'JPCGTransform'])
 
-// `include()` and `CGAffineTransform` is avaliable now.
+// `include()` and `CGAffineTransform` is available now.
 ```
 
 可以通过新增扩展为自己项目里的 struct 类型以及C函数添加支持，详情请见wiki页面：[Adding new extensions](https://github.com/bang590/JSPatch/wiki/Adding-new-extensions)
